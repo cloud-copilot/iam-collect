@@ -1,21 +1,238 @@
-import { existsSync } from 'fs'
-import { resolve } from 'path'
+interface AuthConfig {
+  /**
+   * The profile to use when authenticating with AWS. If not present, the default AWS SDK credential resolution chain will be used.
+   */
+  profile?: string
 
-export const configFileName = 'iam-download.jsonc'
+  // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role.
+  role?: {
+    /**
+     * The path and name of the role to assume. Required if using a role.
+     */
+    pathAndName: 'path/role-name'
 
-/**
- * Get the full path to the config file.
- *
- * @returns The full path to the config file.
- */
-export function fullDefaultConfigPath(): string {
-  return resolve(process.cwd(), configFileName)
+    /**
+     * The account to assume the role in. Optional, if not present the account of the current principal will be used.
+     */
+    account?: string
+
+    /**
+     * Optional, the external id to use when assuming the role.
+     */
+    externalId?: string
+
+    /**
+     * Optional, the session name to use when assuming the role.
+     */
+    sessionName?: string
+  }
 }
 
-/**
- *
- * @returns Whether the default config file exists
- */
-export function defaultConfigExists(): boolean {
-  return existsSync(fullDefaultConfigPath())
+interface FileSystemStorageConfig {
+  type: 'file'
+  path: string
+}
+
+interface S3StorageConfig {
+  type: 's3'
+  bucket: string
+  prefix?: string
+  region: string
+  endpoint?: string
+  auth?: AuthConfig
+}
+
+type StorageConfig = FileSystemStorageConfig | S3StorageConfig
+
+interface BaseConfig {
+  regions?: {
+    included?: string[]
+    excluded?: string[]
+  }
+  services?: {
+    included?: string[]
+    excluded?: string[]
+  }
+  auth?: AuthConfig
+}
+
+interface ServiceConfig extends BaseConfig {
+  endpoint?: string
+  regionConfigs?: Record<string, Omit<ServiceConfig, 'regionConfigs'>>
+}
+
+interface AccountConfig extends BaseConfig {
+  serviceConfigs?: Record<string, ServiceConfig>
+}
+
+interface TopLevelConfig extends BaseConfig {
+  name?: string
+  iamDownloadVersion: string
+  storage: StorageConfig
+  auth?: AuthConfig
+  accounts?: Record<string, AccountConfig>
+  serviceConfigs?: Record<string, ServiceConfig>
+}
+
+type ServicesForAccount = string[]
+type RegionsForAccountService = string[]
+interface AccountServiceRegionConfig {
+  auth: AuthConfig
+  endpoint?: string
+}
+
+interface ResolvedAccountConfig {
+  regions?: {
+    included?: string[]
+    excluded?: string[]
+  }
+  services?: {
+    included?: string[]
+    excluded?: string[]
+  }
+}
+
+interface ResolvedAccountServiceRegionConfig {
+  auth?: AuthConfig
+  endpoint?: string
+}
+
+export function servicesForAccount(
+  account: string,
+  configs: TopLevelConfig[],
+  allServices: string[]
+): ServicesForAccount {
+  let services = allServices
+  for (const config of configs) {
+    if (config.services?.included) {
+      services = config.services.included
+    }
+    if (config.services?.excluded) {
+      services = services.filter((service) => !config.services!.excluded?.includes(service))
+    }
+
+    const accountServices = config.accounts?.[account]?.services
+    if (accountServices) {
+      if (accountServices.included) {
+        services = accountServices.included
+      }
+      if (accountServices.excluded) {
+        services = services.filter((service) => !accountServices.excluded?.includes(service))
+      }
+    }
+  }
+
+  return services
+}
+
+export function regionsForService(
+  service: string,
+  account: string,
+  configs: TopLevelConfig[],
+  allRegions: string[]
+): RegionsForAccountService {
+  let regions = allRegions
+  for (const config of configs) {
+    if (config.regions?.included) {
+      regions = config.regions.included
+    }
+    if (config.regions?.excluded) {
+      regions = regions.filter((region) => !config.regions!.excluded?.includes(region))
+    }
+
+    const serviceConfig = config.serviceConfigs?.[service]
+    if (serviceConfig) {
+      if (serviceConfig.regions?.included) {
+        regions = serviceConfig.regions.included
+      }
+      if (serviceConfig.regions?.excluded) {
+        regions = regions.filter((region) => !serviceConfig.regions!.excluded?.includes(region))
+      }
+    }
+
+    const accountConfig = config.accounts?.[account]
+    if (accountConfig) {
+      if (accountConfig.regions?.included) {
+        regions = accountConfig.regions.included
+      }
+      if (accountConfig.regions?.excluded) {
+        regions = regions.filter((region) => !accountConfig.regions!.excluded?.includes(region))
+      }
+
+      const accountServces = accountConfig.serviceConfigs?.[service]
+      if (accountServces) {
+        if (accountServces.regions?.included) {
+          regions = accountServces.regions.included
+        }
+        if (accountServces.regions?.excluded) {
+          regions = regions.filter((region) => !accountServces.regions!.excluded?.includes(region))
+        }
+      }
+    }
+  }
+
+  return regions
+}
+
+export function accountServiceRegionConfig(
+  service: string,
+  account: string,
+  region: string,
+  configs: TopLevelConfig[]
+): ResolvedAccountServiceRegionConfig {
+  let result: ResolvedAccountServiceRegionConfig = {}
+  for (const config of configs) {
+    if (config.auth) {
+      result.auth = config.auth
+    }
+
+    const serviceConfig = config.serviceConfigs?.[service]
+    if (serviceConfig) {
+      if (serviceConfig.auth) {
+        result.auth = serviceConfig.auth
+      }
+      if (serviceConfig.endpoint) {
+        result.endpoint = serviceConfig.endpoint
+      }
+
+      const regionConfig = serviceConfig.regionConfigs?.[region]
+      if (regionConfig) {
+        if (regionConfig.auth) {
+          result.auth = regionConfig.auth
+        }
+        if (regionConfig.endpoint) {
+          result.endpoint = regionConfig.endpoint
+        }
+      }
+    }
+
+    const accountConfig = config.accounts?.[account]
+    if (accountConfig) {
+      if (accountConfig.auth) {
+        result.auth = accountConfig.auth
+      }
+
+      const accountServiceConfig = accountConfig.serviceConfigs?.[service]
+      if (accountServiceConfig) {
+        if (accountServiceConfig.auth) {
+          result.auth = accountServiceConfig.auth
+        }
+        if (accountServiceConfig.endpoint) {
+          result.endpoint = accountServiceConfig.endpoint
+        }
+
+        const accountRegionConfig = accountServiceConfig.regionConfigs?.[region]
+        if (accountRegionConfig) {
+          if (accountRegionConfig.auth) {
+            result.auth = accountRegionConfig.auth
+          }
+          if (accountRegionConfig.endpoint) {
+            result.endpoint = accountRegionConfig.endpoint
+          }
+        }
+      }
+    }
+  }
+
+  return result
 }

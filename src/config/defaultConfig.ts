@@ -1,7 +1,30 @@
+import { existsSync } from 'fs'
+import { resolve } from 'path'
 import { iamDownloadVersion } from './packageVersion.js'
+
+export const defaultConfigFileName = 'iam-download.jsonc'
+
+/**
+ * Get the full path to the config file.
+ *
+ * @returns The full path to the config file.
+ */
+export function fullDefaultConfigPath(): string {
+  return resolve(process.cwd(), defaultConfigFileName)
+}
+
+/**
+ *
+ * @returns Whether the default config file exists
+ */
+export function defaultConfigExists(): boolean {
+  return existsSync(fullDefaultConfigPath())
+}
 
 const defaultConfig = `
 {
+  // The name of the configuration, used if you need to have multiple configurations.
+  "name": "default config",
   "iamDownloadVersion": "0.0.0",
 
   // Default storage is on the file system.
@@ -27,6 +50,7 @@ const defaultConfig = `
   */
 
   // Optional block, by default all regions returned by ec2:DescribeRegions with 'opt-in-not-required' or 'opted-in' are included
+  // If regions are specified in the CLI, this is ignored
   // "regions": {
   //Optional regions to include, if empty all regions are included
   // "included": ["us-east-1", "us-west-1"],
@@ -35,6 +59,7 @@ const defaultConfig = `
   // },
 
   // Optional block, by default all supported services are included
+  // If services are specified in the CLI, this is ignored
   // "services": {
   //Optional services to include, if empty all supported services are included
   // "included": ["s3", "ec2"],
@@ -46,6 +71,8 @@ const defaultConfig = `
   // "auth": {
   //  //The type of authentication to use
   // }
+
+
 }
 `
 

@@ -1,4 +1,4 @@
-const allowedArguments = new Set(['regions', 'services'])
+const allowedArguments = new Set(['regions', 'services', 'accounts'])
 
 interface CliArguments {
   command: string | undefined

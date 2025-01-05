@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { parseCliArguments } from './cliUtils.js'
-import { defaultConfigExists } from './config/config.js'
 import { createDefaultConfiguration } from './config/createConfigFile.js'
+import { defaultConfigExists } from './config/defaultConfig.js'
 
 const rawArgs = process.argv.slice(2) // Ignore the first two elements
 const parsedArgs = parseCliArguments(rawArgs)
