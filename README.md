@@ -1,6 +1,6 @@
 # iam-download
 
-Download data from AWS. This is built to run in AWS out of the box in simple use cases, and work also work in terrible oppresive environments with a little more configuration. If you want to analyze IAM data at scale this is what you've been looking for.
+Download IAM data from AWS. This is built to run out of the box in simple use cases, and also work in terribly oppresive environments with a little more configuration. If you want to analyze IAM data at scale this is what you've been looking for.
 
 # BETA
 
