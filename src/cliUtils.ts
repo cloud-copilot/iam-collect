@@ -41,27 +41,11 @@ export function parseCliArguments(args: string[]): ParsedCliArguments {
         unrecognizedParams.push(arg)
         currentArgType = undefined
       }
-      // if (arg === '--region') {
-      // currentArgType = 'region'
-      // } else if (arg === '--service') {
-      // currentArgType = 'service'
-      // } else {
-      // unrecognizedParams.push(arg)
-      // }
     } else {
       if (currentArgType) {
         cliArguments[currentArgType] = cliArguments[currentArgType] || []
         cliArguments[currentArgType]!.push(arg)
       }
-      // if (currentArgType === 'region') {
-      //   cliArguments.regions = cliArguments.regions || []
-      //   cliArguments.regions!.push(arg)
-      // } else if (currentArgType === 'service') {
-      //   cliArguments.services = cliArguments.services || []
-      //   cliArguments.services!.push(arg)
-      // } else {
-      //   unrecognizedParams.push(arg)
-      // }
     }
   }
 
