@@ -1,6 +1,5 @@
 import { writeFileSync } from 'fs'
-import { defaultConfigExists, fullDefaultConfigPath } from './config.js'
-import { getDefaultConfig } from './defaultConfig.js'
+import { defaultConfigExists, fullDefaultConfigPath, getDefaultConfig } from './defaultConfig.js'
 
 /**
  * Create a default configuration file.
