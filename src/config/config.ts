@@ -28,12 +28,12 @@ interface AuthConfig {
   }
 }
 
-interface FileSystemStorageConfig {
+export interface FileSystemStorageConfig {
   type: 'file'
   path: string
 }
 
-interface S3StorageConfig {
+export interface S3StorageConfig {
   type: 's3'
   bucket: string
   prefix?: string
@@ -42,7 +42,7 @@ interface S3StorageConfig {
   auth?: AuthConfig
 }
 
-type StorageConfig = FileSystemStorageConfig | S3StorageConfig
+export type StorageConfig = FileSystemStorageConfig | S3StorageConfig
 
 interface BaseConfig {
   regions?: {
@@ -65,7 +65,7 @@ interface AccountConfig extends BaseConfig {
   serviceConfigs?: Record<string, ServiceConfig>
 }
 
-interface TopLevelConfig extends BaseConfig {
+export interface TopLevelConfig extends BaseConfig {
   name?: string
   iamDownloadVersion: string
   storage: StorageConfig
@@ -107,6 +107,7 @@ export function servicesForAccount(
     if (config.services?.included) {
       services = config.services.included
     }
+
     if (config.services?.excluded) {
       services = services.filter((service) => !config.services!.excluded?.includes(service))
     }
@@ -114,7 +115,11 @@ export function servicesForAccount(
     const accountServices = config.accounts?.[account]?.services
     if (accountServices) {
       if (accountServices.included) {
-        services = accountServices.included
+        for (const service of accountServices.included) {
+          if (!services.includes(service)) {
+            services.push(service)
+          }
+        }
       }
       if (accountServices.excluded) {
         services = services.filter((service) => !accountServices.excluded?.includes(service))
@@ -159,13 +164,13 @@ export function regionsForService(
         regions = regions.filter((region) => !accountConfig.regions!.excluded?.includes(region))
       }
 
-      const accountServces = accountConfig.serviceConfigs?.[service]
-      if (accountServces) {
-        if (accountServces.regions?.included) {
-          regions = accountServces.regions.included
+      const accountServices = accountConfig.serviceConfigs?.[service]
+      if (accountServices) {
+        if (accountServices.regions?.included) {
+          regions = accountServices.regions.included
         }
-        if (accountServces.regions?.excluded) {
-          regions = regions.filter((region) => !accountServces.regions!.excluded?.includes(region))
+        if (accountServices.regions?.excluded) {
+          regions = regions.filter((region) => !accountServices.regions!.excluded?.includes(region))
         }
       }
     }
