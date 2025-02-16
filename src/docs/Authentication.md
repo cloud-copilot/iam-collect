@@ -13,10 +13,8 @@ Authentication is configured in the `iam-download.jsonc` file. Anytime `auth` is
 
   // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role.
   "role": {
-    "arn": "arn:aws:iam::123456789012:role/role-name",
     // Required if using a role, the path and name of the role to assume.
     "pathAndName": "role-name",
-
     // Optional, the account to assume the role in. If not present, the target account will be used.
     "account": "123456789012",
     // Optional, the session name to use when assuming the role.

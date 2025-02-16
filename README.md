@@ -12,7 +12,7 @@ This is still in beta, commands and configuration options are likely to change.
 npm install -g @cloud-copilot/iam-download
 ```
 
-## Intialization
+## Initialization
 
 First you need to initialize the configuration file. This will create a commented iam-download.jsonc file with comments for the different elements.
 
