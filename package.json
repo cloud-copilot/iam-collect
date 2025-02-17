@@ -16,6 +16,9 @@
     "dist/**/*"
   ],
   "types": "dist/cjs/index.d.ts",
+  "bin": {
+    "iam-collect": "dist/esm/cli.js"
+  },
   "scripts": {
     "build": "npx tsc -p tsconfig.cjs.json && npx tsc -p tsconfig.esm.json && ./postbuild.sh",
     "clean": "rm -rf dist",
@@ -36,10 +39,72 @@
   "homepage": "https://github.com/cloud-copilot/iam-collect#readme",
   "devDependencies": {
     "@cloud-copilot/prettier-config": "^0.1.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.3",
     "@types/node": "^22.5.0",
     "@vitest/coverage-v8": "^2.0.5",
+    "semantic-release": "^24.2.1",
     "typescript": "^5.7.2",
     "vitest": "^2.0.5"
   },
-  "prettier": "@cloud-copilot/prettier-config"
+  "prettier": "@cloud-copilot/prettier-config",
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "releaseRules": [
+            {
+              "type": "feat",
+              "release": "patch"
+            },
+            {
+              "type": "fix",
+              "release": "patch"
+            },
+            {
+              "breaking": true,
+              "release": "patch"
+            },
+            {
+              "type": "*",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": true
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "package-lock.json",
+            "CHANGELOG.md"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "assets": []
+        }
+      ]
+    ]
+  }
 }
