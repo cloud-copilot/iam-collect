@@ -1,10 +1,10 @@
 {
-  "name": "@cloud-copilot/iam-download",
+  "name": "@cloud-copilot/iam-collect",
   "version": "0.1.1",
-  "description": "Download IAM information from AWS Accounts",
+  "description": "Collect IAM information from AWS Accounts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cloud-copilot/iam-download.git"
+    "url": "git+https://github.com/cloud-copilot/iam-collect.git"
   },
   "exports": {
     ".": {
@@ -31,9 +31,9 @@
   "author": "David Kerber <dave@cloudcopilot.io>",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/cloud-copilot/iam-download/issues"
+    "url": "https://github.com/cloud-copilot/iam-collect/issues"
   },
-  "homepage": "https://github.com/cloud-copilot/iam-download#readme",
+  "homepage": "https://github.com/cloud-copilot/iam-collect#readme",
   "devDependencies": {
     "@cloud-copilot/prettier-config": "^0.1.0",
     "@types/node": "^22.5.0",

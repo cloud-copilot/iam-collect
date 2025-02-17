@@ -20,7 +20,7 @@ const servicesForAccountTests: {
     name: 'should use top level includes',
     configs: [
       {
-        iamDownloadVersion: defaultVersion,
+        iamCollectVersion: defaultVersion,
         storage: defaultStorage,
         services: {
           included: ['s3']
@@ -33,7 +33,7 @@ const servicesForAccountTests: {
     name: 'should use top level excludes',
     configs: [
       {
-        iamDownloadVersion: defaultVersion,
+        iamCollectVersion: defaultVersion,
         storage: defaultStorage,
         services: {
           excluded: ['s3']
@@ -46,7 +46,7 @@ const servicesForAccountTests: {
     name: 'account includes should be merged with top level includes',
     configs: [
       {
-        iamDownloadVersion: defaultVersion,
+        iamCollectVersion: defaultVersion,
         storage: defaultStorage,
         services: {
           included: ['s3']
@@ -66,7 +66,7 @@ const servicesForAccountTests: {
     name: 'account excludes should be combined with top level excludes',
     configs: [
       {
-        iamDownloadVersion: defaultVersion,
+        iamCollectVersion: defaultVersion,
         storage: defaultStorage,
         services: {
           excluded: ['s3']
@@ -86,7 +86,7 @@ const servicesForAccountTests: {
     name: 'account includes should override top level excludes',
     configs: [
       {
-        iamDownloadVersion: defaultVersion,
+        iamCollectVersion: defaultVersion,
         storage: defaultStorage,
         services: {
           excluded: ['s3']
@@ -133,7 +133,7 @@ const regionsForServiceTests: {
     name: 'should use the top level regions',
     configs: [
       {
-        iamDownloadVersion: defaultVersion,
+        iamCollectVersion: defaultVersion,
         storage: defaultStorage,
         regions: {
           included: ['us-east-1']

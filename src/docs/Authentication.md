@@ -1,8 +1,8 @@
 # Authentication
 
-By default all auth is done using the credentials currenty in the environment, this includes retrieving data from servcies and (if configured) uploading data to S3.
+By default all auth is done using the credentials currently in the environment, this includes retrieving data from services and (if configured) uploading data to S3.
 
-It's possible to have distinct auth configs for downloading data vs storing it. It's also possible to have sepaerate auth configs for each service or each region within a service.
+It's possible to have distinct auth configs for downloading data vs storing it. It's also possible to have separate auth configs for each service or each region within a service.
 
 Authentication is configured in the `iam-download.jsonc` file. Anytime `auth` is an option in the configuration it has the same options:
 

@@ -1,8 +1,8 @@
 import { existsSync } from 'fs'
 import { resolve } from 'path'
-import { iamDownloadVersion } from './packageVersion.js'
+import { iamCollectVersion } from './packageVersion.js'
 
-export const defaultConfigFileName = 'iam-download.jsonc'
+export const defaultConfigFileName = 'iam-collect.jsonc'
 
 /**
  * Get the full path to the config file.
@@ -25,7 +25,7 @@ const defaultConfig = `
 {
   // The name of the configuration, used if you need to have multiple configurations.
   "name": "default config",
-  "iamDownloadVersion": "0.0.0",
+  "iamCollectVersion": "0.0.0",
 
   // Default storage is on the file system.
   "storage": {
@@ -42,7 +42,7 @@ const defaultConfig = `
     "prefix": "iam-data/",
     "region": "us-west-2",
     "endpoint": "https://s3.us-west-2.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
-    //Optional auth configuration, see https://github.com/cloud-copilot/iam-download/docs/Authentication.md
+    //Optional auth configuration, see https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
     "auth": {
       //The type of authentication to use
     }
@@ -67,7 +67,7 @@ const defaultConfig = `
   // "excluded": ["iam"]
   // },
 
-  // Optional block for authentication, see , see https://github.com/cloud-copilot/iam-download/docs/Authentication.md
+  // Optional block for authentication, see , see https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
   // "auth": {
   //  //The type of authentication to use
   // }
@@ -77,5 +77,5 @@ const defaultConfig = `
 `
 
 export function getDefaultConfig(): string {
-  return defaultConfig.replace('0.0.0', iamDownloadVersion())
+  return defaultConfig.replace('0.0.0', iamCollectVersion())
 }

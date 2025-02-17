@@ -67,7 +67,7 @@ interface AccountConfig extends BaseConfig {
 
 export interface TopLevelConfig extends BaseConfig {
   name?: string
-  iamDownloadVersion: string
+  iamCollectVersion: string
   storage: StorageConfig
   auth?: AuthConfig
   accounts?: Record<string, AccountConfig>

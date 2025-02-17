@@ -39,7 +39,7 @@ function getPackageData(): PackageInfo {
 /**
  * Get the version of the package
  */
-export function iamDownloadVersion(): string {
+export function iamCollectVersion(): string {
   const data = getPackageData()
   return data.version
 }
