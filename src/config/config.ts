@@ -283,7 +283,7 @@ export function getAccountAuthConfig(
 export function getStorageConfig(configs: TopLevelConfig[]): StorageConfig | undefined {
   const reverseConfigs = [...configs].reverse()
   // Iterate through the configs to find the first storage config
-  for (const config of configs) {
+  for (const config of reverseConfigs) {
     if (config.storage) {
       return config.storage
     }
