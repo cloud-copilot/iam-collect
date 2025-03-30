@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { regionsForService, servicesForAccount, StorageConfig, TopLevelConfig } from './config.js'
+import {
+  AuthConfig,
+  getAccountAuthConfig,
+  regionsForService,
+  servicesForAccount,
+  StorageConfig,
+  TopLevelConfig
+} from './config.js'
 
 const defaultServicesForAccount = ['kms', 's3', 'sns', 'sqs']
 const defaultVersion = '1.0.0'
@@ -143,6 +150,7 @@ const regionsForServiceTests: {
     result: ['us-east-1']
   }
 ]
+
 describe('regionsForService', () => {
   for (const test of regionsForServiceTests) {
     const func = test.only ? it.only : it
@@ -151,6 +159,116 @@ describe('regionsForService', () => {
       const result = regionsForService('s3', accountId, test.configs, defaultRegionsForService)
 
       expect(result.sort()).toEqual(test.result.sort())
+    })
+  }
+})
+
+const getAccountAuthConfigTests: {
+  name: string
+  configs: TopLevelConfig[]
+  accountId: string
+  only?: boolean
+  result?: AuthConfig
+}[] = [
+  {
+    name: 'should return nothing if no configs are provided',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      }
+    ],
+    result: undefined
+  },
+  {
+    name: 'should return the default config if no account config is provided',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default',
+          role: {
+            pathAndName: 'my-role'
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'default',
+      role: {
+        pathAndName: 'my-role'
+      }
+    }
+  },
+  {
+    name: 'should return the override details if any',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default',
+          role: {
+            pathAndName: 'my-role'
+          }
+        },
+        accounts: {
+          '123456789012': {
+            auth: {
+              role: {
+                pathAndName: 'override-role'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'default',
+      role: {
+        pathAndName: 'override-role'
+      }
+    }
+  },
+  {
+    name: 'should return the account specific config if no default config is provided',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: {
+          '123456789012': {
+            auth: {
+              profile: 'my-account-profile',
+              role: {
+                pathAndName: 'override-role'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'my-account-profile',
+      role: {
+        pathAndName: 'override-role'
+      }
+    }
+  }
+]
+
+describe('getAccountAuthConfig', () => {
+  for (const test of getAccountAuthConfigTests) {
+    const func = test.only ? it.only : it
+    func(test.name, async () => {
+      const result = await getAccountAuthConfig(test.accountId, test.configs)
+
+      expect(result).toEqual(test.result)
     })
   }
 })

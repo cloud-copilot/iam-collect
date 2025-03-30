@@ -1,4 +1,4 @@
-interface AuthConfig {
+export interface AuthConfig {
   /**
    * The profile to use when authenticating with AWS. If not present, the default AWS SDK credential resolution chain will be used.
    */
@@ -9,12 +9,7 @@ interface AuthConfig {
     /**
      * The path and name of the role to assume. Required if using a role.
      */
-    pathAndName: 'path/role-name'
-
-    /**
-     * The account to assume the role in. Optional, if not present the account of the current principal will be used.
-     */
-    account?: string
+    pathAndName: string
 
     /**
      * Optional, the external id to use when assuming the role.
@@ -39,7 +34,9 @@ export interface S3StorageConfig {
   prefix?: string
   region: string
   endpoint?: string
-  auth?: AuthConfig
+  auth?: AuthConfig & {
+    accountId: string
+  }
 }
 
 export type StorageConfig = FileSystemStorageConfig | S3StorageConfig
@@ -68,7 +65,7 @@ interface AccountConfig extends BaseConfig {
 export interface TopLevelConfig extends BaseConfig {
   name?: string
   iamCollectVersion: string
-  storage: StorageConfig
+  storage?: StorageConfig
   auth?: AuthConfig
   accounts?: Record<string, AccountConfig>
   serviceConfigs?: Record<string, ServiceConfig>
@@ -92,7 +89,10 @@ interface ResolvedAccountConfig {
   }
 }
 
-interface ResolvedAccountServiceRegionConfig {
+export interface ResolvedAccountServiceRegionConfig {
+  accountId: string
+  service: string
+  region: string
   auth?: AuthConfig
   endpoint?: string
 }
@@ -179,13 +179,27 @@ export function regionsForService(
   return regions
 }
 
+// export function defaultStsRegion(configs: TopLevelConfig[]): string {
+//   for (const config of configs) {
+//     if (config.regions?.included) {
+//       return config.regions.included[0]
+//     }
+//   }
+
+//   return 'us-east-1'
+// }
+
 export function accountServiceRegionConfig(
   service: string,
-  account: string,
+  accountId: string,
   region: string,
   configs: TopLevelConfig[]
 ): ResolvedAccountServiceRegionConfig {
-  let result: ResolvedAccountServiceRegionConfig = {}
+  let result: ResolvedAccountServiceRegionConfig = {
+    accountId: accountId,
+    service,
+    region
+  }
   for (const config of configs) {
     if (config.auth) {
       result.auth = config.auth
@@ -194,7 +208,7 @@ export function accountServiceRegionConfig(
     const serviceConfig = config.serviceConfigs?.[service]
     if (serviceConfig) {
       if (serviceConfig.auth) {
-        result.auth = serviceConfig.auth
+        result.auth = { ...result.auth, ...serviceConfig.auth }
       }
       if (serviceConfig.endpoint) {
         result.endpoint = serviceConfig.endpoint
@@ -203,7 +217,7 @@ export function accountServiceRegionConfig(
       const regionConfig = serviceConfig.regionConfigs?.[region]
       if (regionConfig) {
         if (regionConfig.auth) {
-          result.auth = regionConfig.auth
+          result.auth = { ...result.auth, ...regionConfig.auth }
         }
         if (regionConfig.endpoint) {
           result.endpoint = regionConfig.endpoint
@@ -211,7 +225,7 @@ export function accountServiceRegionConfig(
       }
     }
 
-    const accountConfig = config.accounts?.[account]
+    const accountConfig = config.accounts?.[accountId]
     if (accountConfig) {
       if (accountConfig.auth) {
         result.auth = accountConfig.auth
@@ -220,7 +234,7 @@ export function accountServiceRegionConfig(
       const accountServiceConfig = accountConfig.serviceConfigs?.[service]
       if (accountServiceConfig) {
         if (accountServiceConfig.auth) {
-          result.auth = accountServiceConfig.auth
+          result.auth = { ...result.auth, ...accountServiceConfig.auth }
         }
         if (accountServiceConfig.endpoint) {
           result.endpoint = accountServiceConfig.endpoint
@@ -229,7 +243,7 @@ export function accountServiceRegionConfig(
         const accountRegionConfig = accountServiceConfig.regionConfigs?.[region]
         if (accountRegionConfig) {
           if (accountRegionConfig.auth) {
-            result.auth = accountRegionConfig.auth
+            result.auth = { ...result.auth, ...accountRegionConfig.auth }
           }
           if (accountRegionConfig.endpoint) {
             result.endpoint = accountRegionConfig.endpoint
@@ -240,4 +254,40 @@ export function accountServiceRegionConfig(
   }
 
   return result
+}
+
+/**
+ * Get the auth config for a specific account
+ *
+ * @param accountId the account id to get the auth config for
+ * @param configs the configs to search
+ * @returns the auth config for the account, or undefined if not found
+ */
+export function getAccountAuthConfig(
+  accountId: string,
+  configs: TopLevelConfig[]
+): AuthConfig | undefined {
+  let result: AuthConfig | undefined = undefined
+  for (const config of configs) {
+    if (config.auth) {
+      result = config.auth
+    }
+    const accountConfig = config.accounts?.[accountId]
+    if (accountConfig?.auth) {
+      result = { ...(result || {}), ...accountConfig.auth }
+    }
+  }
+  return result
+}
+
+export function getStorageConfig(configs: TopLevelConfig[]): StorageConfig | undefined {
+  const reverseConfigs = [...configs].reverse()
+  // Iterate through the configs to find the first storage config
+  for (const config of configs) {
+    if (config.storage) {
+      return config.storage
+    }
+  }
+  // Return undefined if no storage config is found
+  return undefined
 }
