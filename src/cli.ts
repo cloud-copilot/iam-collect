@@ -50,8 +50,6 @@ const cli = parseCliArguments(
   }
 )
 
-// cli.subcommand = cli.subcommand || 'download'
-
 if (cli.subcommand === 'init') {
   if (defaultConfigExists()) {
     console.error('Configuration file already exists')
@@ -62,9 +60,7 @@ if (cli.subcommand === 'init') {
   process.exit(0)
 } else if (cli.subcommand === 'download') {
   const defaultConfig = './iam-collect.jsonc'
-  cli.args.configFiles = cli.args.configFiles || []
   const configFiles = cli.args.configFiles?.length > 0 ? cli.args.configFiles : [defaultConfig]
   const configs = loadConfigFiles(configFiles)
-  // console.log(configs)
   downloadData(configs, cli.args.accountIds, cli.args.regions, cli.args.services)
 }
