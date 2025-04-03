@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { FileSystemAdapter } from './FileSystemAdapter'
+import { FileSystemAdapter } from './FileSystemAdapter.js'
 
 vi.mock('./FileSystemAdapter')
 
-import { FileSystemAwsIamStore } from './FileSystemAwsIamStore'
+import { FileSystemAwsIamStore } from './FileSystemAwsIamStore.js'
 
 describe('FileSystemAwsIamStore', () => {
   let store: FileSystemAwsIamStore

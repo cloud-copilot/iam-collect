@@ -1,7 +1,7 @@
 import { join, sep } from 'path'
 import { AwsIamStore, ResourceTypeParts } from '../AwsIamStore.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
-import { FileSystemAdapter } from './FileSystemAdapter'
+import { FileSystemAdapter } from './FileSystemAdapter.js'
 
 export class FileSystemAwsIamStore implements AwsIamStore {
   private fsAdapter: FileSystemAdapter
