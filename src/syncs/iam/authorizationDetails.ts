@@ -29,9 +29,9 @@ import {
 
 import { AwsCredentialIdentityWithMetaData } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
-import { AwsIamStore, ResourceTypeParts } from '../../persistence/AwsIamStore.js'
+import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
-import { Sync } from '../sync.js'
+import { Sync, syncData } from '../sync.js'
 
 interface AccessKeyWithLastUsed extends AccessKeyMetadata {
   lastUsed?: AccessKeyLastUsed
@@ -188,26 +188,6 @@ export const AuthorizationDetailsSync: Sync = {
       resourceType: 'user',
       account: accountId
     })
-  }
-}
-
-type DataRecord = Record<string, any> & { arn: string }
-async function syncData(
-  records: DataRecord[],
-  storage: AwsIamStore,
-  accountId: string,
-  resourceTypeParts: ResourceTypeParts
-) {
-  const allArns = records.map((r) => r.arn)
-  await storage.syncResourceList(accountId, resourceTypeParts, allArns)
-
-  for (const record of records) {
-    for (const [key, value] of Object.entries(record)) {
-      if (key === 'arn') {
-        continue
-      }
-      await storage.saveResourceMetadata(accountId, record.arn, key, value)
-    }
   }
 }
 

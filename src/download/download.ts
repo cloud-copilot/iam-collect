@@ -12,7 +12,7 @@ import { AwsIamStore } from '../persistence/AwsIamStore.js'
 import { FileSystemAwsIamStore } from '../persistence/file/FileSystemAwsIamStore.js'
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
-import { getGlobalSyncsForService } from '../syncs/syncMap.js'
+import { getGlobalSyncsForService, getRegionalSyncsForService } from '../syncs/syncMap.js'
 
 export async function downloadData(
   configs: TopLevelConfig[],
@@ -70,7 +70,16 @@ export async function downloadData(
       //Go through regional syncs for the service
       for (const region of serviceRegions) {
         console.log(`Service ${service} for account ${accountId} in region ${region}`)
+        const regionalSyncs = getRegionalSyncsForService(service)
+        if (regionalSyncs.length === 0) {
+          continue
+        }
         const asrConfig = accountServiceRegionConfig(service, accountId, region, configs)
+        const regionalCredentials = await getCredentials(accountId, asrConfig.auth)
+
+        for (const sync of regionalSyncs) {
+          await sync.execute(accountId, region, regionalCredentials, storage, asrConfig.endpoint)
+        }
       }
     }
   }

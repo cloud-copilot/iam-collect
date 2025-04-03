@@ -1,5 +1,5 @@
 import { AwsCredentialIdentityWithMetaData } from '../aws/auth.js'
-import { AwsIamStore } from '../persistence/AwsIamStore.js'
+import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 
 export interface Sync {
@@ -28,4 +28,24 @@ export interface Sync {
     storage: AwsIamStore,
     endpoint: string | undefined
   ): Promise<void>
+}
+
+type DataRecord = Record<string, any> & { arn: string }
+export async function syncData(
+  records: DataRecord[],
+  storage: AwsIamStore,
+  accountId: string,
+  resourceTypeParts: ResourceTypeParts
+) {
+  const allArns = records.map((r) => r.arn)
+  await storage.syncResourceList(accountId, resourceTypeParts, allArns)
+
+  for (const record of records) {
+    for (const [key, value] of Object.entries(record)) {
+      if (key === 'arn') {
+        continue
+      }
+      await storage.saveResourceMetadata(accountId, record.arn, key, value)
+    }
+  }
 }

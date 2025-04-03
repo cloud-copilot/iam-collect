@@ -1,8 +1,9 @@
 import { AwsService } from '../services.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
+import { LambdaSync } from './lambda/lambda.js'
 import { Sync } from './sync.js'
 
-const allSyncs = [AuthorizationDetailsSync]
+const allSyncs = [AuthorizationDetailsSync, LambdaSync]
 
 const syncMap = new Map<AwsService, { regional: Sync[]; global: Sync[] }>()
 

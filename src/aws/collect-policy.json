@@ -4,7 +4,13 @@
     {
       "Sid": "CollectIAMData",
       "Effect": "Allow",
-      "Action": ["account:ListRegions", "iam:GetAccountAuthorizationDetails"],
+      "Action": [
+        "account:ListRegions",
+        "iam:GetAccountAuthorizationDetails",
+        "lambda:ListFunctions",
+        "lambda:ListTags",
+        "lambda:GetPolicy"
+      ],
       "Resource": "*"
     },
     {
