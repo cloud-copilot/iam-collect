@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { regionsForService, servicesForAccount, StorageConfig, TopLevelConfig } from './config.js'
+import {
+  accountServiceRegionConfig,
+  AuthConfig,
+  getAccountAuthConfig,
+  regionsForService,
+  ResolvedAccountServiceRegionConfig,
+  servicesForAccount,
+  StorageConfig,
+  TopLevelConfig
+} from './config.js'
 
 const defaultServicesForAccount = ['kms', 's3', 'sns', 'sqs']
 const defaultVersion = '1.0.0'
@@ -141,8 +150,21 @@ const regionsForServiceTests: {
       }
     ],
     result: ['us-east-1']
+  },
+  {
+    name: 'should remove exlcuded regions',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        regions: {
+          excluded: ['us-west-1', 'us-west-2']
+        }
+      }
+    ],
+    result: defaultRegionsForService.slice(0).filter((r) => r != 'us-west-1' && r != 'us-west-2')
   }
 ]
+
 describe('regionsForService', () => {
   for (const test of regionsForServiceTests) {
     const func = test.only ? it.only : it
@@ -151,6 +173,415 @@ describe('regionsForService', () => {
       const result = regionsForService('s3', accountId, test.configs, defaultRegionsForService)
 
       expect(result.sort()).toEqual(test.result.sort())
+    })
+  }
+})
+
+const getAccountAuthConfigTests: {
+  name: string
+  configs: TopLevelConfig[]
+  accountId: string
+  only?: boolean
+  result?: AuthConfig
+}[] = [
+  {
+    name: 'should return nothing if no configs are provided',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      }
+    ],
+    result: undefined
+  },
+  {
+    name: 'should return the default config if no account config is provided',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default',
+          role: {
+            pathAndName: 'my-role'
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'default',
+      role: {
+        pathAndName: 'my-role'
+      }
+    }
+  },
+  {
+    name: 'should return the override details if any',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default',
+          role: {
+            pathAndName: 'my-role'
+          }
+        },
+        accounts: {
+          '123456789012': {
+            auth: {
+              role: {
+                pathAndName: 'override-role'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'default',
+      role: {
+        pathAndName: 'override-role'
+      }
+    }
+  },
+  {
+    name: 'should return the account specific config if no default config is provided',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: {
+          '123456789012': {
+            auth: {
+              profile: 'my-account-profile',
+              role: {
+                pathAndName: 'override-role'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'my-account-profile',
+      role: {
+        pathAndName: 'override-role'
+      }
+    }
+  }
+]
+
+describe('getAccountAuthConfig', () => {
+  for (const test of getAccountAuthConfigTests) {
+    const func = test.only ? it.only : it
+    func(test.name, async () => {
+      const result = await getAccountAuthConfig(test.accountId, test.configs)
+
+      expect(result).toEqual(test.result)
+    })
+  }
+})
+
+const accountServiceRegionConfigTests: {
+  name: string
+  configs: TopLevelConfig[]
+  accountId: string
+  service: string
+  region: string
+  only?: boolean
+  result: Pick<ResolvedAccountServiceRegionConfig, 'auth' | 'endpoint'>
+}[] = [
+  {
+    name: 'should return default config when no configs are provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default'
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'default'
+      }
+    }
+  },
+  {
+    name: 'should return service level auth and endpoint when provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            auth: {
+              profile: 'service-profile'
+            },
+            endpoint: 'https://s3.custom.endpoint'
+          }
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'service-profile'
+      },
+      endpoint: 'https://s3.custom.endpoint'
+    }
+  },
+  {
+    name: 'should return region level auth and endpoint when provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            auth: {
+              profile: 'service-profile'
+            },
+            endpoint: 'https://s3.custom.endpoint',
+            regionConfigs: {
+              'us-east-1': {
+                auth: {
+                  profile: 'region-profile'
+                },
+                endpoint: 'https://s3.us-east-1.endpoint'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'region-profile'
+      },
+      endpoint: 'https://s3.us-east-1.endpoint'
+    }
+  },
+
+  {
+    name: 'should return account level auth when provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            auth: {
+              profile: 'service-profile'
+            },
+            endpoint: 'https://s3.custom.endpoint',
+            regionConfigs: {
+              'us-east-1': {
+                auth: {
+                  profile: 'region-profile'
+                },
+                endpoint: 'https://s3.us-east-1.endpoint'
+              }
+            }
+          }
+        },
+        accounts: {
+          '123456789012': {
+            auth: {
+              profile: 'account-profile'
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'account-profile' // Account level auth overrides service and region level
+      },
+      endpoint: 'https://s3.us-east-1.endpoint' // Endpoint from region level
+    }
+  },
+  {
+    name: 'should return account level service auth when provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            auth: {
+              profile: 'service-profile'
+            },
+            endpoint: 'https://s3.custom.endpoint',
+            regionConfigs: {
+              'us-east-1': {
+                auth: {
+                  profile: 'region-profile'
+                },
+                endpoint: 'https://s3.us-east-1.endpoint'
+              }
+            }
+          }
+        },
+        accounts: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                auth: {
+                  profile: 'account-service-profile'
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'account-service-profile' // Account level service auth overrides service and region level
+      },
+      endpoint: 'https://s3.us-east-1.endpoint' // Endpoint from region level
+    }
+  },
+  {
+    name: 'should return account level service auth and endpoint when provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            auth: {
+              profile: 'service-profile'
+            },
+            endpoint: 'https://s3.custom.endpoint',
+            regionConfigs: {
+              'us-east-1': {
+                auth: {
+                  profile: 'region-profile'
+                },
+                endpoint: 'https://s3.us-east-1.endpoint'
+              }
+            }
+          }
+        },
+        accounts: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                auth: {
+                  profile: 'account-service-profile'
+                },
+                endpoint: 'https://s3.account.endpoint'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'account-service-profile' // Account level service auth overrides service and region level
+      },
+      endpoint: 'https://s3.account.endpoint' // Endpoint from account service
+    }
+  },
+  {
+    name: 'should return account, service, region config when provided',
+    accountId: '123456789012',
+    service: 's3',
+    region: 'us-east-1',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            auth: {
+              profile: 'service-profile'
+            },
+            endpoint: 'https://s3.custom.endpoint',
+            regionConfigs: {
+              'us-east-1': {
+                auth: {
+                  profile: 'region-profile'
+                },
+                endpoint: 'https://s3.us-east-1.endpoint'
+              }
+            }
+          }
+        },
+        accounts: {
+          '123456789012': {
+            auth: {
+              profile: 'account-profile'
+            },
+            serviceConfigs: {
+              s3: {
+                auth: {
+                  profile: 'account-service-profile'
+                },
+                endpoint: 'https://s3.account.endpoint',
+                regionConfigs: {
+                  'us-east-1': {
+                    auth: {
+                      profile: 'account-region-profile'
+                    },
+                    endpoint: 'https://s3.account.us-east-1.endpoint'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      auth: {
+        profile: 'account-region-profile' // Account level service auth overrides service and region level
+      },
+      endpoint: 'https://s3.account.us-east-1.endpoint' // Endpoint from account service
+    }
+  }
+]
+
+describe('accountServiceRegionConfig', () => {
+  for (const test of accountServiceRegionConfigTests) {
+    const func = test.only ? it.only : it
+    func(test.name, () => {
+      const result = accountServiceRegionConfig(
+        test.service,
+        test.accountId,
+        test.region,
+        test.configs
+      )
+
+      expect(result.auth).toEqual(test.result.auth)
+      expect(result.endpoint).toEqual(test.result.endpoint)
+      // expect(result).toEqual(test.result)
     })
   }
 })

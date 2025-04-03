@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CollectIAMData",
+      "Effect": "Allow",
+      "Action": [
+        "account:ListRegions",
+        "iam:GetAccountAuthorizationDetails",
+        "lambda:ListFunctions",
+        "lambda:ListTags",
+        "lambda:GetPolicy"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AssumeRoles",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "*"
+    }
+  ]
+}

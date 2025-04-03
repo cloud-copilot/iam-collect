@@ -31,7 +31,7 @@ const defaultConfig = `
   "storage": {
     "type": "file",
     //If this starts with a '.', it is relative to the config file, otherwise it is an absolute path.
-    "rootPath": "./"
+    "path": "./collect"
   }
 
   /*
@@ -45,8 +45,45 @@ const defaultConfig = `
     //Optional auth configuration, see https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
     "auth": {
       //The type of authentication to use
+      // Can include accountId
+      "accountId": "123456789012"
     }
   },
+  */
+
+  /*
+  Optionally specify separate configurations for accounts:
+  "accounts": {
+    "123456789012": {
+      //Optional auth for the account:
+      "auth": {
+        //The type of authentication to use
+      },
+      "regions": {
+        //Optional regions to include, if empty all regions are included
+        // "included": ["us-east-1", "us-west-1"],
+        //Optional regions to exclude, if empty no regions are excluded. You can use it with included, but that wouldn't make much sense.
+        // "excluded": ["us-west-2"]
+      },
+
+      "serviceConfigs" : {
+        "s3": {
+          "endpoint": "https://s3.us-west-2.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
+          "auth": {
+            //Override auth for a specific service
+          }
+          regionConfigs: {
+            "us-west-1": {
+              //Optional configuration for the region
+              endpoint: "https://s3.us-west-1.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
+            }
+          }
+        }
+      }
+
+
+    }
+
   */
 
   // Optional block, by default all regions returned by ec2:DescribeRegions with 'opt-in-not-required' or 'opted-in' are included

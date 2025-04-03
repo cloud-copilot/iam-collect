@@ -4,7 +4,7 @@ By default all auth is done using the credentials currently in the environment, 
 
 It's possible to have distinct auth configs for downloading data vs storing it. It's also possible to have separate auth configs for each service or each region within a service.
 
-Authentication is configured in the `iam-download.jsonc` file. Anytime `auth` is an option in the configuration it has the same options:
+Authentication is configured in the `iam-collect.jsonc` file. Anytime `auth` is an option in the configuration it has the same options:
 
 ```jsonc
 {
@@ -15,7 +15,7 @@ Authentication is configured in the `iam-download.jsonc` file. Anytime `auth` is
   "role": {
     // Required if using a role, the path and name of the role to assume.
     "pathAndName": "role-name",
-    // Optional, the account to assume the role in. If not present, the target account will be used.
+    // Optional, and only applicable to S3 storage, which account to assume the role in.
     "account": "123456789012",
     // Optional, the session name to use when assuming the role.
     "sessionName": "session-name",
