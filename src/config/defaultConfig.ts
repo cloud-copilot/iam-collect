@@ -31,7 +31,7 @@ const defaultConfig = `
   "storage": {
     "type": "file",
     //If this starts with a '.', it is relative to the config file, otherwise it is an absolute path.
-    "path": "./"
+    "path": "./collect"
   }
 
   /*
@@ -45,6 +45,8 @@ const defaultConfig = `
     //Optional auth configuration, see https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
     "auth": {
       //The type of authentication to use
+      // Can include accountId
+      "accountId": "123456789012"
     }
   },
   */
