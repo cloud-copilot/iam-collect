@@ -19,26 +19,43 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   }
 
   private accountPath(accountId: string): string {
-    return join(this.baseFolder, 'accounts', accountId)
+    return join(this.baseFolder, 'accounts', accountId).toLowerCase()
   }
 
   private buildResourcePath(accountId: string, arn: string): string {
-    return resourcePrefix(this.accountPath(accountId), arn, sep)
+    return resourcePrefix(this.accountPath(accountId), arn, sep).toLowerCase()
   }
 
   private buildMetadataPath(accountId: string, arn: string, metadataType: string): string {
     const prefix = this.buildResourcePath(accountId, arn)
-    return join(prefix, `${metadataType}.json`)
+    return join(prefix, `${metadataType}.json`).toLowerCase()
   }
 
   async saveResourceMetadata(
     accountId: string,
     arn: string,
     metadataType: string,
-    data: string | Buffer
+    data: string | any
   ): Promise<void> {
+    if (typeof data === 'string') {
+      data = data.trim()
+    }
+    if (
+      data === undefined ||
+      data === null ||
+      data === '' ||
+      data === '{}' ||
+      data === '[]' ||
+      (Array.isArray(data) && data.length === 0) ||
+      (typeof data === 'object' && Object.keys(data).length === 0)
+    ) {
+      await this.deleteResourceMetadata(accountId, arn, metadataType)
+      return
+    }
+
+    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
     const filePath = this.buildMetadataPath(accountId, arn, metadataType)
-    await this.fsAdapter.writeFile(filePath, data)
+    await this.fsAdapter.writeFile(filePath, content)
   }
 
   async listResourceMetadata(accountId: string, arn: string): Promise<string[]> {
@@ -55,9 +72,18 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     return metadataTypes
   }
 
-  async getResourceMetadata(accountId: string, arn: string, metadataType: string): Promise<string> {
+  async getResourceMetadata<T, D extends T>(
+    accountId: string,
+    arn: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T> {
     const filePath = this.buildMetadataPath(accountId, arn, metadataType)
-    return await this.fsAdapter.readFile(filePath)
+    const contents = await this.fsAdapter.readFile(filePath)
+    if (!contents) {
+      return defaultValue as D extends undefined ? T | undefined : T
+    }
+    return JSON.parse(contents) as T
   }
 
   async deleteResourceMetadata(

@@ -1,3 +1,5 @@
+import { AwsService } from '../services.js'
+
 export interface AuthConfig {
   /**
    * The profile to use when authenticating with AWS. If not present, the default AWS SDK credential resolution chain will be used.
@@ -71,7 +73,7 @@ export interface TopLevelConfig extends BaseConfig {
   serviceConfigs?: Record<string, ServiceConfig>
 }
 
-type ServicesForAccount = string[]
+type ServicesForAccount = AwsService[]
 type RegionsForAccountService = string[]
 interface AccountServiceRegionConfig {
   auth: AuthConfig
@@ -127,7 +129,7 @@ export function servicesForAccount(
     }
   }
 
-  return services
+  return services as ServicesForAccount
 }
 
 export function regionsForService(

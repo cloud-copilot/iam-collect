@@ -38,6 +38,9 @@ export interface AwsIamStore {
   /**
    * Saves metadata for a given AWS resource.
    *
+   * If the data is any form of empty content (undefined, null, empty string, empty object, or empty array)
+   * then the data will not be persisted and the existing metadata for that key will be deleted instead.
+   *
    * @param accountId - The AWS account ID where the resource exists.
    * @param arn - The ARN of the resource.
    * @param metadataType - A key representing the metadata type (e.g., "trust-policy", "inline-policies").
@@ -47,7 +50,7 @@ export interface AwsIamStore {
     accountId: string,
     arn: string,
     metadataType: string,
-    data: string | Buffer
+    data: string | any
   ): Promise<void>
 
   /**
@@ -67,7 +70,12 @@ export interface AwsIamStore {
    * @param metadataType - The key representing the metadata type.
    * @returns The content of the metadata, as a string.
    */
-  getResourceMetadata(accountId: string, arn: string, metadataType: string): Promise<string>
+  getResourceMetadata<T, D extends T>(
+    accountId: string,
+    arn: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T>
 
   /**
    * Deletes metadata for a given AWS resource.

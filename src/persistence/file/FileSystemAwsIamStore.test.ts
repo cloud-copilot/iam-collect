@@ -23,14 +23,14 @@ describe('FileSystemAwsIamStore', () => {
       // When metadata is saved
       await store.saveResourceMetadata(
         '123456789012',
-        'arn:aws:iam::123456789012:role/test-role',
+        'arn:aws:iam::123456789012:role/Test-Role',
         'trust-policy',
         data
       )
 
       // Then the correct file path should be used
       expect(writeFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json',
+        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'.toLowerCase(),
         data
       )
     })
@@ -50,9 +50,29 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used
       expect(writeFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket/bucket-policy.json',
+        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket/bucket-policy.json'.toLowerCase(),
         data
       )
+    })
+
+    it('should delete the metadata file if data is empty', async () => {
+      for (const emptyValue of ['', '   ', '{}', '[]', undefined, null, {}, []]) {
+        // Given a specific ARN and metadata type
+        const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+        // When metadata is saved with empty data
+        await store.saveResourceMetadata(
+          '123456789012',
+          'arn:aws:iam::123456789012:role/test-role',
+          'trust-policy',
+          emptyValue
+        )
+
+        // Then the correct file path should be used
+        expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
+          '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+        )
+      }
     })
   })
 
@@ -98,8 +118,10 @@ describe('FileSystemAwsIamStore', () => {
   describe('getResourceMetadata', () => {
     it('should get resource metadata', async () => {
       // Given a specific ARN and metadata type
-      const expectedData = JSON.stringify({ Version: '2012-10-17', Statement: [] })
-      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(expectedData)
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
 
       // When metadata is retrieved
       const result = await store.getResourceMetadata(
@@ -112,13 +134,15 @@ describe('FileSystemAwsIamStore', () => {
       expect(readFileSpy).toHaveBeenCalledWith(
         '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
       )
-      expect(result).toBe(expectedData)
+      expect(result).toEqual(expectedData)
     })
 
     it('should get s3 bucket metadata', async () => {
       // Given a specific ARN and metadata type
-      const expectedData = JSON.stringify({ Version: '2012-10-17', Statement: [] })
-      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(expectedData)
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
 
       // When metadata is retrieved
       const result = await store.getResourceMetadata(
@@ -131,7 +155,45 @@ describe('FileSystemAwsIamStore', () => {
       expect(readFileSpy).toHaveBeenCalledWith(
         '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket/bucket-policy.json'
       )
-      expect(result).toBe(expectedData)
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return undefined for non-existent metadata when there is no default', async () => {
+      // Given a specific ARN and metadata type
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved without a default value
+      const result = await store.getResourceMetadata(
+        '123456789012',
+        'arn:aws:iam::123456789012:role/test-role',
+        'trust-policy'
+      )
+
+      // Then the correct file path should be used and the result should be undefined
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+      )
+      expect(result).toBeUndefined()
+    })
+
+    it('should return the default value for non-existent metadata', async () => {
+      // Given a specific ARN and metadata type
+      const defaultValue = {}
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getResourceMetadata(
+        '123456789012',
+        'arn:aws:iam::123456789012:role/test-role',
+        'trust-policy',
+        defaultValue
+      )
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+      )
+      expect(result).toEqual(defaultValue)
     })
   })
 

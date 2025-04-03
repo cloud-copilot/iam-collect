@@ -9,7 +9,19 @@ export class FileSystemAdapter {
     await writeFile(filePath, data)
   }
 
-  async readFile(filePath: string): Promise<string> {
+  /**
+   * Read the contents of a file. If the file does not exist, return undefined.
+   *
+   * @param filePath The path to the file to read
+   * @returns The contents of the file as a string, or undefined if the file does not exist.
+   */
+  async readFile(filePath: string): Promise<string | undefined> {
+    try {
+      await access(filePath)
+    } catch (err: any) {
+      // If the file does not exist, return undefined
+      return undefined
+    }
     return await readFile(filePath, { encoding: 'utf8' })
   }
 
