@@ -67,7 +67,7 @@ const defaultConfig = `
       },
 
       "serviceConfigs" : {
-        "s3: {
+        "s3": {
           "endpoint": "https://s3.us-west-2.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
           "auth": {
             //Override auth for a specific service
