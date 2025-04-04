@@ -4,12 +4,12 @@ import { defaultConfigExists, fullDefaultConfigPath, getDefaultConfig } from './
 /**
  * Create a default configuration file.
  */
-export function createDefaultConfiguration() {
+export async function createDefaultConfiguration() {
   if (defaultConfigExists()) {
     throw new Error('Configuration file already exists')
   }
 
-  const configContent = getDefaultConfig()
+  const configContent = await getDefaultConfig()
   // Write the default configuration to a file
   writeFileSync(fullDefaultConfigPath(), configContent)
 }
