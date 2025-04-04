@@ -1,3 +1,10 @@
+## [0.1.9](https://github.com/cloud-copilot/iam-collect/compare/v0.1.8...v0.1.9) (2025-04-04)
+
+
+### Features
+
+* Added typesafe pagination of resources ([dd414ba](https://github.com/cloud-copilot/iam-collect/commit/dd414ba0e1765c2767a9b3876670e67d9b5d8a92))
+
 ## [0.1.8](https://github.com/cloud-copilot/iam-collect/compare/v0.1.7...v0.1.8) (2025-04-04)
 
 
