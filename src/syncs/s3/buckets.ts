@@ -15,6 +15,7 @@ import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
+import { paginateResource } from '../typedSync.js'
 
 export interface S3BucketWithData extends Bucket {
   arn: string
@@ -42,16 +43,16 @@ export const S3GeneralPurposeBucketSync: Sync = {
   ): Promise<void> => {
     const s3Client = AwsClientPool.defaultInstance.client(S3Client, credentials, region, endpoint)
 
-    const allBuckets: Bucket[] = []
-    let continuationToken: string | undefined = undefined
-    do {
-      const listBucketsCommand = new ListBucketsCommand({ MaxBuckets: 1000 })
-      const response = await s3Client.send(listBucketsCommand)
-      if (response.Buckets) {
-        allBuckets.push(...response.Buckets)
-      }
-      continuationToken = response.ContinuationToken
-    } while (continuationToken)
+    const allBuckets = await paginateResource(
+      s3Client,
+      ListBucketsCommand,
+      'Buckets',
+      {
+        inputKey: 'ContinuationToken',
+        outputKey: 'ContinuationToken'
+      },
+      { MaxBuckets: 1000 }
+    )
 
     const bucketsByRegion: Record<string, Bucket[]> = {}
     for (const bucket of allBuckets) {
