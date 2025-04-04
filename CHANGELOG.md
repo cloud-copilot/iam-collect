@@ -1,3 +1,10 @@
+## [0.1.7](https://github.com/cloud-copilot/iam-collect/compare/v0.1.6...v0.1.7) (2025-04-04)
+
+
+### Features
+
+* Load package version dynamically from the embedded package.json ([dc1d2af](https://github.com/cloud-copilot/iam-collect/commit/dc1d2af702d4b41748b201696e6e987e83c415dd))
+
 ## [0.1.6](https://github.com/cloud-copilot/iam-collect/compare/v0.1.5...v0.1.6) (2025-04-04)
 
 ## [0.1.5](https://github.com/cloud-copilot/iam-collect/compare/v0.1.4...v0.1.5) (2025-04-04)
