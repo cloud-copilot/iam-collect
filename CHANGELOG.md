@@ -1,3 +1,10 @@
+## [0.1.8](https://github.com/cloud-copilot/iam-collect/compare/v0.1.7...v0.1.8) (2025-04-04)
+
+
+### Features
+
+* Added download of s3 general purpose bucket information ([2cff09f](https://github.com/cloud-copilot/iam-collect/commit/2cff09fdf3ec308f0d094f98b621dde4aeb02d04))
+
 ## [0.1.7](https://github.com/cloud-copilot/iam-collect/compare/v0.1.6...v0.1.7) (2025-04-04)
 
 
