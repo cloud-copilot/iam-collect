@@ -1,5 +1,4 @@
 import {
-  FunctionConfiguration,
   GetPolicyCommand,
   LambdaClient,
   ListFunctionsCommand,
@@ -10,6 +9,7 @@ import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
+import { paginateResource } from '../typedSync.js'
 
 export const LambdaSync: Sync = {
   awsService: 'lambda',
@@ -30,15 +30,16 @@ export const LambdaSync: Sync = {
       endpoint
     )
 
-    const command = new ListFunctionsCommand()
-
-    const functions: FunctionConfiguration[] = []
-    let marker: string | undefined = undefined
-    do {
-      const response = await lambdaClient.send(command)
-      functions.push(...(response.Functions || []))
-      marker = response.NextMarker
-    } while (marker)
+    const functions = await paginateResource(
+      lambdaClient,
+      ListFunctionsCommand,
+      'Functions',
+      {
+        inputKey: 'Marker',
+        outputKey: 'NextMarker'
+      },
+      {}
+    )
 
     const functionData: ({ arn: string } & Record<string, any>)[] = []
     for (const func of functions) {
