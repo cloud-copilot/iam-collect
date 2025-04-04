@@ -2,6 +2,8 @@ import { AwsCredentialIdentityWithMetaData } from '../aws/auth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 
+export interface SyncOptions {}
+
 export interface Sync {
   /**
    * What service the sync is for.
@@ -26,7 +28,8 @@ export interface Sync {
     region: string,
     credentials: AwsCredentialIdentityWithMetaData,
     storage: AwsIamStore,
-    endpoint: string | undefined
+    endpoint: string | undefined,
+    syncOptions: SyncOptions
   ): Promise<void>
 }
 

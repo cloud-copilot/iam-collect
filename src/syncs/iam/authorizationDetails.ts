@@ -19,8 +19,8 @@ import {
   ListUserPoliciesCommand,
   ListUsersCommand,
   LoginProfile,
-  MFADevice,
   ManagedPolicyDetail,
+  MFADevice,
   RoleDetail,
   Tag,
   User,
@@ -31,7 +31,7 @@ import { AwsCredentialIdentityWithMetaData } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
-import { Sync, syncData } from '../sync.js'
+import { Sync, syncData, SyncOptions } from '../sync.js'
 
 interface AccessKeyWithLastUsed extends AccessKeyMetadata {
   lastUsed?: AccessKeyLastUsed
@@ -46,7 +46,8 @@ export const AuthorizationDetailsSync: Sync = {
     region: string,
     credentials: AwsCredentialIdentityWithMetaData,
     storage: AwsIamStore,
-    endpoint: string | undefined
+    endpoint: string | undefined,
+    syncOptions: SyncOptions
   ): Promise<void> => {
     const client = AwsClientPool.defaultInstance.client(IAMClient, credentials, region, endpoint)
     const authDetails = await getAuthorizationDetails(client)

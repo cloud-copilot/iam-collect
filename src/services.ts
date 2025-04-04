@@ -1,3 +1,3 @@
-export type AwsService = 'iam' | 'lambda'
+export type AwsService = 'iam' | 'lambda' | 's3'
 
-export const allServices: AwsService[] = ['iam', 'lambda']
+export const allServices: AwsService[] = ['iam', 'lambda', 's3']

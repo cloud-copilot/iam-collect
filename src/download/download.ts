@@ -46,12 +46,14 @@ export async function downloadData(
     if (services.length === 0) {
       services = allServices
     }
+    const syncOptions = {}
 
     const enabledServices = servicesForAccount(accountId, configs, services)
     for (const service of enabledServices) {
       console.log(`Service ${service} for account ${accountId}`)
       const serviceRegions = regionsForService(service, accountId, configs, enabledRegions)
-      //Go through global syncs for the service
+
+      //Global syncs for the service
       const globalSyncs = getGlobalSyncsForService(service)
       const globalRegion = serviceRegions.at(0)!
       const globalConfig = accountServiceRegionConfig(service, accountId, globalRegion, configs)
@@ -63,11 +65,12 @@ export async function downloadData(
           globalRegion,
           globalCredentials,
           storage,
-          globalConfig.endpoint
+          globalConfig.endpoint,
+          syncOptions
         )
       }
 
-      //Go through regional syncs for the service
+      //Regional syncs for the service
       for (const region of serviceRegions) {
         console.log(`Service ${service} for account ${accountId} in region ${region}`)
         const regionalSyncs = getRegionalSyncsForService(service)
@@ -78,7 +81,14 @@ export async function downloadData(
         const regionalCredentials = await getCredentials(accountId, asrConfig.auth)
 
         for (const sync of regionalSyncs) {
-          await sync.execute(accountId, region, regionalCredentials, storage, asrConfig.endpoint)
+          await sync.execute(
+            accountId,
+            region,
+            regionalCredentials,
+            storage,
+            asrConfig.endpoint,
+            syncOptions
+          )
         }
       }
     }
