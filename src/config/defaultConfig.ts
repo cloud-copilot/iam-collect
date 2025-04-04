@@ -113,6 +113,7 @@ const defaultConfig = `
 }
 `
 
-export function getDefaultConfig(): string {
-  return defaultConfig.replace('0.0.0', iamCollectVersion())
+export async function getDefaultConfig(): Promise<string> {
+  const version = await iamCollectVersion()
+  return defaultConfig.replace('0.0.0', version)
 }
