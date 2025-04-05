@@ -71,7 +71,8 @@ export const AuthorizationDetailsSync: Sync = {
           name: role.RoleName,
           id: role.RoleId,
           path: role.Path,
-          created: role.CreateDate
+          created: role.CreateDate,
+          permissionBoundary: role.PermissionsBoundary?.PermissionsBoundaryArn
         }
       }
     })

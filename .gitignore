@@ -4,5 +4,5 @@ coverage
 .npmrc
 .vscode
 todo.md
-collect
+iam-data
 iam-collect.jsonc

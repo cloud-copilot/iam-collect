@@ -31,7 +31,7 @@ const defaultConfig = `
   "storage": {
     "type": "file",
     //If this starts with a '.', it is relative to the config file, otherwise it is an absolute path.
-    "path": "./collect"
+    "path": "./iam-data"
   }
 
   /*
