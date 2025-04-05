@@ -1,3 +1,10 @@
+## [0.1.10](https://github.com/cloud-copilot/iam-collect/compare/v0.1.9...v0.1.10) (2025-04-05)
+
+
+### Features
+
+* Added typed sync configuration ([4ef1aa0](https://github.com/cloud-copilot/iam-collect/commit/4ef1aa036ef2d7f0703191e729539a94f16be864))
+
 ## [0.1.9](https://github.com/cloud-copilot/iam-collect/compare/v0.1.8...v0.1.9) (2025-04-04)
 
 
