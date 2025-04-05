@@ -1,3 +1,10 @@
+## [0.1.11](https://github.com/cloud-copilot/iam-collect/compare/v0.1.10...v0.1.11) (2025-04-05)
+
+
+### Features
+
+* Added support for KMS keys ([1d971ff](https://github.com/cloud-copilot/iam-collect/commit/1d971ff97d2d02213e98c2a36dc467e858a6541a))
+
 ## [0.1.10](https://github.com/cloud-copilot/iam-collect/compare/v0.1.9...v0.1.10) (2025-04-05)
 
 
