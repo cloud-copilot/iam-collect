@@ -10,7 +10,7 @@ This is still in beta, commands and configuration options are likely to change.
 
 ## Quick Start
 
-By default, iam-collect will use the credentials configured in your environment. If you have the permissions in the SID `CollectIAMData` in the [example Policy](aws/collect-policy.json) everything will work for the current account you have credentials for.
+By default, iam-collect will use the credentials configured in your environment. If you have the permissions in the SID `CollectIAMData` in the [example Policy](src/aws/collect-policy.json) everything will work for the current account you have credentials for.
 
 ```bash
 npm install -g @cloud-copilot/iam-collect
