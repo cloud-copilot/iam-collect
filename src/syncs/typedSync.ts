@@ -1,4 +1,9 @@
 import type { Client, Command } from '@smithy/smithy-client'
+import { AwsCredentialIdentityWithMetaData } from '../aws/auth.js'
+import { AwsClientPool } from '../aws/ClientPool.js'
+import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
+import { AwsService } from '../services.js'
+import { DataRecord, Sync, syncData, SyncOptions } from './sync.js'
 
 export type ClientConstructor = new (args: any) => Client<any, any, any, any>
 type CommandConstructor = new (args: any) => Command<any, any, any, any, any>
@@ -97,5 +102,262 @@ function paginationOutputKey<C extends CommandConstructors>(
     return paginationConfig.outputKey
   } else {
     return undefined
+  }
+}
+
+type ArrayElementType<T> = T extends (infer E)[] ? E : never
+
+type ResourceElementType<C extends CommandConstructors, K extends keyof ExtractOutputType<C>> =
+  ArrayElementType<ExtractOutputType<C>[K]> extends string
+    ? { name: string }
+    : ArrayElementType<ExtractOutputType<C>[K]>
+
+type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : never
+
+// Define the type for the extraFields function
+export type ExtraFieldsDefinition<
+  C extends ClientConstructor,
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>
+> = Record<
+  string,
+  (
+    client: InstanceType<C>,
+    resource: ResourceElementType<Cmd, K>,
+    accountId: string,
+    region: string
+  ) => Promise<any>
+>
+
+// Use the return type of the extraFields function
+type ExtraFieldsReturnType<T extends ExtraFieldsDefinition<any, any, any>> = {
+  [K in keyof T]: PromiseType<ReturnType<T[K]>>
+}
+
+export type ExtendedResourceElementType<
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>,
+  ExtraFieldsFunc extends ExtraFieldsDefinition<any, Cmd, K>
+> = ResourceElementType<Cmd, K> & { extraFields: ExtraFieldsReturnType<ExtraFieldsFunc> }
+
+export type ResourceSyncType<
+  C extends ClientConstructor,
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>,
+  ExtraFields extends ExtraFieldsDefinition<C, Cmd, K> = Record<string, () => Promise<any>>
+> = {
+  /**
+   * The client to use
+   */
+  client: C
+
+  /**
+   * The command to execute
+   */
+  command: Cmd
+
+  /**
+   * The key of the resource in the command output to pull
+   */
+  key: K
+
+  /**
+   * The pagination token to get from the response and pass to the next call
+   */
+  paginationConfig: Pagination<Cmd>
+
+  /**
+   * The resource type parts used to sync with storage
+   *
+   * @param accountId the account ID of the resource
+   * @param region the region of the resource
+   * @returns the resource type parts
+   */
+  resourceTypeParts: (accountId: string, region: string) => ResourceTypeParts
+
+  /**
+   * Custom arguments to pass to the command, useful for filtering resources.
+   *
+   * @param awsId The AWS account ID being queried
+   * @param region The region being queried
+   * @returns a set of arguments to pass to the command
+   */
+  arguments?: (awsId: string, region: string) => Partial<ExtractInputType<Cmd>>
+
+  /**
+   * Indicates if the resource type is global.
+   */
+  globalResourceType?: boolean
+
+  /**
+   * The function to get the tags for a resource
+   * @param resource The resource to get the tags for
+   * @returns The tags for the resource, or undefined if there are no tags
+   */
+  tags: (
+    resource: ExtendedResourceElementType<Cmd, K, ExtraFields>
+  ) => Record<string, string> | undefined
+
+  /**
+   * Create the ARN for a resource
+   *
+   * @param resource the resource to create the ARN for
+   * @param region the region the resource is in
+   * @param accountId the account the resource is in
+   * @returns the ARN for the resource
+   */
+  arn: (resource: ResourceElementType<Cmd, K>, region: string, accountId: string) => string
+
+  /**
+   * The extra fields to get for a resource
+   * @param client The client to use to get the extra fields
+   * @param resource The resource to get the extra fields for
+   * @returns an object of extra fields to get, where the key is the name of the field and the value is a function that returns the value of the field
+   */
+  extraFields?: ExtraFields
+
+  /**
+   * The results to persist for a resource, except for the ARN and tags, those are handled automatically.
+   *
+   * @param resource The resource to get the custom fields for, includes extraFields from the `extraFields` function
+   */
+  results: (resource: ExtendedResourceElementType<Cmd, K, ExtraFields>) => Record<string, any>
+}
+
+/**
+ * Creates a resource sync type and returns it. This provides cleaner syntax than
+ * making one directly and having to define the types twice.
+ *
+ * @param config Configuration for the resource sync type
+ * @returns The ResourceSyncType instance passed in.
+ */
+export function createResourceSyncType<
+  C extends ClientConstructor,
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>,
+  ExtraFieldsFunc extends ExtraFieldsDefinition<C, Cmd, K>
+>(
+  config: ResourceSyncType<C, Cmd, K, ExtraFieldsFunc>
+): ResourceSyncType<C, Cmd, K, ExtraFieldsFunc> {
+  return config
+}
+
+/**
+ * Paginates a ResourceSyncType and returns the resources.
+ *
+ * @param resourceTypeSync The configuration to use.
+ * @param credentials The credentials to use for AWS API calls.  Pass undefined to use the environment credentials.
+ * @param region The region to get the resources for.
+ * @returns Returns all the resources for the given type in the given region with extraFields populated.
+ */
+export async function paginateResourceConfig<
+  C extends ClientConstructor,
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>,
+  ExtraFieldsFunc extends ExtraFieldsDefinition<C, Cmd, K>
+>(
+  resourceTypeSync: ResourceSyncType<C, Cmd, K, ExtraFieldsFunc>,
+  credentials: AwsCredentialIdentityWithMetaData,
+  region: string,
+  endpoint: string | undefined
+): Promise<ExtendedResourceElementType<Cmd, K, ExtraFieldsFunc>[]> {
+  const accountId = credentials.accountId
+  const client = AwsClientPool.defaultInstance.client(
+    resourceTypeSync.client,
+    credentials,
+    region,
+    endpoint
+  )
+
+  let resources = await paginateResource(
+    client,
+    resourceTypeSync.command,
+    resourceTypeSync.key,
+    resourceTypeSync.paginationConfig,
+    resourceTypeSync.arguments ? resourceTypeSync.arguments(accountId, region) : undefined
+  )
+
+  //If the resource is a string, convert it to an object with the name field set
+  if (resources.length > 0 && typeof resources[0] === 'string') {
+    resources = resources.map((resource: string) => ({ name: resource }))
+  }
+
+  if (resourceTypeSync.extraFields) {
+    await Promise.all(
+      resources.map(async (resource: any) => {
+        const fields = resourceTypeSync.extraFields || {}
+        const extraFields =
+          Object.entries<
+            (
+              client: C,
+              resource: ResourceElementType<Cmd, K>,
+              accountId: string,
+              region: string
+            ) => Promise<{}>
+          >(fields)
+        //Get the extra field values
+        const extraFieldValues: [string, any][] = await Promise.all(
+          extraFields.map(async ([key, callback]) => {
+            const value = await callback(client as any, resource, credentials.accountId, region)
+            return [key, value]
+          })
+        )
+
+        //Map the extra field values to an object
+        const extraFieldsObject = extraFieldValues.reduce(
+          (acc, [key, value]) => ({ ...acc, [key]: value }),
+          {}
+        )
+
+        resource.extraFields = extraFieldsObject
+      })
+    )
+  }
+
+  return resources
+}
+
+export function createTypedSyncOperation<
+  C extends ClientConstructor,
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>,
+  ExtraFieldsFunc extends ExtraFieldsDefinition<C, Cmd, K>
+>(
+  awsService: AwsService,
+  name: string,
+  resourceTypeSync: ResourceSyncType<C, Cmd, K, ExtraFieldsFunc>
+): Sync {
+  return {
+    awsService,
+    name,
+    execute: async (
+      accountId: string,
+      region: string,
+      credentials: AwsCredentialIdentityWithMetaData,
+      storage: AwsIamStore,
+      endpoint: string | undefined,
+      syncOptions: SyncOptions
+    ) => {
+      const awsId = credentials.accountId
+
+      const resources = await paginateResourceConfig(
+        resourceTypeSync,
+        credentials,
+        region,
+        endpoint
+      )
+
+      const records: DataRecord[] = resources.map((resource) => {
+        const result = resourceTypeSync.results(resource)
+        result.arn = resourceTypeSync.arn(resource, region, awsId)
+        if (result.metadata) {
+          result.metadata.arn = result.arn
+        }
+        result.tags = resourceTypeSync.tags(resource)
+        return result as DataRecord
+      })
+
+      await syncData(records, storage, accountId, resourceTypeSync.resourceTypeParts(awsId, region))
+    }
   }
 }

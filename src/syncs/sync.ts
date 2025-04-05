@@ -33,7 +33,7 @@ export interface Sync {
   ): Promise<void>
 }
 
-type DataRecord = Record<string, any> & { arn: string }
+export type DataRecord = Record<string, any> & { arn: string }
 export async function syncData(
   records: DataRecord[],
   storage: AwsIamStore,

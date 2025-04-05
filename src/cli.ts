@@ -58,7 +58,6 @@ const main = async () => {
     }
     console.log('Initializing...')
     await createDefaultConfiguration()
-    process.exit(0)
   } else if (cli.subcommand === 'download') {
     const defaultConfig = './iam-collect.jsonc'
     const configFiles = cli.args.configFiles?.length > 0 ? cli.args.configFiles : [defaultConfig]

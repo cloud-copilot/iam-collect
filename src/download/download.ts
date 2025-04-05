@@ -35,9 +35,8 @@ export async function downloadData(
     const authForAccount = getAccountAuthConfig(accountId, configs)
     const credentials = await getCredentials(accountId, authForAccount)
 
-    let enabledRegions: string[] = []
     if (regions.length === 0) {
-      enabledRegions = await getEnabledRegions(credentials)
+      regions = await getEnabledRegions(credentials)
       // console.log(`Enabled regions for account ${accountId}:`, enabledRegions)
     }
 
@@ -51,7 +50,7 @@ export async function downloadData(
     const enabledServices = servicesForAccount(accountId, configs, services)
     for (const service of enabledServices) {
       console.log(`Service ${service} for account ${accountId}`)
-      const serviceRegions = regionsForService(service, accountId, configs, enabledRegions)
+      const serviceRegions = regionsForService(service, accountId, configs, regions)
 
       //Global syncs for the service
       const globalSyncs = getGlobalSyncsForService(service)
