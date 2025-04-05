@@ -1,3 +1,10 @@
+## [0.1.13](https://github.com/cloud-copilot/iam-collect/compare/v0.1.12...v0.1.13) (2025-04-05)
+
+
+### Bug Fixes
+
+* Ignore access denied errors when getting kms keys tags ([ce6ae7a](https://github.com/cloud-copilot/iam-collect/commit/ce6ae7a7d582a245a1e904b24387ae2b92cd4488))
+
 ## [0.1.12](https://github.com/cloud-copilot/iam-collect/compare/v0.1.11...v0.1.12) (2025-04-05)
 
 ## [0.1.11](https://github.com/cloud-copilot/iam-collect/compare/v0.1.10...v0.1.11) (2025-04-05)
