@@ -4,7 +4,7 @@ import {
   ListKeysCommand,
   ListResourceTagsCommand
 } from '@aws-sdk/client-kms'
-import { runAndCatch404 } from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const KeySync = createTypedSyncOperation(
@@ -26,15 +26,17 @@ export const KeySync = createTypedSyncOperation(
     }),
     extraFields: {
       tags: async (client, key) => {
-        return runAndCatch404(async () => {
-          const tagResult = await client.send(new ListResourceTagsCommand({ KeyId: key.KeyId }))
-          return tagResult.Tags?.reduce(
-            (acc, tag) => {
-              acc[tag.TagKey!] = tag.TagValue!
-              return acc
-            },
-            {} as Record<string, string>
-          )
+        return runAndCatchAccessDenied(async () => {
+          return runAndCatch404(async () => {
+            const tagResult = await client.send(new ListResourceTagsCommand({ KeyId: key.KeyId }))
+            return tagResult.Tags?.reduce(
+              (acc, tag) => {
+                acc[tag.TagKey!] = tag.TagValue!
+                return acc
+              },
+              {} as Record<string, string>
+            )
+          })
         })
       },
       policy: async (client, key) => {
