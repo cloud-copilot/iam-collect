@@ -2,10 +2,17 @@ import { AwsService } from '../services.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { KeySync } from './kms/key.js'
 import { LambdaSync } from './lambda/lambda.js'
+import { OrganizationSync } from './organizations/organizations.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { Sync } from './sync.js'
 
-const allSyncs = [AuthorizationDetailsSync, KeySync, LambdaSync, S3GeneralPurposeBucketSync]
+const allSyncs = [
+  AuthorizationDetailsSync,
+  KeySync,
+  LambdaSync,
+  OrganizationSync,
+  S3GeneralPurposeBucketSync
+]
 
 const syncMap = new Map<AwsService, { regional: Sync[]; global: Sync[] }>()
 

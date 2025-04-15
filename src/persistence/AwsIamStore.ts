@@ -30,6 +30,8 @@ export interface ResourceTypeParts {
   resourceType?: string
 }
 
+export type OrganizationPolicyType = 'scps' | 'rcps'
+
 /**
  * An interface for persisting AWS resource metadata.
  * Implementations can be backed by S3 or the local file system.
@@ -116,4 +118,152 @@ export interface AwsIamStore {
     options: ResourceTypeParts,
     desiredResources: string[]
   ): Promise<void>
+
+  /**
+   * Save metadata for an AWS Organization
+   *
+   * @param organizationId - The AWS organization ID.
+   * @param metadataType - The type of metadata to save (e.g., "metadata").
+   * @param data - The metadata content to save an an object.
+   */
+  saveOrganizationMetadata(organizationId: string, metadataType: string, data: any): Promise<void>
+
+  /**
+   * Delete metadata for an AWS Organization
+   *
+   * @param organizationId - The AWS organization ID.
+   * @param metadataType - The type of metadata to delete (e.g., "metadata").
+   */
+  deleteOrganizationMetadata(organizationId: string, metadataType: string): Promise<void>
+
+  /**
+   * List the Organizational Units (OUs) that have been saved for a given organization.
+   *
+   * @param organizationId - The AWS organization ID.
+   */
+  listOrganizationalUnits(organizationId: string): Promise<string[]>
+
+  /**
+   * Save metadata for an Organizational Unit (OU) within an AWS Organization.
+   *
+   * @param organizationId - The AWS organization ID.
+   * @param ouId - The AWS ID of the Organizational Unit.
+   * @param metadataType - The type of metadata to save (e.g., "metadata").
+   * @param data - The metadata content to save as an object.
+   */
+  saveOrganizationalUnitMetadata(
+    organizationId: string,
+    ouId: string,
+    metadataType: string,
+    data: any
+  ): Promise<void>
+
+  /**
+   * Delete metadata for an Organizational Unit (OU) within an AWS Organization.
+   *
+   * @param organizationId - The AWS organization ID.
+   * @param ouId - The AWS ID of the Organizational Unit.
+   * @param metadataType - The type of metadata to delete (e.g., "metadata").
+   */
+  deleteOrganizationalUnitMetadata(
+    organizationId: string,
+    ouId: string,
+    metadataType: string
+  ): Promise<void>
+
+  /**
+   * Get metadata for an Organizational Unit (OU) within an AWS Organization.
+   *
+   * @param organizationId - The AWS organization ID.
+   * @param ouId - The AWS ID of the Organizational Unit.
+   * @param metadataType - The type of metadata to retrieve (e.g., "metadata").
+   * @param defaultValue - The default value to return if the metadata is not found.
+   */
+  getOrganizationalUnitMetadata<T, D extends T>(
+    organizationId: string,
+    ouId: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T>
+
+  /**
+   * Delete an Organizational Unit (OU) from an AWS Organization.
+   *
+   * @param organizationId - The AWS organization ID.
+   * @param ouId - The AWS ID of the Organizational Unit.
+   */
+  deleteOrganizationalUnit(organizationId: string, ouId: string): Promise<void>
+
+  /**
+   * Delete metadata for an Organization Policy.
+   *
+   * @param organizationId the AWS organization ID
+   * @param policyType the type of policy (e.g., "scps", "rcps")
+   * @param policyId the ID of the policy to delete metadata for
+   * @param metadataType the type of metadata to delete (e.g., "metadata")
+   */
+  deleteOrganizationPolicyMetadata(
+    organizationId: string,
+    policyType: OrganizationPolicyType,
+    policyId: string,
+    metadataType: string
+  ): Promise<void>
+
+  /**
+   *
+   * @param organizationId the AWS organization ID
+   * @param policyType the type of policy (e.g., "scps", "rcps")
+   * @param policyId the ID of the policy to save metadata for
+   * @param metadataType the type of metadata to save (e.g., "metadata")
+   * @param data the content to save
+   */
+  saveOrganizationPolicyMetadata(
+    organizationId: string,
+    policyType: OrganizationPolicyType,
+    policyId: string,
+    metadataType: string,
+    data: any
+  ): Promise<void>
+
+  /**
+   * Get metadata for an Organization Policy.
+   *
+   * @param organizationId the AWS organization ID
+   * @param policyType the type of policy (e.g., "scps", "rcps")
+   * @param policyId the ID of the policy to retrieve metadata for
+   * @param metadataType the type of metadata to retrieve (e.g., "metadata")
+   * @param defaultValue the default value to return if the metadata is not found
+   */
+  getOrganizationPolicyMetadata<T, D extends T>(
+    organizationId: string,
+    policyType: OrganizationPolicyType,
+    policyId: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T>
+
+  /**
+   * Delete an Organization Policy.
+   *
+   * @param organizationId the AWS organization ID
+   * @param policyType the type of policy (e.g., "scps", "rcps")
+   * @param policyId the ID of the policy to delete
+   */
+  deleteOrganizationPolicy(
+    organizationId: string,
+    policyType: OrganizationPolicyType,
+    policyId: string
+  ): Promise<void>
+
+  /**
+   * List the Organization Policies for a given organization and type
+   *
+   * @param organizationId the AWS organization ID
+   * @param policyType the type of policy (e.g., "scps", "rcps")
+   * @returns An array of policy IDs
+   */
+  listOrganizationPolicies(
+    organizationId: string,
+    policyType: OrganizationPolicyType
+  ): Promise<string[]>
 }

@@ -341,4 +341,303 @@ describe('FileSystemAwsIamStore', () => {
       )
     })
   })
+
+  describe('saveOrganizationMetadata', () => {
+    it('should save organization metadata', async () => {
+      // Given a specific account ID and metadata type
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When metadata is saved
+      await store.saveOrganizationMetadata('o-12345', 'organization-config', data)
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/organization-config.json'.toLowerCase(),
+        data
+      )
+    })
+
+    it('should delete the organization metadata file if data is empty', async () => {
+      for (const emptyValue of ['', '   ', '{}', '[]', undefined, null, {}, []]) {
+        // Given a specific account ID and metadata type
+        const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+        // When metadata is saved with empty data
+        await store.saveOrganizationMetadata('o-12345', 'organization-config', emptyValue)
+
+        // Then the correct file path should be used
+        expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
+          '/base/folder/aws/aws/organizations/o-12345/organization-config.json'
+        )
+      }
+    })
+  })
+
+  describe('deleteOrganizationMetadata', () => {
+    it('should delete organization metadata', async () => {
+      // Given a specific organization ID and metadata type
+      const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+      // When metadata is deleted
+      await store.deleteOrganizationMetadata('o-12345', 'organization-config')
+
+      // Then the correct file path should be used
+      expect(deleteFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/organization-config.json'
+      )
+    })
+  })
+
+  describe('listOrganizationalUnits', () => {
+    it('should list organizational units', async () => {
+      // Given a specific organization ID
+      const expectedOUs = ['ou-12345678', 'ou-87654321']
+      const listDirectorySpy = vi
+        .spyOn(mockFsAdapter, 'listDirectory')
+        .mockResolvedValue(expectedOUs)
+
+      // When organizational units are listed
+      const result = await store.listOrganizationalUnits('o-12345')
+
+      // Then the correct file path should be used and the result should match
+      expect(listDirectorySpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/ous'
+      )
+      expect(result).toEqual(expectedOUs)
+    })
+  })
+
+  describe('deleteOrganizationalUnitMetadata', () => {
+    it('should delete organizational unit metadata', async () => {
+      // Given a specific organization ID and OU ID
+      const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+      // When metadata is deleted
+      await store.deleteOrganizationalUnitMetadata('o-12345', 'ou-12345678', 'metadata')
+
+      // Then the correct file path should be used
+      expect(deleteFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/ous/ou-12345678/metadata.json'
+      )
+    })
+  })
+
+  describe('saveOrganizationalUnitMetadata', () => {
+    it('should save organizational unit metadata', async () => {
+      // Given a specific organization ID and OU ID
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When metadata is saved
+      await store.saveOrganizationalUnitMetadata('o-12345', 'ou-12345678', 'metadata', data)
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/ous/ou-12345678/metadata.json'.toLowerCase(),
+        data
+      )
+    })
+
+    it('should delete the OU metadata file if data is empty', async () => {
+      for (const emptyValue of ['', '   ', '{}', '[]', undefined, null, {}, []]) {
+        // Given a specific organization ID and OU ID
+        const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+        // When metadata is saved with empty data
+        await store.saveOrganizationalUnitMetadata('o-12345', 'ou-12345678', 'metadata', emptyValue)
+
+        // Then the correct file path should be used
+        expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
+          '/base/folder/aws/aws/organizations/o-12345/ous/ou-12345678/metadata.json'
+        )
+      }
+    })
+  })
+
+  describe('getOrganizationalUnitMetadata', () => {
+    it('should get organizational unit metadata', async () => {
+      // Given a specific organization ID and OU ID
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getOrganizationalUnitMetadata('o-12345', 'ou-12345678', 'metadata')
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/ous/ou-12345678/metadata.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return the default value for non-existent OU metadata', async () => {
+      // Given a specific organization ID and OU ID
+      const defaultValue = { defaultValue: true }
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getOrganizationalUnitMetadata(
+        'o-12345',
+        'ou-12345678',
+        'metadata',
+        defaultValue
+      )
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/ous/ou-12345678/metadata.json'
+      )
+      expect(result).toEqual(defaultValue)
+    })
+  })
+
+  describe('deleteOrganizationalUnit', () => {
+    it('should delete an organizational unit', async () => {
+      // Given a specific organization ID and OU ID
+      const deleteDirectorySpy = vi.spyOn(mockFsAdapter, 'deleteDirectory').mockResolvedValue()
+
+      // When the organizational unit is deleted
+      await store.deleteOrganizationalUnit('o-12345', 'ou-12345678')
+
+      // Then the correct directory path should be used
+      expect(deleteDirectorySpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/ous/ou-12345678'
+      )
+    })
+  })
+
+  describe('deleteOrganizationPolicyMetadata', () => {
+    it('should delete organization policy metadata', async () => {
+      // Given a specific organization ID and policy type
+      const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+      // When metadata is deleted
+      await store.deleteOrganizationPolicyMetadata('o-12345', 'scps', 'p-12345678', 'policy')
+
+      // Then the correct file path should be used
+      expect(deleteFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/scps/p-12345678/policy.json'
+      )
+    })
+  })
+
+  describe('saveOrganizationPolicyMetadata', () => {
+    it('should save organization policy metadata', async () => {
+      // Given a specific organization ID and policy type
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When metadata is saved
+      await store.saveOrganizationPolicyMetadata('o-12345', 'scps', 'p-12345678', 'policy', data)
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/scps/p-12345678/policy.json'.toLowerCase(),
+        data
+      )
+    })
+
+    it('should delete the organization policy metadata file if data is empty', async () => {
+      for (const emptyValue of ['', '   ', '{}', '[]', undefined, null, {}, []]) {
+        // Given a specific organization ID and policy type
+        const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+        // When metadata is saved with empty data
+        await store.saveOrganizationPolicyMetadata(
+          'o-12345',
+          'scps',
+          'p-12345678',
+          'policy',
+          emptyValue
+        )
+
+        // Then the correct file path should be used
+        expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
+          '/base/folder/aws/aws/organizations/o-12345/scps/p-12345678/policy.json'
+        )
+      }
+    })
+  })
+
+  describe('getOrganizationPolicyMetadata', () => {
+    it('should get organization policy metadata', async () => {
+      // Given a specific organization ID and policy type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getOrganizationPolicyMetadata(
+        'o-12345',
+        'scps',
+        'p-12345678',
+        'policy'
+      )
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/scps/p-12345678/policy.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return a default value for non-existent organization policy metadata', async () => {
+      // Given a specific organization ID and policy type
+      const defaultValue = { defaultValue: true }
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getOrganizationPolicyMetadata(
+        'o-12345',
+        'scps',
+        'p-12345678',
+        'policy',
+        defaultValue
+      )
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/scps/p-12345678/policy.json'
+      )
+      expect(result).toEqual(defaultValue)
+    })
+  })
+
+  describe('deleteOrganizationPolicy', () => {
+    it('should delete an organization policy', async () => {
+      // Given a specific organization ID and policy type
+      const deleteDirectorySpy = vi.spyOn(mockFsAdapter, 'deleteDirectory').mockResolvedValue()
+
+      // When the organization policy is deleted
+      await store.deleteOrganizationPolicy('o-12345', 'scps', 'p-12345678')
+
+      // Then the correct directory path should be used
+      expect(deleteDirectorySpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/scps/p-12345678'
+      )
+    })
+  })
+
+  describe('listOrganizationPolicies', () => {
+    it('should list organization policies', async () => {
+      // Given a specific organization ID and policy type
+      const expectedPolicies = ['p-12345678', 'p-87654321']
+      const listDirectorySpy = vi
+        .spyOn(mockFsAdapter, 'listDirectory')
+        .mockResolvedValue(expectedPolicies)
+
+      // When organization policies are listed
+      const result = await store.listOrganizationPolicies('o-12345', 'scps')
+
+      // Then the correct file path should be used and the result should match
+      expect(listDirectorySpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/scps'
+      )
+      expect(result).toEqual(expectedPolicies)
+    })
+  })
 })

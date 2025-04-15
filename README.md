@@ -46,12 +46,16 @@ This will download the IAM data from the current account to the `./iam-data` dir
 
 # Supported Services and Data Downloaded
 
-| Service | Resource Type    | Data Downloaded                                                                                               |
-| ------- | ---------------- | ------------------------------------------------------------------------------------------------------------- |
-| iam     | Users            | name, path, id, groups, tags, inline policies, managed policies, permission boundary                          |
-| iam     | Groups           | name, path, id, inline policies, managed policies                                                             |
-| iam     | Roles            | name, path, id, trust policy, inline policies, managed policies, instance profiles, tags, permission boundary |
-| iam     | Managed Policies | name, path, id, default version, default version doc, tags                                                    |
-| kms     | Keys             | id, policy, tags                                                                                              |
-| lambda  | Functions        | name, role, tags, policy                                                                                      |
-| s3      | Buckets          | name, region, tags, policy, block public access configuration, default encryption                             |
+| Service       | Resource Type                     | Data Downloaded                                                                                               |
+| ------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| iam           | Users                             | name, path, id, groups, tags, inline policies, managed policies, permission boundary                          |
+| iam           | Groups                            | name, path, id, inline policies, managed policies                                                             |
+| iam           | Roles                             | name, path, id, trust policy, inline policies, managed policies, instance profiles, tags, permission boundary |
+| iam           | Customer and AWS Managed Policies | name, path, id, default version, default version doc, tags                                                    |
+| kms           | Keys                              | id, policy, tags                                                                                              |
+| lambda        | Functions                         | name, role, tags, policy                                                                                      |
+| s3            | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                             |
+| organizations | Organizations                     | id, arn, root account id, enabled policy types, org structure                                                 |
+| organizations | Organizational Units              | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                          |
+| organizations | Accounts                          | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                          |
+| organizations | SCPs, RCPs                        | id, arn, name, description, tags, policy                                                                      |
