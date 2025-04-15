@@ -1,3 +1,10 @@
+## [0.1.16](https://github.com/cloud-copilot/iam-collect/compare/v0.1.15...v0.1.16) (2025-04-15)
+
+
+### Features
+
+* Add syncing of organizations information ([7f947e5](https://github.com/cloud-copilot/iam-collect/commit/7f947e5f2891e58bd14eaf8752ffffee50769861))
+
 ## [0.1.15](https://github.com/cloud-copilot/iam-collect/compare/v0.1.14...v0.1.15) (2025-04-12)
 
 ## [0.1.14](https://github.com/cloud-copilot/iam-collect/compare/v0.1.13...v0.1.14) (2025-04-05)
