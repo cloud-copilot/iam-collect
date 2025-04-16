@@ -11,9 +11,6 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     private readonly partition: string,
     fsAdapter?: FileSystemAdapter
   ) {
-    console.log(
-      `Initializing FileSystemAwsIamStore with baseFolder: ${baseFolder}, partition: ${partition}`
-    )
     this.baseFolder = join(baseFolder, 'aws', partition)
     this.fsAdapter = fsAdapter || new FileSystemAdapter()
   }
@@ -132,11 +129,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   }
 
   async listResources(accountId: string, options: ResourceTypeParts): Promise<string[]> {
-    const dirPath = resourceTypePrefix(
-      this.accountPath(accountId),
-      { ...options, partition: this.partition },
-      sep
-    )
+    const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, sep)
     return await this.fsAdapter.listDirectory(dirPath)
   }
 
@@ -145,11 +138,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     options: ResourceTypeParts,
     desiredResources: string[]
   ): Promise<void> {
-    const dirPath = resourceTypePrefix(
-      this.accountPath(accountId),
-      { ...options, partition: this.partition },
-      sep
-    )
+    const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, sep)
 
     const existingSubDirs = (await this.fsAdapter.listDirectory(dirPath)).map((subDir) =>
       join(dirPath, subDir)
