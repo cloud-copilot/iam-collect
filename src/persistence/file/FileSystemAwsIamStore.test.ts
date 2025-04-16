@@ -30,7 +30,27 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used
       expect(writeFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'.toLowerCase(),
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'.toLowerCase(),
+        data
+      )
+    })
+
+    it('should save aws managed policies metadata', async () => {
+      // Given a specific ARN and metadata type
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When metadata is saved
+      await store.saveResourceMetadata(
+        '123456789012',
+        'arn:aws:iam::aws:policy/AWSLambdaBasicExecutionRole',
+        'policy',
+        data
+      )
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy/AWSLambdaBasicExecutionRole/policy.json'.toLowerCase(),
         data
       )
     })
@@ -50,7 +70,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used
       expect(writeFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket/bucket-policy.json'.toLowerCase(),
+        '/base/folder/aws/aws/accounts/123456789012/s3/my-bucket/bucket-policy.json'.toLowerCase(),
         data
       )
     })
@@ -70,7 +90,7 @@ describe('FileSystemAwsIamStore', () => {
 
         // Then the correct file path should be used
         expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
-          '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+          '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
         )
       }
     })
@@ -92,7 +112,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used and the result should match
       expect(listDirectorySpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role'
       )
       expect(result).toEqual(expectedMetadataTypes)
     })
@@ -109,7 +129,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used and the result should match
       expect(listDirectorySpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket'
+        '/base/folder/aws/aws/accounts/123456789012/s3/my-bucket'
       )
       expect(result).toEqual(expectedMetadataTypes)
     })
@@ -132,7 +152,28 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used and the data should match
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should get resource metadata for a managed policy', async () => {
+      // Given a specific ARN and metadata type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getResourceMetadata(
+        '123456789012',
+        'arn:aws:iam::aws:policy/AdministratorAccess',
+        'policy'
+      )
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy/administratoraccess/policy.json'
       )
       expect(result).toEqual(expectedData)
     })
@@ -153,7 +194,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used and the data should match
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket/bucket-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/s3/my-bucket/bucket-policy.json'
       )
       expect(result).toEqual(expectedData)
     })
@@ -171,7 +212,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used and the result should be undefined
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
       )
       expect(result).toBeUndefined()
     })
@@ -191,7 +232,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used and the result should match the default value
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
       )
       expect(result).toEqual(defaultValue)
     })
@@ -211,7 +252,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used
       expect(deleteFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
       )
     })
 
@@ -224,7 +265,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct file path should be used
       expect(deleteFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket/bucket-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/s3/my-bucket/bucket-policy.json'
       )
     })
   })
@@ -239,7 +280,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct directory path should be used
       expect(deleteDirectorySpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/123456789012/role/test-role'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role'
       )
     })
 
@@ -252,7 +293,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct directory path should be used
       expect(deleteDirectorySpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-bucket'
+        '/base/folder/aws/aws/accounts/123456789012/s3/my-bucket'
       )
     })
   })
@@ -273,7 +314,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct directory path should be used and the result should match
       expect(listDirectoriesSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/iam/role'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role'
       )
       expect(result).toEqual(expectedResources)
     })
@@ -292,7 +333,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct directory path should be used and the result should match
       expect(listDirectoriesSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3'
+        '/base/folder/aws/aws/accounts/123456789012/s3'
       )
       expect(result).toEqual(expectedResources)
     })
@@ -314,7 +355,7 @@ describe('FileSystemAwsIamStore', () => {
 
       // Then the correct directory path should be used and the result should match
       expect(listDirectoriesSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/kms/us-east-1/123456789012/key'
+        '/base/folder/aws/aws/accounts/123456789012/kms/us-east-1/key'
       )
       expect(result).toEqual(expectedResources)
     })
@@ -335,9 +376,59 @@ describe('FileSystemAwsIamStore', () => {
       await store.syncResourceList('123456789012', { service: 's3' }, ['arn:aws:s3:::my-bucket'])
 
       // Then the correct directory path should be used
-      expect(listSpy).toHaveBeenCalledWith('/base/folder/aws/aws/accounts/123456789012/aws/s3')
+      expect(listSpy).toHaveBeenCalledWith('/base/folder/aws/aws/accounts/123456789012/s3')
       expect(deleteSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/aws/s3/my-other-bucket'
+        '/base/folder/aws/aws/accounts/123456789012/s3/my-other-bucket'
+      )
+    })
+
+    it('should remove account id from the arn when syncing resources', async () => {
+      // Given a specific account ID and service
+      const listSpy = vi.spyOn(mockFsAdapter, 'listDirectory').mockResolvedValue([
+        // Mocking the directories that exist in the filesystem for the given service
+        'admin',
+        'readonly'
+      ])
+
+      const deleteSpy = vi.spyOn(mockFsAdapter, 'deleteDirectory').mockResolvedValue()
+
+      // When syncing the resource list
+      await store.syncResourceList(
+        '123456789012',
+        { service: 'iam', account: '123456789012', resourceType: 'policy' },
+        ['admin']
+      )
+
+      // Then the correct directory path should be used
+      expect(listSpy).toHaveBeenCalledWith('/base/folder/aws/aws/accounts/123456789012/iam/policy')
+      expect(deleteSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/policy/readonly'
+      )
+    })
+
+    it('should sync resource list with the account id if it is aws', async () => {
+      // Given a specific account ID and service
+      const listSpy = vi.spyOn(mockFsAdapter, 'listDirectory').mockResolvedValue([
+        // Mocking the directories that exist in the filesystem for the given service
+        'adminaccess',
+        'readonly'
+      ])
+
+      const deleteSpy = vi.spyOn(mockFsAdapter, 'deleteDirectory').mockResolvedValue()
+
+      // When syncing the resource list
+      await store.syncResourceList(
+        '123456789012',
+        { service: 'iam', account: 'aws', resourceType: 'policy' },
+        ['adminaccess']
+      )
+
+      // Then the correct directory path should be used
+      expect(listSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy'
+      )
+      expect(deleteSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy/readonly'
       )
     })
   })

@@ -20,10 +20,9 @@ export function resourcePrefix(
   return joinPathParts(
     [
       startingPath,
-      parts.partition,
       parts.service,
       parts.region,
-      parts.accountId,
+      parts.accountId === 'aws' ? parts.accountId : undefined,
       parts.resourceType,
       parts.resourcePath ? encodeURIComponent(parts.resourcePath.trim()) : undefined
     ],
@@ -42,7 +41,7 @@ export function resourcePrefix(
 export function resourceTypePrefix(
   startingPath: string,
   parts: {
-    partition: string
+    partition?: string
     account?: string
     service: string
     region?: string
@@ -51,7 +50,14 @@ export function resourceTypePrefix(
   separator: string
 ): string {
   return joinPathParts(
-    [startingPath, parts.partition, parts.service, parts.region, parts.account, parts.resourceType],
+    [
+      startingPath,
+      parts.partition,
+      parts.service,
+      parts.region,
+      parts.account === 'aws' ? parts.account : undefined,
+      parts.resourceType
+    ],
     separator
   )
 }
