@@ -1,3 +1,10 @@
+## [0.1.17](https://github.com/cloud-copilot/iam-collect/compare/v0.1.16...v0.1.17) (2025-04-16)
+
+
+### Features
+
+* Remove redundant partition and account id information from resource paths ([2900c58](https://github.com/cloud-copilot/iam-collect/commit/2900c58286828728549c5759825a68f7c820df22))
+
 ## [0.1.16](https://github.com/cloud-copilot/iam-collect/compare/v0.1.15...v0.1.16) (2025-04-15)
 
 
