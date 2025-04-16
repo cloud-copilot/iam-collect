@@ -15,7 +15,7 @@ Authentication is configured in the `iam-collect.jsonc` file. Anytime `auth` is 
   "role": {
     // Required if using a role, the path and name of the role to assume.
     "pathAndName": "role-name",
-    // Optional, and only applicable to S3 storage, which account to assume the role in.
+    // Only applicable to S3 storage, which account to assume the role in for connecting to S3 for storage.
     "account": "123456789012",
     // Optional, the session name to use when assuming the role.
     "sessionName": "session-name",
