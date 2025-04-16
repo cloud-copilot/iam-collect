@@ -1,3 +1,10 @@
+## [0.1.18](https://github.com/cloud-copilot/iam-collect/compare/v0.1.17...v0.1.18) (2025-04-16)
+
+
+### Features
+
+* Add syncing of secrets manager secrets and their resource policies ([fd07a6f](https://github.com/cloud-copilot/iam-collect/commit/fd07a6fbb99ef7b50a3b631145e53e9c2e89be04))
+
 ## [0.1.17](https://github.com/cloud-copilot/iam-collect/compare/v0.1.16...v0.1.17) (2025-04-16)
 
 
