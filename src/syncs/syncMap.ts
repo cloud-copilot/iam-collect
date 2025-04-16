@@ -4,6 +4,7 @@ import { KeySync } from './kms/key.js'
 import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
+import { SecretSync } from './secretsmanager/secrets.js'
 import { Sync } from './sync.js'
 
 const allSyncs = [
@@ -11,7 +12,8 @@ const allSyncs = [
   KeySync,
   LambdaSync,
   OrganizationSync,
-  S3GeneralPurposeBucketSync
+  S3GeneralPurposeBucketSync,
+  SecretSync
 ]
 
 const syncMap = new Map<AwsService, { regional: Sync[]; global: Sync[] }>()
