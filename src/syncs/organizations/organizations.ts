@@ -20,6 +20,7 @@ import { AwsCredentialIdentityWithMetaData } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsIamStore, OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
+import { convertTagsToRecord } from '../../utils/tags.js'
 import { Sync, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
@@ -48,7 +49,7 @@ interface OuDetails {
     arn: string
     name: string
   }
-  tags: Record<string, string>
+  tags: Record<string, string> | undefined
 }
 
 export const OrganizationSync: Sync = {
@@ -164,13 +165,10 @@ export const OrganizationSync: Sync = {
           parent[key].accounts = []
         }
         for (const account of accounts) {
-          let accountTags: Record<string, string> | undefined = await getTagsForAccount(
+          const accountTags: Record<string, string> | undefined = await getTagsForAccount(
             organizationClient,
             account.Id!
           )
-          if (Object.keys(accountTags).length === 0) {
-            accountTags = undefined
-          }
           allAccounts[account.Id!] = {
             ou: key,
             scps: await getPoliciesForTarget(
@@ -305,7 +303,7 @@ export async function getOrganizationRoot(client: OrganizationsClient): Promise<
 export async function getTagsForOu(
   client: OrganizationsClient,
   ouId: string
-): Promise<Record<string, string>> {
+): Promise<Record<string, string> | undefined> {
   return getTags(client, ouId)
 }
 
@@ -318,7 +316,7 @@ export async function getTagsForOu(
 export async function getTagsForAccount(
   client: OrganizationsClient,
   accountId: string
-): Promise<Record<string, string>> {
+): Promise<Record<string, string> | undefined> {
   return getTags(client, accountId)
 }
 
@@ -332,20 +330,13 @@ export async function getTagsForAccount(
 async function getTags(
   client: OrganizationsClient,
   resourceId: string
-): Promise<Record<string, string>> {
+): Promise<Record<string, string> | undefined> {
   const command = new ListTagsForResourceCommand({ ResourceId: resourceId })
   const response = await runAndCatch404(() => client.send(command))
   if (!response) {
     return {}
   }
-
-  return (response.Tags || [])?.reduce(
-    (acc, tag) => {
-      acc[tag.Key!] = tag.Value!
-      return acc
-    },
-    {} as Record<string, string>
-  )
+  return convertTagsToRecord(response.Tags)
 }
 
 /**

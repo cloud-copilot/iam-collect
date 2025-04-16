@@ -29,13 +29,7 @@ export const KeySync = createTypedSyncOperation(
         return runAndCatchAccessDenied(async () => {
           return runAndCatch404(async () => {
             const tagResult = await client.send(new ListResourceTagsCommand({ KeyId: key.KeyId }))
-            return tagResult.Tags?.reduce(
-              (acc, tag) => {
-                acc[tag.TagKey!] = tag.TagValue!
-                return acc
-              },
-              {} as Record<string, string>
-            )
+            return tagResult.Tags
           })
         })
       },
