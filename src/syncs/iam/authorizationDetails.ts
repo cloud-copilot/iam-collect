@@ -31,6 +31,7 @@ import { AwsCredentialIdentityWithMetaData } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
+import { convertTagsToRecord } from '../../utils/tags.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 
 interface AccessKeyWithLastUsed extends AccessKeyMetadata {
@@ -59,13 +60,7 @@ export const AuthorizationDetailsSync: Sync = {
         'trust-policy': role.AssumeRolePolicyDocument,
         'instance-profiles': role.InstanceProfileList?.map((i) => i.Arn),
         'inline-policies': role.RolePolicyList,
-        tags: role.Tags?.reduce(
-          (acc, tag) => {
-            acc[tag.Key!] = tag.Value!
-            return acc
-          },
-          {} as Record<string, string>
-        ),
+        tags: convertTagsToRecord(role.Tags),
         metadata: {
           arn: role.Arn,
           name: role.RoleName,
@@ -125,7 +120,7 @@ export const AuthorizationDetailsSync: Sync = {
         },
         policy: policy.PolicyVersionList?.filter((version) => version.IsDefaultVersion).at(0)
           ?.Document,
-        tags: policy.Tags
+        tags: convertTagsToRecord(policy.Tags)
       }
     })
 
@@ -167,13 +162,7 @@ export const AuthorizationDetailsSync: Sync = {
         'managed-policies': user.AttachedManagedPolicies?.map((p) => p.PolicyArn),
         'inline-policies': user.UserPolicyList,
         groups: user.GroupList?.map((g) => groupArns[g]),
-        tags: user.Tags?.reduce(
-          (acc, tag) => {
-            acc[tag.Key!] = tag.Value!
-            return acc
-          },
-          {} as Record<string, string>
-        ),
+        tags: convertTagsToRecord(user.Tags),
         metadata: {
           arn: user.Arn,
           path: user.Path,

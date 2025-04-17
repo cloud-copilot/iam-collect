@@ -39,14 +39,7 @@ export const SecretSync = createTypedSyncOperation(
         })
       }
     },
-    tags: (secret) =>
-      secret.Tags?.reduce(
-        (acc, tag) => {
-          acc[tag.Key!] = tag.Value!
-          return acc
-        },
-        {} as Record<string, string>
-      ),
+    tags: (secret) => secret.Tags,
     arn: (secret) => secret.ARN!,
     results: (secret) => ({
       metadata: {

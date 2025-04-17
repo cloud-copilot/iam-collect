@@ -3,6 +3,7 @@ import { AwsCredentialIdentityWithMetaData } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
+import { convertTagsToRecord, Tags } from '../utils/tags.js'
 import { DataRecord, Sync, syncData, SyncOptions } from './sync.js'
 
 export type ClientConstructor = new (args: any) => Client<any, any, any, any>
@@ -194,9 +195,7 @@ export type ResourceSyncType<
    * @param resource The resource to get the tags for
    * @returns The tags for the resource, or undefined if there are no tags
    */
-  tags: (
-    resource: ExtendedResourceElementType<Cmd, K, ExtraFields>
-  ) => Record<string, string> | undefined
+  tags: (resource: ExtendedResourceElementType<Cmd, K, ExtraFields>) => Tags | undefined
 
   /**
    * Create the ARN for a resource
@@ -353,7 +352,7 @@ export function createTypedSyncOperation<
         if (result.metadata) {
           result.metadata.arn = result.arn
         }
-        result.tags = resourceTypeSync.tags(resource)
+        result.tags = convertTagsToRecord(resourceTypeSync.tags(resource))
         return result as DataRecord
       })
 
