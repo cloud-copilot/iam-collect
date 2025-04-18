@@ -431,6 +431,54 @@ describe('FileSystemAwsIamStore', () => {
         '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy/readonly'
       )
     })
+
+    it('should sync resources based on metadata if provided', async () => {
+      // Given a specific account ID and service with metadata
+      const listSpy = vi.spyOn(mockFsAdapter, 'listDirectory').mockResolvedValue([
+        // Mocking the directories that exist in the filesystem for the given service
+        'inregionA',
+        'inregionB',
+        'outregion',
+        'noregion',
+        'nodata'
+      ])
+      vi.spyOn(mockFsAdapter, 'readFile').mockImplementation(async (path) => {
+        if (path.includes('inregionA') || path.includes('inregionB')) {
+          return JSON.stringify({ region: 'us-east-1' })
+        } else if (path.includes('outregion')) {
+          return JSON.stringify({ region: 'us-west-2' })
+        } else if (path.includes('noregion')) {
+          return JSON.stringify({ other: 'data' })
+        } else if (path.includes('nodata')) {
+          return undefined // Simulating no metadata
+        }
+        throw new Error(`Unexpected path: ${path}`)
+      })
+
+      const deleteSpy = vi.spyOn(mockFsAdapter, 'deleteDirectory').mockResolvedValue()
+
+      // When syncing the resource list with metadata
+      await store.syncResourceList(
+        '123456789012',
+        {
+          service: 'iam',
+          account: 'aws',
+          resourceType: 'policy',
+          metadata: {
+            region: 'us-east-1'
+          }
+        },
+        ['inregionA']
+      )
+
+      // Then the correct directory path should be used
+      expect(listSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy'
+      )
+      expect(deleteSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/aws/policy/inregionB'
+      )
+    })
   })
 
   describe('saveOrganizationMetadata', () => {

@@ -28,6 +28,11 @@ export interface ResourceTypeParts {
    * Optional for for legacy resource types like s3 buckets or sqs queues where the resource type is not explicitly defined in the ARN.
    */
   resourceType?: string
+
+  /**
+   * Specific metadata to filter the resources by.
+   */
+  metadata?: Record<string, string>
 }
 
 export type OrganizationPolicyType = 'scps' | 'rcps'

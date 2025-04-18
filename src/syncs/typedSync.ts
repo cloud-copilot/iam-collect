@@ -126,7 +126,8 @@ export type ExtraFieldsDefinition<
     client: InstanceType<C>,
     resource: ResourceElementType<Cmd, K>,
     accountId: string,
-    region: string
+    region: string,
+    partition: string
   ) => Promise<any>
 >
 
@@ -261,6 +262,7 @@ export async function paginateResourceConfig<
   endpoint: string | undefined
 ): Promise<ExtendedResourceElementType<Cmd, K, ExtraFieldsFunc>[]> {
   const accountId = credentials.accountId
+  const partition = credentials.partition
   const client = AwsClientPool.defaultInstance.client(
     resourceTypeSync.client,
     credentials,
@@ -291,13 +293,20 @@ export async function paginateResourceConfig<
               client: C,
               resource: ResourceElementType<Cmd, K>,
               accountId: string,
-              region: string
+              region: string,
+              partition: string
             ) => Promise<{}>
           >(fields)
         //Get the extra field values
         const extraFieldValues: [string, any][] = await Promise.all(
           extraFields.map(async ([key, callback]) => {
-            const value = await callback(client as any, resource, credentials.accountId, region)
+            const value = await callback(
+              client as any,
+              resource,
+              credentials.accountId,
+              region,
+              partition
+            )
             return [key, value]
           })
         )

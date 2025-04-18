@@ -5,6 +5,7 @@ import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { SecretSync } from './secretsmanager/secrets.js'
+import { SsoDataSync } from './sso/ssoInstances.js'
 import { Sync } from './sync.js'
 
 const allSyncs = [
@@ -13,7 +14,8 @@ const allSyncs = [
   LambdaSync,
   OrganizationSync,
   S3GeneralPurposeBucketSync,
-  SecretSync
+  SecretSync,
+  SsoDataSync
 ]
 
 const syncMap = new Map<AwsService, { regional: Sync[]; global: Sync[] }>()

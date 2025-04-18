@@ -139,10 +139,30 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     desiredResources: string[]
   ): Promise<void> {
     const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, sep)
-
     const existingSubDirs = (await this.fsAdapter.listDirectory(dirPath)).map((subDir) =>
       join(dirPath, subDir)
     )
+
+    let filteredSubDirs: string[] = existingSubDirs
+
+    if (options.metadata && Object.keys(options.metadata).length > 0) {
+      filteredSubDirs = []
+      // If metadata is provided, filter existing sub dirs based on metadata
+      const metadataFilter = (metadataString: string | undefined) => {
+        if (!metadataString) {
+          return false
+        }
+        const metadata = JSON.parse(metadataString)
+        return Object.entries(options.metadata!).every(([key, value]) => metadata[key] === value)
+      }
+
+      for (const subDir of existingSubDirs) {
+        const metadata = await this.fsAdapter.readFile(join(subDir, `metadata.json`))
+        if (metadataFilter(metadata)) {
+          filteredSubDirs.push(subDir)
+        }
+      }
+    }
 
     const desiredDirs = new Set(
       desiredResources.map((desiredArn) => {
@@ -152,7 +172,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     )
 
     // Identify resources that exist in storage but not in desiredResources.
-    const resourcesToDelete = existingSubDirs.filter((s) => !desiredDirs.has(s))
+    const resourcesToDelete = filteredSubDirs.filter((s) => !desiredDirs.has(s))
 
     for (const resource of resourcesToDelete) {
       await this.fsAdapter.deleteDirectory(resource)
