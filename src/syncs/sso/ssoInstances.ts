@@ -59,7 +59,8 @@ export const SsoDataSync: Sync = {
           identityStoreId: instance.IdentityStoreId,
           ownerAccountId: instance.OwnerAccountId,
           status: instance.Status,
-          region
+          region,
+          arn: instance.InstanceArn!
         },
         tags
       })
