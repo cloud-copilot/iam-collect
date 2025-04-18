@@ -1,3 +1,10 @@
+## [0.1.21](https://github.com/cloud-copilot/iam-collect/compare/v0.1.20...v0.1.21) (2025-04-18)
+
+
+### Bug Fixes
+
+* Add ARN to sso instance metadata ([b54cb0a](https://github.com/cloud-copilot/iam-collect/commit/b54cb0addbd088fce8e60e8eefbae519a287ae4d))
+
 ## [0.1.20](https://github.com/cloud-copilot/iam-collect/compare/v0.1.19...v0.1.20) (2025-04-18)
 
 
