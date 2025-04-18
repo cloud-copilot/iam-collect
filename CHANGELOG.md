@@ -1,3 +1,10 @@
+## [0.1.20](https://github.com/cloud-copilot/iam-collect/compare/v0.1.19...v0.1.20) (2025-04-18)
+
+
+### Features
+
+* Add sync for SSO Instances and Permission Sets ([4b757b0](https://github.com/cloud-copilot/iam-collect/commit/4b757b0586842048ef21b4f49d23624386276b0a))
+
 ## [0.1.19](https://github.com/cloud-copilot/iam-collect/compare/v0.1.18...v0.1.19) (2025-04-17)
 
 ## [0.1.18](https://github.com/cloud-copilot/iam-collect/compare/v0.1.17...v0.1.18) (2025-04-16)
