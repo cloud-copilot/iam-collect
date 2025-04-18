@@ -1,4 +1,11 @@
-export type AwsService = 'iam' | 'kms' | 'lambda' | 'organizations' | 's3' | 'secretsmanager'
+export type AwsService =
+  | 'iam'
+  | 'kms'
+  | 'lambda'
+  | 'organizations'
+  | 's3'
+  | 'secretsmanager'
+  | 'sso'
 
 export const allServices: AwsService[] = [
   'iam',
@@ -6,5 +13,6 @@ export const allServices: AwsService[] = [
   'lambda',
   'organizations',
   's3',
-  'secretsmanager'
+  'secretsmanager',
+  'sso'
 ]
