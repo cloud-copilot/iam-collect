@@ -13,6 +13,7 @@ import { FileSystemAwsIamStore } from '../persistence/file/FileSystemAwsIamStore
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
 import { getGlobalSyncsForService, getRegionalSyncsForService } from '../syncs/syncMap.js'
+import { log } from '../utils/log.js'
 
 export async function downloadData(
   configs: TopLevelConfig[],
@@ -31,13 +32,12 @@ export async function downloadData(
     throw new Error('No storage configuration found. Cannot download data.')
   }
   for (const accountId of accountIds) {
-    console.log(`Downloading data for account ${accountId}`)
+    log.info('Starting download for account', { accountId })
     const authForAccount = getAccountAuthConfig(accountId, configs)
     const credentials = await getCredentials(accountId, authForAccount)
 
     if (regions.length === 0) {
       regions = await getEnabledRegions(credentials)
-      // console.log(`Enabled regions for account ${accountId}:`, enabledRegions)
     }
 
     const storage = createStorageClient(storageConfig, credentials.partition)
@@ -49,7 +49,7 @@ export async function downloadData(
 
     const enabledServices = servicesForAccount(accountId, configs, services)
     for (const service of enabledServices) {
-      console.log(`Service ${service} for account ${accountId}`)
+      log.info('Starting download', { service, accountId })
       const serviceRegions = regionsForService(service, accountId, configs, regions)
 
       //Global syncs for the service
@@ -71,7 +71,7 @@ export async function downloadData(
 
       //Regional syncs for the service
       for (const region of serviceRegions) {
-        console.log(`Service ${service} for account ${accountId} in region ${region}`)
+        log.info('Starting download for region and service', { service, accountId, region })
         const regionalSyncs = getRegionalSyncsForService(service)
         if (regionalSyncs.length === 0) {
           continue
