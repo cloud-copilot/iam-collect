@@ -6,6 +6,7 @@ import { createDefaultConfiguration } from './config/createConfigFile.js'
 import { defaultConfigExists } from './config/defaultConfig.js'
 import { iamCollectVersion } from './config/packageVersion.js'
 import { downloadData } from './download/download.js'
+import { LogLevels, setLogLevel } from './utils/log.js'
 
 const main = async () => {
   const version = await iamCollectVersion()
@@ -42,7 +43,14 @@ const main = async () => {
         }
       }
     },
-    {},
+    {
+      log: {
+        type: 'enum',
+        description: 'The log level to use',
+        values: 'single',
+        validValues: LogLevels
+      }
+    },
     {
       envPrefix: 'IAM_COLLECT',
       showHelpIfNoArgs: true,
@@ -50,6 +58,10 @@ const main = async () => {
       version: version
     }
   )
+
+  if (cli.args.log) {
+    setLogLevel(cli.args.log)
+  }
 
   if (cli.subcommand === 'init') {
     if (defaultConfigExists()) {
