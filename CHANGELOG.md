@@ -1,3 +1,10 @@
+## [0.1.24](https://github.com/cloud-copilot/iam-collect/compare/v0.1.23...v0.1.24) (2025-04-22)
+
+
+### Features
+
+* Add configurable log levels ([dd6688b](https://github.com/cloud-copilot/iam-collect/commit/dd6688bf122534ddc269251ba28bbd4643c918be))
+
 ## [0.1.23](https://github.com/cloud-copilot/iam-collect/compare/v0.1.22...v0.1.23) (2025-04-22)
 
 
