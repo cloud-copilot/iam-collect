@@ -1,3 +1,10 @@
+## [0.1.25](https://github.com/cloud-copilot/iam-collect/compare/v0.1.24...v0.1.25) (2025-04-22)
+
+
+### Bug Fixes
+
+* Only sync sso instances owned by the account being synced ([02469ba](https://github.com/cloud-copilot/iam-collect/commit/02469badbbb49e8fe6f2fc56a996315c2ae6ce25))
+
 ## [0.1.24](https://github.com/cloud-copilot/iam-collect/compare/v0.1.23...v0.1.24) (2025-04-22)
 
 
