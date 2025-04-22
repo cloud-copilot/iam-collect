@@ -13,6 +13,7 @@ import {
 } from '@aws-sdk/client-sso-admin'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
+import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
 import { DataRecord, Sync, syncData } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation, paginateResource } from '../typedSync.js'
@@ -33,6 +34,16 @@ export const SsoDataSync: Sync = {
       outputKey: 'NextToken'
     })
 
+    const accountInstances = instances.filter(
+      (instance) => instance.OwnerAccountId === accountId && instance.Status === 'ACTIVE'
+    )
+
+    log.trace('Found SSO instances', {
+      accountId,
+      region,
+      instances: accountInstances.length
+    })
+
     const resourceTypeParts = {
       service: 'sso',
       resourceType: 'instance',
@@ -42,7 +53,7 @@ export const SsoDataSync: Sync = {
     }
 
     const data: DataRecord[] = []
-    for (const instance of instances) {
+    for (const instance of accountInstances) {
       const command = new ListTagsForResourceCommand({
         InstanceArn: instance.InstanceArn!,
         ResourceArn: instance.InstanceArn!
@@ -68,7 +79,7 @@ export const SsoDataSync: Sync = {
 
     await syncData(data, storage, accountId, resourceTypeParts)
 
-    for (const instance of instances) {
+    for (const instance of accountInstances) {
       const dataSyncs = createSsoInstanceResourceSyncs(instance, region)
 
       for (const dataSync of dataSyncs) {
