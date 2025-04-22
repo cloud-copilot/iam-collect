@@ -1,3 +1,10 @@
+## [0.1.23](https://github.com/cloud-copilot/iam-collect/compare/v0.1.22...v0.1.23) (2025-04-22)
+
+
+### Features
+
+* Add support for DynamoDB Table Policies ([d347424](https://github.com/cloud-copilot/iam-collect/commit/d3474245f607bc2010c8a9289d0b35466bcd0139))
+
 ## [0.1.22](https://github.com/cloud-copilot/iam-collect/compare/v0.1.21...v0.1.22) (2025-04-19)
 
 ## [0.1.21](https://github.com/cloud-copilot/iam-collect/compare/v0.1.20...v0.1.21) (2025-04-18)
