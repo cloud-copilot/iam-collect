@@ -206,7 +206,12 @@ export type ResourceSyncType<
    * @param accountId the account the resource is in
    * @returns the ARN for the resource
    */
-  arn: (resource: ResourceElementType<Cmd, K>, region: string, accountId: string) => string
+  arn: (
+    resource: ResourceElementType<Cmd, K>,
+    region: string,
+    accountId: string,
+    partition: string
+  ) => string
 
   /**
    * The extra fields to get for a resource
@@ -357,7 +362,7 @@ export function createTypedSyncOperation<
 
       const records: DataRecord[] = resources.map((resource) => {
         const result = resourceTypeSync.results(resource)
-        result.arn = resourceTypeSync.arn(resource, region, awsId)
+        result.arn = resourceTypeSync.arn(resource, region, awsId, credentials.partition)
         if (result.metadata) {
           result.metadata.arn = result.arn
         }

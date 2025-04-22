@@ -54,6 +54,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | iam           | Groups                            | name, path, id, inline policies, managed policies                                                                      |
 | iam           | Roles                             | name, path, id, trust policy, inline policies, managed policies, instance profiles, tags, permission boundary          |
 | iam           | Customer and AWS Managed Policies | name, path, id, default version, default version doc, tags                                                             |
+| dynamodb      | Tables                            | name, arn, region, tags, resource policy                                                                               |
 | kms           | Keys                              | id, policy, tags                                                                                                       |
 | lambda        | Functions                         | name, role, tags, policy                                                                                               |
 | s3            | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |

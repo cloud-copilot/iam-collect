@@ -39,3 +39,27 @@ export async function runAndCatchAccessDenied<T>(
     throw e
   }
 }
+
+/**
+ * Run an operation and catch a specific error by name. Return undefined if the error matches, otherwise rethrow the error.
+ *
+ * @param errorName the name of the error to catch
+ * @param operation the operation to run
+ * @returns If successful, returns the result of operation. If operation throws an error with the specified name, returns undefined.
+ * @throws If operation throws an error with a different name, rethrows that error.
+ */
+
+export async function runAndCatchError<T>(
+  errorName: string,
+  operation: () => Promise<T | undefined>
+): Promise<T | undefined> {
+  try {
+    const result = await operation()
+    return result
+  } catch (e: any) {
+    if (e.name == errorName) {
+      return undefined
+    }
+    throw e
+  }
+}

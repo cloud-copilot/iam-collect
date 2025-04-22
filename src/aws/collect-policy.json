@@ -6,6 +6,9 @@
       "Effect": "Allow",
       "Action": [
         "account:ListRegions",
+        "dynamodb:GetResourcePolicy",
+        "dynamodb:ListTables",
+        "dynamodb:ListTagsOfResource",
         "iam:GetAccountAuthorizationDetails",
         "kms:GetKeyPolicy",
         "kms:ListKeys",
