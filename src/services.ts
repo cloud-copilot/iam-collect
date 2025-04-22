@@ -1,4 +1,5 @@
 export type AwsService =
+  | 'dynamodb'
   | 'iam'
   | 'kms'
   | 'lambda'
@@ -8,6 +9,7 @@ export type AwsService =
   | 'sso'
 
 export const allServices: AwsService[] = [
+  'dynamodb',
   'iam',
   'kms',
   'lambda',
