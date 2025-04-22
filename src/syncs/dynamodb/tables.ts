@@ -30,7 +30,7 @@ export const DynamoDBTableSync = createTypedSyncOperation(
     }),
     extraFields: {
       policy: async (client, table, accountId, region, partition) => {
-        runAndCatchError('PolicyNotFoundException', async () => {
+        return runAndCatchError('PolicyNotFoundException', async () => {
           const response = await client.send(
             new GetResourcePolicyCommand({
               ResourceArn: tableArn(partition, region, accountId, table.name)
