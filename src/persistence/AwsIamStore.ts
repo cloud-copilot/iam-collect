@@ -125,6 +125,36 @@ export interface AwsIamStore {
   ): Promise<void>
 
   /**
+   * Delete metadata for an AWS Account
+   *
+   * @param accountId the AWS account ID
+   * @param metadataType the type of metadata to delete (e.g., "metadata")
+   */
+  deleteAccountMetadata(accountId: string, metadataType: string): Promise<void>
+
+  /**
+   * Save metadata for an AWS Account
+   *
+   * @param accountId The AWS account ID.
+   * @param metadataType The type of metadata to save (e.g., "metadata").
+   * @param data - The metadata content to save as an object.
+   */
+  saveAccountMetadata(accountId: string, metadataType: string, data: any): Promise<void>
+
+  /**
+   * Get metadata for an AWS Account
+   *
+   * @param accountId the AWS account ID
+   * @param metadataType the type of metadata to retrieve (e.g., "metadata")
+   * @param defaultValue the default value to return if the metadata is not found
+   */
+  getAccountMetadata<T, D extends T>(
+    accountId: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T>
+
+  /**
    * Save metadata for an AWS Organization
    *
    * @param organizationId - The AWS organization ID.

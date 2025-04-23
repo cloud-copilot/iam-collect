@@ -481,6 +481,87 @@ describe('FileSystemAwsIamStore', () => {
     })
   })
 
+  describe('deleteAccountMetadata', () => {
+    it('should delete account metadata', async () => {
+      // Given a specific account ID and metadata type
+      const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+      // When metadata is deleted
+      await store.deleteAccountMetadata('123456789012', 'account-config')
+
+      // Then the correct file path should be used
+      expect(deleteFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/account-config.json'
+      )
+    })
+  })
+
+  describe('saveAccountMetadata', () => {
+    it('should save account metadata', async () => {
+      // Given a specific account ID and metadata type
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When metadata is saved
+      await store.saveAccountMetadata('123456789012', 'account-config', data)
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/account-config.json'.toLowerCase(),
+        data
+      )
+    })
+
+    it('should delete the account metadata file if data is empty', async () => {
+      for (const emptyValue of ['', '   ', '{}', '[]', undefined, null, {}, []]) {
+        // Given a specific account ID and metadata type
+        const deleteFileSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+        // When metadata is saved with empty data
+        await store.saveAccountMetadata('123456789012', 'account-config', emptyValue)
+
+        // Then the correct file path should be used
+        expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
+          '/base/folder/aws/aws/accounts/123456789012/account-config.json'
+        )
+      }
+    })
+  })
+
+  describe('getAccountMetadata', () => {
+    it('should get account metadata', async () => {
+      // Given a specific account ID and metadata type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getAccountMetadata('123456789012', 'account-config')
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/account-config.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return the default value for non-existent account metadata', async () => {
+      // Given a specific account ID and metadata type
+      const defaultValue = { defaultValue: true }
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getAccountMetadata('123456789012', 'account-config', defaultValue)
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/account-config.json'
+      )
+      expect(result).toEqual(defaultValue)
+    })
+  })
+
   describe('saveOrganizationMetadata', () => {
     it('should save organization metadata', async () => {
       // Given a specific account ID and metadata type
