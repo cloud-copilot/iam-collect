@@ -50,7 +50,7 @@ export const IdentityProviderSyncs: Sync[] = [
   ),
   createTypedSyncOperation(
     'iam',
-    'oidcProviders',
+    'samlProviders',
 
     createResourceSyncType({
       globalResourceType: true,
