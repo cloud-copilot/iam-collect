@@ -1,3 +1,10 @@
+## [0.1.27](https://github.com/cloud-copilot/iam-collect/compare/v0.1.26...v0.1.27) (2025-04-23)
+
+
+### Features
+
+* Sync account S3 Block Public Access settings ([733a03e](https://github.com/cloud-copilot/iam-collect/commit/733a03ed22a694d39b5bb6b5ebf43f50009a3245))
+
 ## [0.1.26](https://github.com/cloud-copilot/iam-collect/compare/v0.1.25...v0.1.26) (2025-04-23)
 
 
