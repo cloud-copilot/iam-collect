@@ -1,3 +1,16 @@
+## [0.1.26](https://github.com/cloud-copilot/iam-collect/compare/v0.1.25...v0.1.26) (2025-04-23)
+
+
+### Bug Fixes
+
+* correct sync name for SAML providers ([cc09ec8](https://github.com/cloud-copilot/iam-collect/commit/cc09ec8a2fe603e62f142dccd8db21c051217a43))
+
+
+### Features
+
+* Add support to sync OIDC providers ([3103d40](https://github.com/cloud-copilot/iam-collect/commit/3103d40b86950984d658607353fe5b37b3022b3a))
+* Add support to sync SAML providers ([b9867c2](https://github.com/cloud-copilot/iam-collect/commit/b9867c293751da57e8d9999bcb4bcbfa45a2d28d))
+
 ## [0.1.25](https://github.com/cloud-copilot/iam-collect/compare/v0.1.24...v0.1.25) (2025-04-22)
 
 
