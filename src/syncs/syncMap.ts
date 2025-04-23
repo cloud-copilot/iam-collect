@@ -1,6 +1,7 @@
 import { AwsService } from '../services.js'
 import { DynamoDBTableSync } from './dynamodb/tables.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
+import { IdentityProviderSyncs } from './iam/identityProviders.js'
 import { KeySync } from './kms/key.js'
 import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
@@ -12,6 +13,7 @@ import { Sync } from './sync.js'
 const allSyncs = [
   AuthorizationDetailsSync,
   DynamoDBTableSync,
+  ...IdentityProviderSyncs,
   KeySync,
   LambdaSync,
   OrganizationSync,
