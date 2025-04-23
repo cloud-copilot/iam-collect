@@ -73,6 +73,10 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     return join(this.baseFolder, 'accounts', accountId).toLowerCase()
   }
 
+  private accountMetadataPath(accountId: string, metadataType: string): string {
+    return join(this.accountPath(accountId), `${metadataType}.json`).toLowerCase()
+  }
+
   private buildResourcePath(accountId: string, arn: string): string {
     return resourcePrefix(this.accountPath(accountId), arn, sep).toLowerCase()
   }
@@ -177,6 +181,25 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     for (const resource of resourcesToDelete) {
       await this.fsAdapter.deleteDirectory(resource)
     }
+  }
+
+  async deleteAccountMetadata(accountId: string, metadataType: string): Promise<void> {
+    const filePath = this.accountMetadataPath(accountId, metadataType)
+    await this.fsAdapter.deleteFile(filePath)
+  }
+
+  async saveAccountMetadata(accountId: string, metadataType: string, data: any): Promise<void> {
+    const filePath = this.accountMetadataPath(accountId, metadataType)
+    await this.saveOrDeleteFile(filePath, data)
+  }
+
+  async getAccountMetadata<T, D extends T>(
+    accountId: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T> {
+    const filePath = this.accountMetadataPath(accountId, metadataType)
+    return this.contentOrDefault(filePath, defaultValue)
   }
 
   async saveOrganizationMetadata(

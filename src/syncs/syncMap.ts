@@ -5,12 +5,14 @@ import { IdentityProviderSyncs } from './iam/identityProviders.js'
 import { KeySync } from './kms/key.js'
 import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
+import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { SecretSync } from './secretsmanager/secrets.js'
 import { SsoDataSync } from './sso/ssoInstances.js'
 import { Sync } from './sync.js'
 
 const allSyncs = [
+  AccountS3BpaSync,
   AuthorizationDetailsSync,
   DynamoDBTableSync,
   ...IdentityProviderSyncs,

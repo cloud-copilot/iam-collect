@@ -31,6 +31,7 @@
         "organizations:ListPoliciesForTarget",
         "organizations:ListRoots",
         "organizations:ListTagsForResource",
+        "s3:GetAccountPublicAccessBlock",
         "s3:GetBucketPolicy",
         "s3:GetBucketPublicAccessBlock",
         "s3:GetBucketTagging",
