@@ -32,7 +32,7 @@ const defaultConfig = `
     "type": "file",
     //If this starts with a '.', it is relative to the config file, otherwise it is an absolute path.
     "path": "./iam-data"
-  }
+  },
 
   /*
   You can also use S3 storage instead of the default file storage.
@@ -57,7 +57,7 @@ const defaultConfig = `
     "123456789012": {
       //Optional auth for the account:
       "auth": {
-        //The type of authentication to use
+        //The type of authentication to use https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
       },
       "regions": {
         //Optional regions to include, if empty all regions are included
