@@ -59,6 +59,7 @@ export async function downloadData(
       const globalCredentials = await getCredentials(accountId, globalConfig.auth)
 
       for (const globalSync of globalSyncs) {
+        log.debug({ service, accountId, sync: globalSync.name }, 'Executing global sync')
         await globalSync.execute(
           accountId,
           globalRegion,
@@ -71,7 +72,7 @@ export async function downloadData(
 
       //Regional syncs for the service
       for (const region of serviceRegions) {
-        log.info('Starting download for region and service', { service, accountId, region })
+        log.debug({ service, accountId, region }, 'Starting regional syncs')
         const regionalSyncs = getRegionalSyncsForService(service)
         if (regionalSyncs.length === 0) {
           continue
@@ -80,6 +81,7 @@ export async function downloadData(
         const regionalCredentials = await getCredentials(accountId, asrConfig.auth)
 
         for (const sync of regionalSyncs) {
+          log.trace({ service, accountId, region, sync: sync.name }, 'Executing regional sync')
           await sync.execute(
             accountId,
             region,

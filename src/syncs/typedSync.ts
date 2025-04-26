@@ -343,6 +343,7 @@ export function createTypedSyncOperation<
   return {
     awsService,
     name,
+    global: resourceTypeSync.globalResourceType ?? false,
     execute: async (
       accountId: string,
       region: string,
