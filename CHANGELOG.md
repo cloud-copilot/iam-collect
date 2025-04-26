@@ -1,3 +1,16 @@
+## [0.1.29](https://github.com/cloud-copilot/iam-collect/compare/v0.1.28...v0.1.29) (2025-04-26)
+
+
+### Bug Fixes
+
+* Add missing permissions to example policy ([ef93649](https://github.com/cloud-copilot/iam-collect/commit/ef93649704177978691acf37dd3c8ead36323e8e))
+* Properly set global flag for typed syncs ([e03eec0](https://github.com/cloud-copilot/iam-collect/commit/e03eec0833e10bd8630ca5b57839a023d8d1167c))
+
+
+### Features
+
+* Add credential caching ([820a131](https://github.com/cloud-copilot/iam-collect/commit/820a131287a65e7377326d53a2e71aa6c4b69621))
+
 ## [0.1.28](https://github.com/cloud-copilot/iam-collect/compare/v0.1.27...v0.1.28) (2025-04-26)
 
 ## [0.1.27](https://github.com/cloud-copilot/iam-collect/compare/v0.1.26...v0.1.27) (2025-04-23)
