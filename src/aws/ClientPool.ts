@@ -1,6 +1,6 @@
 import type { Client } from '@smithy/smithy-client'
 import { RETRY_MODES } from '@smithy/util-retry'
-import { AwsCredentialIdentityWithMetaData } from './auth.js'
+import { AwsCredentialIdentityWithMetaData } from './coreAuth.js'
 
 type ClientConstructor<T> = new (args: any) => T
 type AnyClient = Client<any, any, any, any>
@@ -49,7 +49,7 @@ export class AwsClientPool {
     region: string | undefined,
     endpoint: string | undefined
   ): string {
-    return `${ClientType.name}:${credentials.accountId}:${region}:${endpoint}`
+    return `${ClientType.name}:${credentials.accountId}:${credentials.accessKeyId}:${region}:${endpoint}`
   }
 
   /**

@@ -18,10 +18,7 @@ export const IdentityProviderSyncs: Sync[] = [
       client: IAMClient,
       command: ListOpenIDConnectProvidersCommand,
       key: 'OpenIDConnectProviderList',
-      paginationConfig: {
-        inputKey: undefined as never,
-        outputKey: undefined as any
-      },
+      paginationConfig: '::no-pagination::',
       arn: (provider) => provider.Arn!,
       resourceTypeParts: (account, region) => ({
         service: 'iam',
@@ -57,10 +54,7 @@ export const IdentityProviderSyncs: Sync[] = [
       client: IAMClient,
       command: ListSAMLProvidersCommand,
       key: 'SAMLProviderList',
-      paginationConfig: {
-        inputKey: undefined as never,
-        outputKey: undefined as any
-      },
+      paginationConfig: '::no-pagination::',
       arn: (provider) => provider.Arn!,
       resourceTypeParts: (account, region) => ({
         service: 'iam',

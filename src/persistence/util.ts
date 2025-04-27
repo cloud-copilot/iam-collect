@@ -1,4 +1,21 @@
+import { StorageConfig } from '../config/config.js'
 import { splitArnParts } from '../utils/arn.js'
+import { AwsIamStore } from './AwsIamStore.js'
+import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
+
+/**
+ * Create a storage client based on the provided storage configuration and partition.
+ *
+ * @param storageConfig - The storage configuration object that defines the type and path of the storage.
+ * @param partition - The partition to use for the storage client.
+ * @returns The storage client instance to use
+ */
+export function createStorageClient(storageConfig: StorageConfig, partition: string): AwsIamStore {
+  if (storageConfig.type === 'file') {
+    return new FileSystemAwsIamStore(storageConfig.path, partition)
+  }
+  throw new Error(`Unsupported storage type: ${storageConfig.type}. Supported types are: file.`)
+}
 
 /**
  * Generate a resource prefix given a starting path, a resource ARN, and a separator.

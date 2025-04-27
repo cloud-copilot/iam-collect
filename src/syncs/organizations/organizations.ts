@@ -16,8 +16,8 @@ import {
   PolicyTypeStatus,
   Root
 } from '@aws-sdk/client-organizations'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
+import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore, OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
 import { convertTagsToRecord } from '../../utils/tags.js'

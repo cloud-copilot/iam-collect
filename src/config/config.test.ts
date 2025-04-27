@@ -3,6 +3,7 @@ import {
   accountServiceRegionConfig,
   AuthConfig,
   getAccountAuthConfig,
+  getDefaultAuthConfig,
   regionsForService,
   ResolvedAccountServiceRegionConfig,
   servicesForAccount,
@@ -584,4 +585,86 @@ describe('accountServiceRegionConfig', () => {
       // expect(result).toEqual(test.result)
     })
   }
+})
+
+describe('getDefaultAuthConfig', () => {
+  it('should return an empty object if no auth found', () => {
+    // Given no auth config in the provided configs
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      }
+    ]
+
+    // When getDefaultAuthConfig is called
+    const result = getDefaultAuthConfig(configs)
+
+    // Then it should return an empty object
+    expect(result).toEqual({})
+  })
+
+  it('should return the default auth config if provided', () => {
+    // Given a single config with auth details
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default',
+          role: {
+            pathAndName: 'my-role'
+          }
+        }
+      }
+    ]
+
+    // When getDefaultAuthConfig is called
+    const result = getDefaultAuthConfig(configs)
+
+    // Then it should return the auth config
+    expect(result).toEqual({
+      profile: 'default',
+      role: {
+        pathAndName: 'my-role'
+      }
+    })
+  })
+
+  it('should return the last auth config if multiple are provided', () => {
+    // Given multiple configs with auth details
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'first',
+          role: {
+            pathAndName: 'first-role'
+          }
+        }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'second',
+          role: {
+            pathAndName: 'second-role'
+          }
+        }
+      }
+    ]
+
+    // When getDefaultAuthConfig is called
+    const result = getDefaultAuthConfig(configs)
+
+    // Then it should return the last auth config
+    expect(result).toEqual({
+      profile: 'second',
+      role: {
+        pathAndName: 'second-role'
+      }
+    })
+  })
 })

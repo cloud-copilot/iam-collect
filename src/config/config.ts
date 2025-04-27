@@ -99,6 +99,23 @@ export interface ResolvedAccountServiceRegionConfig {
   endpoint?: string
 }
 
+/**
+ * Get the default auth config from the provided configs.
+ *
+ * @param configs the configs to search for the default auth config
+ * @returns the default auth config, or an empty object if none found
+ */
+export function getDefaultAuthConfig(configs: TopLevelConfig[]): AuthConfig {
+  // Return the last config with an auth config, or an empty object if none found
+  for (let i = configs.length - 1; i >= 0; i--) {
+    const configAuth = configs[i].auth
+    if (configAuth) {
+      return configAuth
+    }
+  }
+  return {}
+}
+
 export function servicesForAccount(
   account: string,
   configs: TopLevelConfig[],
@@ -180,16 +197,6 @@ export function regionsForService(
 
   return regions
 }
-
-// export function defaultStsRegion(configs: TopLevelConfig[]): string {
-//   for (const config of configs) {
-//     if (config.regions?.included) {
-//       return config.regions.included[0]
-//     }
-//   }
-
-//   return 'us-east-1'
-// }
 
 export function accountServiceRegionConfig(
   service: string,
