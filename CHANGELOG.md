@@ -1,3 +1,10 @@
+## [0.1.30](https://github.com/cloud-copilot/iam-collect/compare/v0.1.29...v0.1.30) (2025-04-27)
+
+
+### Features
+
+* Add parallel downloading of information across accounts, regions, and services ([367a349](https://github.com/cloud-copilot/iam-collect/commit/367a3499d1782a174f6c99d34cc8f22835a2dd13))
+
 ## [0.1.29](https://github.com/cloud-copilot/iam-collect/compare/v0.1.28...v0.1.29) (2025-04-26)
 
 
