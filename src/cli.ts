@@ -25,7 +25,7 @@ const main = async () => {
             description: 'The configuration files to use',
             values: 'multiple'
           },
-          accountIds: {
+          accounts: {
             type: 'string',
             description: 'The account IDs to download from',
             values: 'multiple'
@@ -39,6 +39,12 @@ const main = async () => {
             type: 'string',
             description: 'The services to download',
             values: 'multiple'
+          },
+          concurrency: {
+            type: 'number',
+            description:
+              'The maximum number of concurrent downloads to allow. Defaults based on your system CPUs',
+            values: 'single'
           }
         }
       }
@@ -74,7 +80,13 @@ const main = async () => {
     const defaultConfig = './iam-collect.jsonc'
     const configFiles = cli.args.configFiles?.length > 0 ? cli.args.configFiles : [defaultConfig]
     const configs = loadConfigFiles(configFiles)
-    await downloadData(configs, cli.args.accountIds, cli.args.regions, cli.args.services)
+    await downloadData(
+      configs,
+      cli.args.accounts,
+      cli.args.regions,
+      cli.args.services,
+      cli.args.concurrency
+    )
   }
 }
 

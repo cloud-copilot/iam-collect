@@ -1,5 +1,5 @@
 import { AccountClient, ListRegionsCommand, RegionOptStatus } from '@aws-sdk/client-account'
-import { AwsCredentialIdentityWithMetaData } from './aws/auth.js'
+import { AwsCredentialIdentityWithMetaData } from './aws/coreAuth.js'
 import { isDefined } from './utils/types.js'
 
 export async function getEnabledRegions(

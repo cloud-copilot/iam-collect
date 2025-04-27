@@ -1,4 +1,4 @@
-import { AwsCredentialIdentityWithMetaData } from '../aws/auth.js'
+import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 

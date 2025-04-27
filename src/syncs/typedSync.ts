@@ -1,6 +1,6 @@
 import type { Client, Command } from '@smithy/smithy-client'
-import { AwsCredentialIdentityWithMetaData } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
+import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 import { convertTagsToRecord, Tags } from '../utils/tags.js'

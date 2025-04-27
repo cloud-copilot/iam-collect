@@ -10,8 +10,8 @@ import {
   ServerSideEncryptionConfiguration,
   ServerSideEncryptionRule
 } from '@aws-sdk/client-s3'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
+import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'

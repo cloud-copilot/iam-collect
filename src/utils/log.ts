@@ -30,6 +30,13 @@ function serializeArgs(args: unknown[]): string {
     .join(' ')
 }
 
+function isError(obj: unknown): obj is Error {
+  return (
+    obj instanceof Error ||
+    (typeof obj === 'object' && obj !== null && 'message' in obj && 'name' in obj)
+  )
+}
+
 // core log function: level check → prefix → JSON output
 function logAt(level: LogLevel, args: unknown[]) {
   if (LEVELS[level] > CURRENT_LEVEL) return
@@ -41,8 +48,9 @@ function logAt(level: LogLevel, args: unknown[]) {
   }
 
   // Separate object args and message args
-  const objectArgs = args.filter((a) => typeof a === 'object' && a !== null)
+  const objectArgs = args.filter((a) => typeof a === 'object' && a !== null && !isError(a))
   const messageArgs = args.filter((a) => typeof a !== 'object' || a === null)
+  const errorArgs = args.filter(isError)
 
   // Merge all object arguments into the entry
   for (const obj of objectArgs) {
@@ -52,6 +60,13 @@ function logAt(level: LogLevel, args: unknown[]) {
   const msg = serializeArgs(messageArgs)
   if (msg) {
     entry.message = msg
+  }
+  if (errorArgs.length > 0) {
+    entry.errors = errorArgs.map((e) => ({
+      name: e.name,
+      message: e.message,
+      stack: e.stack
+    }))
   }
 
   const line = JSON.stringify(entry)
