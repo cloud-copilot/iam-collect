@@ -1,3 +1,10 @@
+## [0.1.31](https://github.com/cloud-copilot/iam-collect/compare/v0.1.30...v0.1.31) (2025-04-28)
+
+
+### Features
+
+* Add download of SNS Topic policies ([12d0d20](https://github.com/cloud-copilot/iam-collect/commit/12d0d2039962764611de0aeb344b496f804a10e9))
+
 ## [0.1.30](https://github.com/cloud-copilot/iam-collect/compare/v0.1.29...v0.1.30) (2025-04-27)
 
 
