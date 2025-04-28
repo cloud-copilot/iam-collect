@@ -8,6 +8,7 @@ import { OrganizationSync } from './organizations/organizations.js'
 import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { SecretSync } from './secretsmanager/secrets.js'
+import { SnsTopicsSync } from './sns/topics.js'
 import { SsoDataSync } from './sso/ssoInstances.js'
 import { Sync } from './sync.js'
 
@@ -21,6 +22,7 @@ const allSyncs = [
   OrganizationSync,
   S3GeneralPurposeBucketSync,
   SecretSync,
+  SnsTopicsSync,
   SsoDataSync
 ]
 
