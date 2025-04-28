@@ -40,6 +40,8 @@
         "s3:ListAllMyBuckets",
         "secretsmanager:ListSecrets",
         "secretsmanager:GetResourcePolicy",
+        "sns:GetTopicAttributes",
+        "sns:ListTopics",
         "sso:DescribePermissionSet",
         "sso:DescribePermissionsPolicies",
         "sso:GetInlinePolicyForPermissionSet",

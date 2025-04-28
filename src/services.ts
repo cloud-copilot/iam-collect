@@ -9,6 +9,7 @@ export const allServices = [
   'organizations',
   's3',
   'secretsmanager',
+  'sns',
   'sso'
 ] as const
 
