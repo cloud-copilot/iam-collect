@@ -1,3 +1,10 @@
+## [0.1.32](https://github.com/cloud-copilot/iam-collect/compare/v0.1.31...v0.1.32) (2025-04-29)
+
+
+### Features
+
+* Add downloading of SQS queue policies ([4731904](https://github.com/cloud-copilot/iam-collect/commit/4731904b489e60a62abd3f262d266fcfaa6d4035))
+
 ## [0.1.31](https://github.com/cloud-copilot/iam-collect/compare/v0.1.30...v0.1.31) (2025-04-28)
 
 
