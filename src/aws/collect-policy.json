@@ -9,6 +9,7 @@
         "dynamodb:GetResourcePolicy",
         "dynamodb:ListTables",
         "dynamodb:ListTagsOfResource",
+        "ec2:DescribeVpcEndpoints",
         "iam:GetAccountAuthorizationDetails",
         "iam:GetOpenIDConnectProvider",
         "iam:GetSAMLProvider",

@@ -57,6 +57,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | iam           | OIDC Providers                    | arn, audiences, thumbprints, url, tags                                                                                 |
 | iam           | SAML Providers                    | arn, metadata document, uuid, private keys, valid until, tags                                                          |
 | dynamodb      | Tables                            | name, arn, region, tags, resource policy                                                                               |
+| ec2           | VPC Endpoints                     | id, name, type, vpc, policy                                                                                            |
 | kms           | Keys                              | id, policy, tags                                                                                                       |
 | lambda        | Functions                         | name, role, tags, policy                                                                                               |
 | s3            | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |
@@ -65,6 +66,6 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | organizations | Accounts                          | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
 | organizations | SCPs, RCPs                        | id, arn, name, description, tags, policy                                                                               |
 | sns           | Topics                            | name, arn, tags, kms key id, policy                                                                                    |
-| sqs           | Queues                            | name, arn, tags, kms key id, policy                                                                                     |
+| sqs           | Queues                            | name, arn, tags, kms key id, policy                                                                                    |
 | sso           | Instances                         | id, arn, name, owner account id, status, tags                                                                          |
 | sso           | Permission Sets                   | name, description, AWS managed policies, customer managed policies, inline policy, permission boundary, accounts, tags |
