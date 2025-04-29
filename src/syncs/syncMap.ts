@@ -9,6 +9,7 @@ import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { SecretSync } from './secretsmanager/secrets.js'
 import { SnsTopicsSync } from './sns/topics.js'
+import { SqsQueueSync } from './sqs/queues.js'
 import { SsoDataSync } from './sso/ssoInstances.js'
 import { Sync } from './sync.js'
 
@@ -23,6 +24,7 @@ const allSyncs = [
   S3GeneralPurposeBucketSync,
   SecretSync,
   SnsTopicsSync,
+  SqsQueueSync,
   SsoDataSync
 ]
 

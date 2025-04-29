@@ -51,7 +51,11 @@ export function getResourceSegments(
   resourceString: string
 ): [string, string] {
   // This is terrible, and I hate it
-  if ((service === 's3' && accountId === '' && region === '') || service === 'sns') {
+  if (
+    (service === 's3' && accountId === '' && region === '') ||
+    service === 'sns' ||
+    service === 'sqs'
+  ) {
     return ['', resourceString]
   }
 
