@@ -3,6 +3,7 @@
  */
 export const allServices = [
   'dynamodb',
+  'ec2',
   'iam',
   'kms',
   'lambda',

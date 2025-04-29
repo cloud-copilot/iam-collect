@@ -110,6 +110,7 @@
   "dependencies": {
     "@aws-sdk/client-account": "^3.758.0",
     "@aws-sdk/client-dynamodb": "^3.788.0",
+    "@aws-sdk/client-ec2": "^3.798.0",
     "@aws-sdk/client-iam": "^3.777.0",
     "@aws-sdk/client-kms": "^3.782.0",
     "@aws-sdk/client-lambda": "^3.782.0",

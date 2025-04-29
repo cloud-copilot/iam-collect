@@ -1,5 +1,6 @@
 import { AwsService } from '../services.js'
 import { DynamoDBTableSync } from './dynamodb/tables.js'
+import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { IdentityProviderSyncs } from './iam/identityProviders.js'
 import { KeySync } from './kms/key.js'
@@ -25,7 +26,8 @@ const allSyncs = [
   SecretSync,
   SnsTopicsSync,
   SqsQueueSync,
-  SsoDataSync
+  SsoDataSync,
+  VpcEndpointsSync
 ]
 
 const syncMap = new Map<AwsService, { regional: Sync[]; global: Sync[] }>()
