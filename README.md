@@ -64,5 +64,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | organizations | Organizational Units              | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
 | organizations | Accounts                          | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
 | organizations | SCPs, RCPs                        | id, arn, name, description, tags, policy                                                                               |
+| sns           | Topics                            | name, arn, tags, kms key id, policy                                                                                    |
+| sqs           | Queues                            | name, arn, tags, kms key id, policy                                                                                     |
 | sso           | Instances                         | id, arn, name, owner account id, status, tags                                                                          |
 | sso           | Permission Sets                   | name, description, AWS managed policies, customer managed policies, inline policy, permission boundary, accounts, tags |
