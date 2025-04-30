@@ -1,3 +1,10 @@
+## [0.1.35](https://github.com/cloud-copilot/iam-collect/compare/v0.1.34...v0.1.35) (2025-04-30)
+
+
+### Features
+
+* Sync ECR repositories and registries ([40a0c38](https://github.com/cloud-copilot/iam-collect/commit/40a0c38e845506df5fc83f626322ab49d1c07713))
+
 ## [0.1.34](https://github.com/cloud-copilot/iam-collect/compare/v0.1.33...v0.1.34) (2025-04-29)
 
 
