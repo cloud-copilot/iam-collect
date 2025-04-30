@@ -57,6 +57,8 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | iam           | OIDC Providers                    | arn, audiences, thumbprints, url, tags                                                                                 |
 | iam           | SAML Providers                    | arn, metadata document, uuid, private keys, valid until, tags                                                          |
 | dynamodb      | Tables                            | name, arn, region, tags, resource policy                                                                               |
+| ecr           | Repositories                      | name, arn, region, tags, resource policy, key id                                                                       |
+| ecr           | Registries                        | policy                                                                                                                 |
 | ec2           | VPC Endpoints                     | id, name, type, vpc, policy                                                                                            |
 | kms           | Keys                              | id, policy, tags                                                                                                       |
 | lambda        | Functions                         | name, role, tags, policy                                                                                               |
