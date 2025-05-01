@@ -2,6 +2,7 @@
  * All Valid AWS Services
  */
 export const allServices = [
+  'apigateway',
   'dynamodb',
   'ec2',
   'ecr',

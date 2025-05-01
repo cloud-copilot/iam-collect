@@ -1,4 +1,5 @@
 import { AwsService } from '../services.js'
+import { RestApisSync } from './apigateway/gateways.js'
 import { DynamoDBTableSync } from './dynamodb/tables.js'
 import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
 import { EcrSyncs } from './ecr/ecrSyncs.js'
@@ -24,6 +25,7 @@ const allSyncs = [
   KeySync,
   LambdaSync,
   OrganizationSync,
+  RestApisSync,
   S3GeneralPurposeBucketSync,
   SecretSync,
   SnsTopicsSync,

@@ -56,6 +56,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | iam           | Customer and AWS Managed Policies | name, path, id, default version, default version doc, tags                                                             |
 | iam           | OIDC Providers                    | arn, audiences, thumbprints, url, tags                                                                                 |
 | iam           | SAML Providers                    | arn, metadata document, uuid, private keys, valid until, tags                                                          |
+| apigateway    | Rest APIs                         | id, name, policy, tags                                                                                                 |
 | dynamodb      | Tables                            | name, arn, region, tags, resource policy                                                                               |
 | ecr           | Repositories                      | name, arn, region, tags, resource policy, key id                                                                       |
 | ecr           | Registries                        | policy                                                                                                                 |

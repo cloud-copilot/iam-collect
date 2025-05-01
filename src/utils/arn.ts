@@ -59,6 +59,10 @@ export function getResourceSegments(
     return ['', resourceString]
   }
 
+  if (resourceString.startsWith('/')) {
+    resourceString = resourceString.slice(1)
+  }
+
   const slashIndex = resourceString.indexOf('/')
   const colonIndex = resourceString.indexOf(':')
 
