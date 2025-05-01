@@ -1,3 +1,10 @@
+## [0.1.39](https://github.com/cloud-copilot/iam-collect/compare/v0.1.38...v0.1.39) (2025-05-01)
+
+
+### Features
+
+* Sync glacier vaults ([3f75514](https://github.com/cloud-copilot/iam-collect/commit/3f755149af33f243be3167c4d180909d342bb473))
+
 ## [0.1.38](https://github.com/cloud-copilot/iam-collect/compare/v0.1.37...v0.1.38) (2025-05-01)
 
 
