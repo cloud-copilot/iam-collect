@@ -7,8 +7,7 @@ import {
   ListBucketsCommand,
   PublicAccessBlockConfiguration,
   S3Client,
-  ServerSideEncryptionConfiguration,
-  ServerSideEncryptionRule
+  ServerSideEncryptionConfiguration
 } from '@aws-sdk/client-s3'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
@@ -16,18 +15,6 @@ import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
-
-interface S3BucketWithData extends Bucket {
-  arn: string
-  tags: Record<string, string> | undefined
-  bpa: PublicAccessBlockConfiguration | undefined
-  policy: any
-  encryption: ServerSideEncryptionRule[] | undefined
-  metadata: {
-    name: string
-    region: string
-  }
-}
 
 export const S3GeneralPurposeBucketSync: Sync = {
   awsService: 's3',
