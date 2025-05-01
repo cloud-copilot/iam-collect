@@ -62,6 +62,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | ecr           | Repositories                      | name, arn, region, tags, resource policy, key id                                                                       |
 | ecr           | Registries                        | policy                                                                                                                 |
 | ec2           | VPC Endpoints                     | id, name, type, vpc, policy                                                                                            |
+| glacier       | Vaults                            | name, arn, region, tags, access policy                                                                                 |
 | kms           | Keys                              | id, policy, tags                                                                                                       |
 | lambda        | Functions                         | name, role, tags, policy                                                                                               |
 | s3            | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |
