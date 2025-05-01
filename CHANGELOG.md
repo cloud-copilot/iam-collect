@@ -1,3 +1,10 @@
+## [0.1.38](https://github.com/cloud-copilot/iam-collect/compare/v0.1.37...v0.1.38) (2025-05-01)
+
+
+### Features
+
+* Sync instance profiles ([08322af](https://github.com/cloud-copilot/iam-collect/commit/08322afc86e269d65e8b15f17a410b8beb6af5c3))
+
 ## [0.1.37](https://github.com/cloud-copilot/iam-collect/compare/v0.1.36...v0.1.37) (2025-05-01)
 
 
