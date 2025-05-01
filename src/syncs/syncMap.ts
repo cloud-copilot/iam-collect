@@ -11,6 +11,7 @@ import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
 import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
+import { GlacierVaultsSync } from './s3/vaults.js'
 import { SecretSync } from './secretsmanager/secrets.js'
 import { SnsTopicsSync } from './sns/topics.js'
 import { SqsQueueSync } from './sqs/queues.js'
@@ -24,6 +25,7 @@ const allSyncs = [
   ...EcrSyncs,
   InstanceProfilesSync,
   ...IdentityProviderSyncs,
+  GlacierVaultsSync,
   KeySync,
   LambdaSync,
   OrganizationSync,
