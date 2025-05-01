@@ -6,6 +6,7 @@
       "Effect": "Allow",
       "Action": [
         "account:ListRegions",
+        "apigateway:GET",
         "dynamodb:GetResourcePolicy",
         "dynamodb:ListTables",
         "dynamodb:ListTagsOfResource",
