@@ -5,6 +5,7 @@ import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
 import { EcrSyncs } from './ecr/ecrSyncs.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { IdentityProviderSyncs } from './iam/identityProviders.js'
+import { InstanceProfilesSync } from './iam/instanceProfiles.js'
 import { KeySync } from './kms/key.js'
 import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
@@ -21,6 +22,7 @@ const allSyncs = [
   AuthorizationDetailsSync,
   DynamoDBTableSync,
   ...EcrSyncs,
+  InstanceProfilesSync,
   ...IdentityProviderSyncs,
   KeySync,
   LambdaSync,

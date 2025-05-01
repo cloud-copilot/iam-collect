@@ -18,6 +18,7 @@
         "iam:GetAccountAuthorizationDetails",
         "iam:GetOpenIDConnectProvider",
         "iam:GetSAMLProvider",
+        "iam:ListInstanceProfiles",
         "iam:ListOpenIDConnectProviders",
         "iam:ListOpenIDConnectProviderTags",
         "iam:ListPolicyTags",
