@@ -7,8 +7,7 @@ import {
   ListBucketsCommand,
   PublicAccessBlockConfiguration,
   S3Client,
-  ServerSideEncryptionConfiguration,
-  ServerSideEncryptionRule
+  ServerSideEncryptionConfiguration
 } from '@aws-sdk/client-s3'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
@@ -17,22 +16,9 @@ import { runAndCatch404 } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
-export interface S3BucketWithData extends Bucket {
-  arn: string
-  tags: Record<string, string> | undefined
-  bpa: PublicAccessBlockConfiguration | undefined
-  policy: any
-  encryption: ServerSideEncryptionRule[] | undefined
-  metadata: {
-    name: string
-    region: string
-  }
-}
-
 export const S3GeneralPurposeBucketSync: Sync = {
   awsService: 's3',
   name: 'generalPurposeBuckets',
-  global: true,
   execute: async (
     accountId: string,
     region: string,
@@ -51,55 +37,39 @@ export const S3GeneralPurposeBucketSync: Sync = {
         inputKey: 'ContinuationToken',
         outputKey: 'ContinuationToken'
       },
-      { MaxBuckets: 1000 }
+      { MaxBuckets: 1000, BucketRegion: region }
     )
 
-    const bucketsByRegion: Record<string, Bucket[]> = {}
-    for (const bucket of allBuckets) {
-      const bucketRegion = bucket.BucketRegion!
-      if (!bucketsByRegion[bucketRegion]) {
-        bucketsByRegion[bucketRegion] = []
-      }
-      bucketsByRegion[bucketRegion].push(bucket)
-    }
+    const augmentedBuckets = await Promise.all(
+      allBuckets.map(async (bucket) => {
+        const [tags, blockPublicAccessConfig, bucketPolicy, encryption] = await Promise.all([
+          getTagsForBucket(s3Client, bucket),
+          getBucketPublicAccessSettings(s3Client, bucket),
+          getBucketPolicy(s3Client, bucket, credentials.accountId),
+          getBucketEncryptionSettings(s3Client, bucket)
+        ])
 
-    const augmentedResponses: S3BucketWithData[] = []
-    for (const bucketRegion of Object.keys(bucketsByRegion)) {
-      const regionClient = AwsClientPool.defaultInstance.client(
-        S3Client,
-        credentials,
-        bucketRegion,
-        endpoint
-      )
-      const regionBuckets = bucketsByRegion[bucketRegion]
-      const augmentedRegionBuckets = await Promise.all(
-        regionBuckets.map(async (bucket) => {
-          const [tags, blockPublicAccessConfig, bucketPolicy, encryption] = await Promise.all([
-            getTagsForBucket(regionClient, bucket),
-            getBucketPublicAccessSettings(regionClient, bucket),
-            getBucketPolicy(regionClient, bucket, credentials.accountId),
-            getBucketEncryptionSettings(regionClient, bucket)
-          ])
-
-          return {
-            arn: `arn:${credentials.partition}:s3:::${bucket.Name}`,
-            tags: tags,
-            bpa: blockPublicAccessConfig,
-            policy: bucketPolicy,
-            encryption: encryption?.Rules,
-            metadata: {
-              name: bucket.Name!,
-              region: bucketRegion
-            }
+        return {
+          arn: `arn:${credentials.partition}:s3:::${bucket.Name}`,
+          tags: tags,
+          bpa: blockPublicAccessConfig,
+          policy: bucketPolicy,
+          encryption: encryption?.Rules,
+          metadata: {
+            name: bucket.Name!,
+            region: region
           }
-        })
-      )
-      augmentedResponses.push(...augmentedRegionBuckets)
-
-      syncData(augmentedResponses, storage, accountId, {
-        service: 's3'
+        }
       })
-    }
+    )
+
+    syncData(augmentedBuckets, storage, accountId, {
+      service: 's3',
+      account: accountId,
+      metadata: {
+        region
+      }
+    })
   }
 }
 
