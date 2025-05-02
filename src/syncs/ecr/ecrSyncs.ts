@@ -42,12 +42,16 @@ export const EcrSyncs: Sync[] = [
           return result.tags
         },
         policy: async (client, repository, account, region, partition) => {
-          const result = await client.send(
-            new GetRepositoryPolicyCommand({
-              repositoryName: repository.repositoryName
-            })
-          )
-          return JSON.parse(result.policyText || '{}')
+          const policy = await runAndCatchError('RepositoryPolicyNotFoundException', async () => {
+            const result = await client.send(
+              new GetRepositoryPolicyCommand({
+                repositoryName: repository.repositoryName
+              })
+            )
+            return JSON.parse(result.policyText || '{}')
+          })
+
+          return policy
         }
       },
       results: (repository) => ({
