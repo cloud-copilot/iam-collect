@@ -1,3 +1,10 @@
+## [0.1.41](https://github.com/cloud-copilot/iam-collect/compare/v0.1.40...v0.1.41) (2025-05-02)
+
+
+### Bug Fixes
+
+* Handle RepositoryPolicyNotFoundException if an ECR repository has no policy ([2e6205e](https://github.com/cloud-copilot/iam-collect/commit/2e6205e9e526f2a31c4b2d6f41337331042ada83))
+
 ## [0.1.40](https://github.com/cloud-copilot/iam-collect/compare/v0.1.39...v0.1.40) (2025-05-01)
 
 ## [0.1.39](https://github.com/cloud-copilot/iam-collect/compare/v0.1.38...v0.1.39) (2025-05-01)
