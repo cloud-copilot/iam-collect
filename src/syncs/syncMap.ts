@@ -9,6 +9,7 @@ import { InstanceProfilesSync } from './iam/instanceProfiles.js'
 import { KeySync } from './kms/key.js'
 import { LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
+import { S3AccessPointsSync } from './s3/accessPoints.js'
 import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { GlacierVaultsSync } from './s3/vaults.js'
@@ -30,6 +31,7 @@ const allSyncs = [
   LambdaSync,
   OrganizationSync,
   RestApisSync,
+  S3AccessPointsSync,
   S3GeneralPurposeBucketSync,
   SecretSync,
   SnsTopicsSync,

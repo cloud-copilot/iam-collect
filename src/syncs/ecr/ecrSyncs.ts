@@ -8,6 +8,7 @@ import {
 } from '@aws-sdk/client-ecr'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatchError } from '../../utils/client-tools.js'
+import { parseIfPresent } from '../../utils/json.js'
 import { Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
@@ -48,7 +49,7 @@ export const EcrSyncs: Sync[] = [
                 repositoryName: repository.repositoryName
               })
             )
-            return JSON.parse(result.policyText || '{}')
+            return parseIfPresent(result.policyText)
           })
 
           return policy

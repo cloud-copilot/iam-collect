@@ -4,6 +4,7 @@ import {
   ListQueueTagsCommand,
   SQSClient
 } from '@aws-sdk/client-sqs'
+import { parseIfPresent } from '../../utils/json.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const SqsQueueSync = createTypedSyncOperation(
@@ -51,7 +52,7 @@ export const SqsQueueSync = createTypedSyncOperation(
         name: queue.name.split('/').pop() || '',
         kmsKey: queue.extraFields.attributes?.KmsMasterKeyId
       },
-      policy: JSON.parse(queue.extraFields.attributes?.Policy || '{}')
+      policy: parseIfPresent(queue.extraFields.attributes?.Policy)
     })
   })
 )
