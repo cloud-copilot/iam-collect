@@ -1,3 +1,10 @@
+## [0.1.43](https://github.com/cloud-copilot/iam-collect/compare/v0.1.42...v0.1.43) (2025-05-04)
+
+
+### Features
+
+* Add support for downloading S3 Access Points ([1aa7b49](https://github.com/cloud-copilot/iam-collect/commit/1aa7b49921eb7a081f0c4fb551c5d5c66d8aaa46))
+
 ## [0.1.42](https://github.com/cloud-copilot/iam-collect/compare/v0.1.41...v0.1.42) (2025-05-04)
 
 ## [0.1.41](https://github.com/cloud-copilot/iam-collect/compare/v0.1.40...v0.1.41) (2025-05-02)
