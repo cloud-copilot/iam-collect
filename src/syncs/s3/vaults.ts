@@ -5,6 +5,7 @@ import {
   ListVaultsCommand
 } from '@aws-sdk/client-glacier'
 import { runAndCatch404 } from '../../utils/client-tools.js'
+import { parseIfPresent } from '../../utils/json.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const GlacierVaultsSync = createTypedSyncOperation(
@@ -36,7 +37,7 @@ export const GlacierVaultsSync = createTypedSyncOperation(
             })
           )
 
-          return JSON.parse(result.policy?.Policy || '{}')
+          return parseIfPresent(result.policy?.Policy)
         })
 
         return policy

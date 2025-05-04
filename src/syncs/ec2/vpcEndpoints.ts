@@ -1,4 +1,5 @@
 import { DescribeVpcEndpointsCommand, EC2Client } from '@aws-sdk/client-ec2'
+import { parseIfPresent } from '../../utils/json.js'
 import { Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
@@ -29,7 +30,7 @@ export const VpcEndpointsSync: Sync = createTypedSyncOperation(
         vpc: resource.VpcId,
         type: resource.VpcEndpointType
       },
-      policy: JSON.parse(resource.PolicyDocument || '{}')
+      policy: parseIfPresent(resource.PolicyDocument)
     })
   })
 )

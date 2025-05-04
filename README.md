@@ -65,6 +65,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | glacier       | Vaults                            | name, arn, region, tags, policy                                                                                        |
 | kms           | Keys                              | id, policy, tags                                                                                                       |
 | lambda        | Functions                         | name, role, tags, policy                                                                                               |
+| s3            | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints         |
 | s3            | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |
 | organizations | Organizations                     | id, arn, root account id, enabled policy types, org structure                                                          |
 | organizations | Organizational Units              | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
