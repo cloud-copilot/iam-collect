@@ -1,3 +1,5 @@
+## [0.1.42](https://github.com/cloud-copilot/iam-collect/compare/v0.1.41...v0.1.42) (2025-05-04)
+
 ## [0.1.41](https://github.com/cloud-copilot/iam-collect/compare/v0.1.40...v0.1.41) (2025-05-02)
 
 
