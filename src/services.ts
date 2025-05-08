@@ -12,6 +12,7 @@ export const allServices = [
   'lambda',
   'organizations',
   's3',
+  's3express',
   's3tables',
   'secretsmanager',
   'sns',

@@ -10,6 +10,7 @@ import {
   syncEnabledForRegion,
   TopLevelConfig
 } from '../config/config.js'
+import { getPartitionDefaults } from '../config/partitionDefaults.js'
 import { createStorageClient } from '../persistence/util.js'
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
@@ -48,27 +49,35 @@ export async function downloadData(
     log.info('Queuing downloads for account', { accountId })
     const authForAccount = getAccountAuthConfig(accountId, configs)
     const credentials = await getCredentials(accountId, authForAccount)
+    const partition = credentials.partition
+    const partitionConfig = getPartitionDefaults(partition)
+    const accountConfigs = [partitionConfig, ...configs]
 
     if (regions.length === 0) {
       regions = await getEnabledRegions(credentials)
     }
 
-    const storage = createStorageClient(storageConfig, credentials.partition)
+    const storage = createStorageClient(storageConfig, partition)
 
     if (services.length === 0) {
       services = allServices as unknown as string[]
     }
     const syncOptions = {}
 
-    const enabledServices = servicesForAccount(accountId, configs, services)
+    const enabledServices = servicesForAccount(accountId, accountConfigs, services)
     for (const service of enabledServices) {
       log.info('Queuing downloads', { service, accountId })
-      const serviceRegions = regionsForService(service, accountId, configs, regions)
+      const serviceRegions = regionsForService(service, accountId, accountConfigs, regions)
 
       //Global syncs for the service
       const globalSyncs = getGlobalSyncsForService(service)
       const globalRegion = serviceRegions.at(0)!
-      const globalConfig = accountServiceRegionConfig(service, accountId, globalRegion, configs)
+      const globalConfig = accountServiceRegionConfig(
+        service,
+        accountId,
+        globalRegion,
+        accountConfigs
+      )
 
       for (const globalSync of globalSyncs) {
         jobs.push({
@@ -100,10 +109,16 @@ export async function downloadData(
         if (regionalSyncs.length === 0) {
           continue
         }
-        const asrConfig = accountServiceRegionConfig(service, accountId, region, configs)
+        const asrConfig = accountServiceRegionConfig(service, accountId, region, accountConfigs)
 
         for (const sync of regionalSyncs) {
-          const includeSync = syncEnabledForRegion(accountId, service, sync.name, configs, region)
+          const includeSync = syncEnabledForRegion(
+            accountId,
+            service,
+            sync.name,
+            accountConfigs,
+            region
+          )
           if (!includeSync) {
             log.debug({ service, accountId, region, syncName: sync.name }, 'Skipping regional sync')
             continue
