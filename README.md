@@ -67,6 +67,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 | lambda        | Functions                         | name, role, tags, policy                                                                                               |
 | s3            | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints         |
 | s3            | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |
+| s3Tables      | Table Buckets                     | name, region, bucket policy, encryption                                                                                |
 | organizations | Organizations                     | id, arn, root account id, enabled policy types, org structure                                                          |
 | organizations | Organizational Units              | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
 | organizations | Accounts                          | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |

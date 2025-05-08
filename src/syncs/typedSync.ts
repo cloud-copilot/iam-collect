@@ -132,15 +132,21 @@ export type ExtraFieldsDefinition<
 >
 
 // Use the return type of the extraFields function
-type ExtraFieldsReturnType<T extends ExtraFieldsDefinition<any, any, any>> = {
+type ExtraFieldsReturnType<
+  C extends ClientConstructor,
+  Cmd extends CommandConstructors,
+  K extends keyof ExtractOutputType<Cmd>,
+  T extends ExtraFieldsDefinition<any, Cmd, K>
+> = {
   [K in keyof T]: PromiseType<ReturnType<T[K]>>
 }
 
 export type ExtendedResourceElementType<
+  C extends ClientConstructor,
   Cmd extends CommandConstructors,
   K extends keyof ExtractOutputType<Cmd>,
   ExtraFieldsFunc extends ExtraFieldsDefinition<any, Cmd, K>
-> = ResourceElementType<Cmd, K> & { extraFields: ExtraFieldsReturnType<ExtraFieldsFunc> }
+> = ResourceElementType<Cmd, K> & { extraFields: ExtraFieldsReturnType<C, Cmd, K, ExtraFieldsFunc> }
 
 export type ResourceSyncType<
   C extends ClientConstructor,
@@ -196,7 +202,7 @@ export type ResourceSyncType<
    * @param resource The resource to get the tags for
    * @returns The tags for the resource, or undefined if there are no tags
    */
-  tags: (resource: ExtendedResourceElementType<Cmd, K, ExtraFields>) => Tags | undefined
+  tags: (resource: ExtendedResourceElementType<C, Cmd, K, ExtraFields>) => Tags | undefined
 
   /**
    * Create the ARN for a resource
@@ -226,7 +232,7 @@ export type ResourceSyncType<
    *
    * @param resource The resource to get the custom fields for, includes extraFields from the `extraFields` function
    */
-  results: (resource: ExtendedResourceElementType<Cmd, K, ExtraFields>) => Record<string, any>
+  results: (resource: ExtendedResourceElementType<C, Cmd, K, ExtraFields>) => Record<string, any>
 }
 
 /**
@@ -237,10 +243,10 @@ export type ResourceSyncType<
  * @returns The ResourceSyncType instance passed in.
  */
 export function createResourceSyncType<
-  C extends ClientConstructor,
-  Cmd extends CommandConstructors,
-  K extends keyof ExtractOutputType<Cmd>,
-  ExtraFieldsFunc extends ExtraFieldsDefinition<C, Cmd, K>
+  const C extends ClientConstructor,
+  const Cmd extends CommandConstructors,
+  const K extends keyof ExtractOutputType<Cmd>,
+  const ExtraFieldsFunc extends ExtraFieldsDefinition<C, Cmd, K>
 >(
   config: ResourceSyncType<C, Cmd, K, ExtraFieldsFunc>
 ): ResourceSyncType<C, Cmd, K, ExtraFieldsFunc> {
@@ -265,7 +271,7 @@ export async function paginateResourceConfig<
   credentials: AwsCredentialIdentityWithMetaData,
   region: string,
   endpoint: string | undefined
-): Promise<ExtendedResourceElementType<Cmd, K, ExtraFieldsFunc>[]> {
+): Promise<ExtendedResourceElementType<C, Cmd, K, ExtraFieldsFunc>[]> {
   const accountId = credentials.accountId
   const partition = credentials.partition
   const client = AwsClientPool.defaultInstance.client(
@@ -330,6 +336,18 @@ export async function paginateResourceConfig<
   return resources
 }
 
+/**
+ * Create a typed sync operation for a given AWS service and resource type.
+ *
+ * Because of obscure typescript issues, the order of the keys in `resourceTypeSync` is important.
+ * This order is known to work:
+ * client, command, key, paginationConfig, arn, extraFields, tags, resourceTypeParts, results
+ *
+ * @param awsService the AWS service to sync
+ * @param name the name of the sync operation
+ * @param resourceTypeSync the resource type sync configuration
+ * @returns The sync operation
+ */
 export function createTypedSyncOperation<
   C extends ClientConstructor,
   Cmd extends CommandConstructors,

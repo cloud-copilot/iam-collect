@@ -5,6 +5,7 @@ import {
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
 import { runAndCatch404 } from '../../utils/client-tools.js'
+import { parseIfPresent } from '../../utils/json.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const LambdaSync = createTypedSyncOperation(
@@ -38,10 +39,7 @@ export const LambdaSync = createTypedSyncOperation(
           const policyResult = await client.send(
             new GetPolicyCommand({ FunctionName: resource.FunctionName })
           )
-          if (policyResult.Policy) {
-            return JSON.parse(policyResult.Policy)
-          }
-          return undefined
+          return parseIfPresent(policyResult.Policy)
         })
       }
     },
