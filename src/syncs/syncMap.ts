@@ -13,6 +13,7 @@ import { S3AccessPointsSync } from './s3/accessPoints.js'
 import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { GlacierVaultsSync } from './s3/vaults.js'
+import { S3TableBucketsSync } from './s3tables/s3TablesSync.js'
 import { SecretSync } from './secretsmanager/secrets.js'
 import { SnsTopicsSync } from './sns/topics.js'
 import { SqsQueueSync } from './sqs/queues.js'
@@ -33,6 +34,7 @@ const allSyncs = [
   RestApisSync,
   S3AccessPointsSync,
   S3GeneralPurposeBucketSync,
+  S3TableBucketsSync,
   SecretSync,
   SnsTopicsSync,
   SqsQueueSync,
@@ -43,7 +45,7 @@ const allSyncs = [
 const syncMap = new Map<AwsService, { regional: Sync[]; global: Sync[] }>()
 
 for (const sync of allSyncs) {
-  const service = sync.awsService
+  const service = lowerCaseService(sync.awsService)
   if (!syncMap.has(service)) {
     syncMap.set(service, {
       regional: [],
@@ -65,7 +67,7 @@ for (const sync of allSyncs) {
  * @returns An array of syncs that are global for the specified service.
  */
 export function getGlobalSyncsForService(service: AwsService): Sync[] {
-  const syncs = syncMap.get(service)
+  const syncs = syncMap.get(lowerCaseService(service))
   if (!syncs) {
     return []
   }
@@ -79,9 +81,19 @@ export function getGlobalSyncsForService(service: AwsService): Sync[] {
  * @returns An array of syncs that are regional for the specified service.
  */
 export function getRegionalSyncsForService(service: AwsService): Sync[] {
-  const syncs = syncMap.get(service)
+  const syncs = syncMap.get(lowerCaseService(service))
   if (!syncs) {
     return []
   }
   return syncs.regional
+}
+
+/**
+ * Convert a service name to lowercase.
+ *
+ * @param service The service name to convert
+ * @returns The lowercase service name
+ */
+function lowerCaseService(service: string): AwsService {
+  return service.toLowerCase() as AwsService
 }
