@@ -34,6 +34,20 @@ const defaultConfig = `
     "path": "./iam-data"
   },
 
+  "serviceConfigs": {
+    "s3": {
+      "syncConfigs": {
+        "multiRegionAccessPoints": {
+          "regions": {
+            // Multi-Region Access Points are only available in us-west-2 in the aws partition
+            // If using a different partition, you can specify the region for that partition here
+            "included": ["us-west-2"]
+          }
+        }
+      }
+    }
+  },
+
   /*
   You can also use S3 storage instead of the default file storage.
   "storage": {

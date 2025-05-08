@@ -4,10 +4,12 @@ import {
   AuthConfig,
   getAccountAuthConfig,
   getDefaultAuthConfig,
+  getStorageConfig,
   regionsForService,
   ResolvedAccountServiceRegionConfig,
   servicesForAccount,
   StorageConfig,
+  syncEnabledForRegion,
   TopLevelConfig
 } from './config.js'
 
@@ -666,5 +668,291 @@ describe('getDefaultAuthConfig', () => {
         pathAndName: 'second-role'
       }
     })
+  })
+})
+
+describe('syncEnabledForRegion', () => {
+  it('should return false if the sync is excluded for the account/service', () => {
+    // Given a sync with an excluded account/service
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                syncConfigs: {
+                  multiRegionAccessPoints: {
+                    regions: {
+                      excluded: ['us-east-1']
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    /// When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-east-1'
+    )
+
+    // Then it should return false
+    expect(result).toBe(false)
+  })
+
+  it('should return false if the sync is excluded for the service', () => {
+    // Given a sync with an excluded service
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              multiRegionAccessPoints: {
+                regions: {
+                  excluded: ['us-east-1']
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-east-1'
+    )
+
+    // Then it should return false
+    expect(result).toBe(false)
+  })
+
+  it('should return true if the sync is included for the account/service', () => {
+    // Given a sync with an included account/service
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                syncConfigs: {
+                  multiRegionAccessPoints: {
+                    regions: {
+                      included: ['us-east-1']
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-east-1'
+    )
+
+    // Then it should return true
+    expect(result).toBe(true)
+  })
+  it('should return true if the sync is included for the service', () => {
+    // Given a sync with an included service
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              multiRegionAccessPoints: {
+                regions: {
+                  included: ['us-east-1']
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-east-1'
+    )
+
+    // Then it should return true
+    expect(result).toBe(true)
+  })
+  it('should return false if the account/service has an include list and the sync is not in it', () => {
+    // Given a sync with an included account/service
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                syncConfigs: {
+                  multiRegionAccessPoints: {
+                    regions: {
+                      included: ['us-east-1']
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-west-1'
+    )
+
+    // Then it should return false
+    expect(result).toBe(false)
+  })
+  it('should return false if the service has an include list and the sync is not in it', () => {
+    // Given a sync with an included service
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              multiRegionAccessPoints: {
+                regions: {
+                  included: ['us-east-1']
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-west-1'
+    )
+
+    // Then it should return false
+    expect(result).toBe(false)
+  })
+  it('should return true if the sync is not explicitly excluded or included', () => {
+    // Given a sync with no exclusions or inclusions
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              multiRegionAccessPoints: {}
+            }
+          }
+        }
+      }
+    ]
+
+    // When syncEnabledForRegion is called
+    const result = syncEnabledForRegion(
+      '123456789012',
+      's3',
+      'multiRegionAccessPoints',
+      configs,
+      'us-west-1'
+    )
+
+    // Then it should return true
+    expect(result).toBe(true)
+  })
+})
+
+describe('getStorageConfig', () => {
+  it('should return the last storage config found', () => {
+    // Given multiple configs with storage details
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: {
+          type: 'file',
+          path: './first-storage'
+        }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: {
+          type: 'file',
+          path: './second-storage'
+        }
+      }
+    ]
+
+    //When getStorageConfig is called
+    const result = getStorageConfig(configs)
+
+    // Then it should return the last storage config
+    expect(result).toEqual({
+      type: 'file',
+      path: './second-storage'
+    })
+  })
+
+  it('should return undefined if no storage config is found', () => {
+    // Given no storage config in the provided configs
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion
+      },
+      {
+        iamCollectVersion: defaultVersion
+      }
+    ]
+
+    // When getStorageConfig is called
+    const result = getStorageConfig(configs)
+
+    // Then it should return undefined
+    expect(result).toBeUndefined()
   })
 })
