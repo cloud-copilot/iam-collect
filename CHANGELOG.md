@@ -1,3 +1,10 @@
+## [0.1.44](https://github.com/cloud-copilot/iam-collect/compare/v0.1.43...v0.1.44) (2025-05-08)
+
+
+### Features
+
+* Sync S3 Table Buckets ([bc0a40f](https://github.com/cloud-copilot/iam-collect/commit/bc0a40f6dccb60c66206673c176180f8c45a7e4b))
+
 ## [0.1.43](https://github.com/cloud-copilot/iam-collect/compare/v0.1.42...v0.1.43) (2025-05-04)
 
 
