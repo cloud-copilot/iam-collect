@@ -14,6 +14,7 @@ import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { S3MultiRegionAccessPointsSync } from './s3/multiRegionAccessPoints.js'
 import { GlacierVaultsSync } from './s3/vaults.js'
+import { S3DirectoryBucketsSync } from './s3express/s3DirectoryBucketsSync.js'
 import { S3TableBucketsSync } from './s3tables/s3TablesSync.js'
 import { SecretSync } from './secretsmanager/secrets.js'
 import { SnsTopicsSync } from './sns/topics.js'
@@ -34,6 +35,7 @@ const allSyncs = [
   OrganizationSync,
   RestApisSync,
   S3AccessPointsSync,
+  S3DirectoryBucketsSync,
   S3GeneralPurposeBucketSync,
   S3MultiRegionAccessPointsSync,
   S3TableBucketsSync,
