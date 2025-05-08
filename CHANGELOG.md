@@ -1,3 +1,10 @@
+## [0.1.46](https://github.com/cloud-copilot/iam-collect/compare/v0.1.45...v0.1.46) (2025-05-08)
+
+
+### Features
+
+* Sync Directory Buckets and partition defaults ([a2d10ab](https://github.com/cloud-copilot/iam-collect/commit/a2d10ab73ff698e2eb9376ca2597f61b2dcaf291))
+
 ## [0.1.45](https://github.com/cloud-copilot/iam-collect/compare/v0.1.44...v0.1.45) (2025-05-08)
 
 
