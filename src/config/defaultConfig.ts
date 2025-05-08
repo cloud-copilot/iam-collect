@@ -40,7 +40,7 @@ const defaultConfig = `
         "multiRegionAccessPoints": {
           "regions": {
             // Multi-Region Access Points are only available in us-west-2 in the aws partition
-            // If using a different partition, you can specify the region for that parition here
+            // If using a different partition, you can specify the region for that partition here
             "included": ["us-west-2"]
           }
         }
