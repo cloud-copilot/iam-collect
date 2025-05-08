@@ -58,6 +58,15 @@ interface BaseConfig {
 interface ServiceConfig extends BaseConfig {
   endpoint?: string
   regionConfigs?: Record<string, Omit<ServiceConfig, 'regionConfigs'>>
+  syncConfigs?: Record<string, SyncConfig>
+}
+
+interface SyncConfig {
+  regions?: {
+    included?: string[]
+    excluded?: string[]
+  }
+  auth?: AuthConfig
 }
 
 interface AccountConfig extends BaseConfig {
@@ -78,17 +87,6 @@ type RegionsForAccountService = string[]
 interface AccountServiceRegionConfig {
   auth: AuthConfig
   endpoint?: string
-}
-
-interface ResolvedAccountConfig {
-  regions?: {
-    included?: string[]
-    excluded?: string[]
-  }
-  services?: {
-    included?: string[]
-    excluded?: string[]
-  }
 }
 
 export interface ResolvedAccountServiceRegionConfig {
@@ -299,4 +297,51 @@ export function getStorageConfig(configs: TopLevelConfig[]): StorageConfig | und
   }
   // Return undefined if no storage config is found
   return undefined
+}
+
+/**
+ * Check if a specific sync is enabled for given region. This checks the specific sync config within the service.
+ *
+ * This should only be used after the sync has been validated to be enabled for the account and service.
+ *
+ * @param accountId the account id to check
+ * @param service the service to check
+ * @param syncName the specific name of the sync to check
+ * @param configs the configs to check
+ * @param region the region being tested
+ * @returns true if the sync is enabled for the region, false otherwise
+ */
+export function syncEnabledForRegion(
+  accountId: string,
+  service: string,
+  syncName: string,
+  configs: TopLevelConfig[],
+  region: string
+): boolean {
+  // go through the configs in reverse order,
+  // If any have the sync enabled return true,
+  // If any have the sync disabled return false
+  // If none are found, return true
+  for (const config of [...configs].reverse()) {
+    const accountServiceConfig =
+      config.accounts?.[accountId]?.serviceConfigs?.[service]?.syncConfigs?.[syncName]
+    if (accountServiceConfig) {
+      if (accountServiceConfig.regions?.excluded?.includes(region)) {
+        return false
+      }
+      if (accountServiceConfig.regions?.included) {
+        return accountServiceConfig.regions.included.includes(region)
+      }
+    }
+    const serviceConfig = config.serviceConfigs?.[service]?.syncConfigs?.[syncName]
+    if (serviceConfig) {
+      if (serviceConfig.regions?.excluded?.includes(region)) {
+        return false
+      }
+      if (serviceConfig.regions?.included) {
+        return serviceConfig.regions.included.includes(region)
+      }
+    }
+  }
+  return true
 }

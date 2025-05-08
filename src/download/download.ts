@@ -7,6 +7,7 @@ import {
   getStorageConfig,
   regionsForService,
   servicesForAccount,
+  syncEnabledForRegion,
   TopLevelConfig
 } from '../config/config.js'
 import { createStorageClient } from '../persistence/util.js'
@@ -87,21 +88,26 @@ export async function downloadData(
               globalConfig.endpoint,
               syncOptions
             )
-            log.debug(logDetails, 'Finished global sync')
+            log.trace(logDetails, 'Finished global sync')
           }
         })
       }
 
+      const regionalSyncs = getRegionalSyncsForService(service)
       //Regional syncs for the service
       for (const region of serviceRegions) {
         log.debug({ service, accountId, region }, 'Queuing regional syncs')
-        const regionalSyncs = getRegionalSyncsForService(service)
         if (regionalSyncs.length === 0) {
           continue
         }
         const asrConfig = accountServiceRegionConfig(service, accountId, region, configs)
 
         for (const sync of regionalSyncs) {
+          const includeSync = syncEnabledForRegion(accountId, service, sync.name, configs, region)
+          if (!includeSync) {
+            log.debug({ service, accountId, region, syncName: sync.name }, 'Skipping regional sync')
+            continue
+          }
           jobs.push({
             properties: { service, accountId, region, sync: sync.name },
             execute: async (context) => {
@@ -109,7 +115,7 @@ export async function downloadData(
                 workerId: context.workerId,
                 ...context.properties
               }
-              log.trace(logDetails, 'Executing regional sync')
+              log.debug(logDetails, 'Executing regional sync')
               const regionalCredentials = await getCredentials(accountId, asrConfig.auth)
 
               await sync.execute(
