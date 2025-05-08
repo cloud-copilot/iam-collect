@@ -1,3 +1,10 @@
+## [0.1.45](https://github.com/cloud-copilot/iam-collect/compare/v0.1.44...v0.1.45) (2025-05-08)
+
+
+### Features
+
+* Sync S3 multi region access points ([46d3cde](https://github.com/cloud-copilot/iam-collect/commit/46d3cde943ce27b5a5f3b6f45dafe548c5273e5c))
+
 ## [0.1.44](https://github.com/cloud-copilot/iam-collect/compare/v0.1.43...v0.1.44) (2025-05-08)
 
 
