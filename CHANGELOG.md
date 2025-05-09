@@ -1,3 +1,10 @@
+## [0.1.47](https://github.com/cloud-copilot/iam-collect/compare/v0.1.46...v0.1.47) (2025-05-09)
+
+
+### Features
+
+* Sync EFS file systems ([b2993a3](https://github.com/cloud-copilot/iam-collect/commit/b2993a30bb8bc6fd175f831bfff02fcdf2e6a871))
+
 ## [0.1.46](https://github.com/cloud-copilot/iam-collect/compare/v0.1.45...v0.1.46) (2025-05-08)
 
 
