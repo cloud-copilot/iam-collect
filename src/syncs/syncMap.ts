@@ -3,6 +3,7 @@ import { RestApisSync } from './apigateway/gateways.js'
 import { DynamoDBTableSync } from './dynamodb/tables.js'
 import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
 import { EcrSyncs } from './ecr/ecrSyncs.js'
+import { ElasticFileSystemsSync } from './efs/fileSystems.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { IdentityProviderSyncs } from './iam/identityProviders.js'
 import { InstanceProfilesSync } from './iam/instanceProfiles.js'
@@ -27,6 +28,7 @@ const allSyncs = [
   AuthorizationDetailsSync,
   DynamoDBTableSync,
   ...EcrSyncs,
+  ElasticFileSystemsSync,
   InstanceProfilesSync,
   ...IdentityProviderSyncs,
   GlacierVaultsSync,
