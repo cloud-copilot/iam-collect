@@ -301,4 +301,37 @@ export interface AwsIamStore {
     organizationId: string,
     policyType: OrganizationPolicyType
   ): Promise<string[]>
+
+  /**
+   * Synchronizes RAM resource information for a given account and region.
+   * Any records not matching the provided ARNs will be deleted.
+   *
+   * @param accountId - The AWS account ID.
+   * @param region - The AWS region, can be undefined or empty for global resources.
+   * @param arns - The list of resource ARNs that should exist on disk.
+   */
+  syncRamResources(accountId: string, region: string | undefined, arns: string[]): Promise<void>
+
+  /**
+   * Saves or overwrites a RAM resource information for the specified ARN.
+   *
+   * @param accountId - The AWS account ID.
+   * @param arn - The ARN of the resource.
+   * @param data - The policy content to save (object or JSON string).
+   */
+  saveRamResource(accountId: string, arn: string, data: any): Promise<void>
+
+  /**
+   * Retrieves a stored RAM resource for the given ARN.
+   *
+   * @param accountId - The AWS account ID.
+   * @param arn - The ARN of the resource.
+   * @param defaultValue - The default value to return if the resource is not found.
+   * @returns The resource data if found, otherwise the default value if provided, otherwise undefined
+   */
+  getRamResource<T, D extends T>(
+    accountId: string,
+    arn: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T>
 }

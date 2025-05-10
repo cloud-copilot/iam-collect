@@ -860,4 +860,163 @@ describe('FileSystemAwsIamStore', () => {
       expect(result).toEqual(expectedPolicies)
     })
   })
+
+  describe('syncRamResources', () => {
+    it('should sync RAM resources for the given account and region', async () => {
+      // Given a specific account ID and region
+      const listSpy = vi.spyOn(mockFsAdapter, 'listDirectory').mockResolvedValue([
+        // Mocking the directories that exist in the filesystem for the given account and region
+        'arn-aws-ram-us-east-1-123456789012-resource1.json',
+        'arn-aws-ram-us-east-1-123456789012-resource2.json'
+      ])
+
+      const deleteSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+      // When syncing RAM resources
+      await store.syncRamResources('123456789012', 'us-east-1', [
+        'arn:aws:ram:us-east-1:123456789012:resource1'
+      ])
+
+      // Then the correct directory path should be used
+      expect(listSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/us-east-1'
+      )
+      expect(deleteSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/us-east-1/arn-aws-ram-us-east-1-123456789012-resource2.json'
+      )
+    })
+    it('should sync RAM resources for the global folder if no region is given', async () => {
+      // Given a specific account ID and region
+      const listSpy = vi.spyOn(mockFsAdapter, 'listDirectory').mockResolvedValue([
+        // Mocking the directories that exist in the filesystem for the given account and region
+        'arn-aws-ram--123456789012-resource1.json',
+        'arn-aws-ram--123456789012-resource2.json'
+      ])
+
+      const deleteSpy = vi.spyOn(mockFsAdapter, 'deleteFile').mockResolvedValue()
+
+      // When syncing RAM resources
+      await store.syncRamResources('123456789012', '', ['arn:aws:ram::123456789012:resource1'])
+
+      // Then the correct directory path should be used
+      expect(listSpy).toHaveBeenCalledWith('/base/folder/aws/aws/accounts/123456789012/ram/global')
+      expect(deleteSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/global/arn-aws-ram--123456789012-resource2.json'
+      )
+    })
+  })
+
+  describe('saveRamResource', () => {
+    it('should save the resource data', async () => {
+      // Given a specific ARN and data
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When the resource data is saved
+      await store.saveRamResource(
+        '123456789012',
+        'arn:aws:ram:us-east-1:123456789012:resource1',
+        data
+      )
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/us-east-1/arn-aws-ram-us-east-1-123456789012-resource1.json'.toLowerCase(),
+        data
+      )
+    })
+
+    it('should save the resource data in global folder if no region exists', async () => {
+      // Given a specific ARN and data
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When the resource data is saved
+      await store.saveRamResource('123456789012', 'arn:aws:ram::123456789012:resource1', data)
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/global/arn-aws-ram--123456789012-resource1.json'.toLowerCase(),
+        data
+      )
+    })
+  })
+
+  describe('getRamResource', () => {
+    it('should get the ram resource data', async () => {
+      // Given a specific ARN and metadata type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getRamResource(
+        '123456789012',
+        'arn:aws:ram:us-east-1:123456789012:resource1'
+      )
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/us-east-1/arn-aws-ram-us-east-1-123456789012-resource1.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should get the ram resource data from the global folder if no region exists', async () => {
+      // Given a specific ARN and metadata type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getRamResource(
+        '123456789012',
+        'arn:aws:ram::123456789012:resource1'
+      )
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/global/arn-aws-ram--123456789012-resource1.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return the default if provided and no value exists', async () => {
+      // Given a specific ARN and metadata type
+      const defaultValue = { defaultValue: true }
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getRamResource(
+        '123456789012',
+        'arn:aws:ram::123456789012:resource1',
+        defaultValue
+      )
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/global/arn-aws-ram--123456789012-resource1.json'
+      )
+      expect(result).toEqual(defaultValue)
+    })
+
+    it('should return undefined if no value exists and no default provided', async () => {
+      // Given a specific ARN and metadata type
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved without a default value
+      const result = await store.getRamResource(
+        '123456789012',
+        'arn:aws:ram::123456789012:resource1'
+      )
+
+      // Then the correct file path should be used and the result should be undefined
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/ram/global/arn-aws-ram--123456789012-resource1.json'
+      )
+      expect(result).toBeUndefined()
+    })
+  })
 })

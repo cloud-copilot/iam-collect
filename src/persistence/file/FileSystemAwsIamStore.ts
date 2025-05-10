@@ -1,4 +1,5 @@
 import { join, sep } from 'path'
+import { splitArnParts } from '../../utils/arn.js'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
 import { FileSystemAdapter } from './FileSystemAdapter.js'
@@ -84,6 +85,36 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   private buildMetadataPath(accountId: string, arn: string, metadataType: string): string {
     const prefix = this.buildResourcePath(accountId, arn)
     return join(prefix, `${metadataType}.json`).toLowerCase()
+  }
+
+  /**
+   * Root RAM folder for a given account.
+   */
+  private ramRootPath(accountId: string): string {
+    return join(this.accountPath(accountId), 'ram')
+  }
+
+  /**
+   * Folder under ramRootPath for a specific region (or 'global').
+   */
+  private ramRegionPath(accountId: string, region: string | undefined): string {
+    // normalize region or use 'global'
+    const rg = region && region.trim() != '' ? region.toLowerCase() : 'global'
+    return join(this.ramRootPath(accountId), rg)
+  }
+
+  /**
+   * File name for a given resource ARN: replace ':' and '/' with '-'
+   */
+  private ramFileNameForArn(arn: string): string {
+    return arn.replace(/[:/]/g, '-').toLowerCase() + '.json'
+  }
+
+  /**
+   * Full path to the RAM policy file for this ARN in region.
+   */
+  private ramPolicyFilePath(accountId: string, region: string | undefined, arn: string): string {
+    return join(this.ramRegionPath(accountId, region), this.ramFileNameForArn(arn))
   }
 
   async saveResourceMetadata(
@@ -317,6 +348,40 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   ): Promise<string[]> {
     const dirPath = this.organizationPoliciesPath(organizationId, policyType)
     return await this.fsAdapter.listDirectory(dirPath)
+  }
+
+  async syncRamResources(
+    accountId: string,
+    region: string | undefined,
+    arns: string[]
+  ): Promise<void> {
+    const dirPath = this.ramRegionPath(accountId, region)
+
+    const files = await this.fsAdapter.listDirectory(dirPath)
+    const keepSet = new Set(arns.map((a) => this.ramFileNameForArn(a)))
+
+    for (const file of files) {
+      if (!keepSet.has(file.toLowerCase())) {
+        await this.fsAdapter.deleteFile(join(dirPath, file))
+      }
+    }
+  }
+
+  async saveRamResource(accountId: string, arn: string, data: any): Promise<void> {
+    const region = splitArnParts(arn).region
+    const filePath = this.ramPolicyFilePath(accountId, region, arn)
+    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+    await this.fsAdapter.writeFile(filePath, content)
+  }
+
+  async getRamResource<T, D extends T>(
+    accountId: string,
+    arn: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T> {
+    const region = splitArnParts(arn).region
+    const filePath = this.ramPolicyFilePath(accountId, region, arn)
+    return this.contentOrDefault(filePath, defaultValue)
   }
 
   /**
