@@ -12,6 +12,7 @@ export const allServices = [
   'kms',
   'lambda',
   'organizations',
+  'ram',
   's3',
   's3express',
   's3tables',
