@@ -44,6 +44,8 @@
         "organizations:ListPoliciesForTarget",
         "organizations:ListRoots",
         "organizations:ListTagsForResource",
+        "ram:GetResourcePolicies",
+        "ram:ListResources",
         "s3:GetAccessPointPolicy",
         "s3:GetAccessPoint",
         "s3:GetAccountPublicAccessBlock",
