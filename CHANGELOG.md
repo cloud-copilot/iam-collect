@@ -1,3 +1,10 @@
+## [0.1.49](https://github.com/cloud-copilot/iam-collect/compare/v0.1.48...v0.1.49) (2025-05-10)
+
+
+### Features
+
+* Sync RAM shared resources with policies ([ba50ef5](https://github.com/cloud-copilot/iam-collect/commit/ba50ef57027a9329eee844f3fd9c317c8f7f6be7))
+
 ## [0.1.48](https://github.com/cloud-copilot/iam-collect/compare/v0.1.47...v0.1.48) (2025-05-10)
 
 ## [0.1.47](https://github.com/cloud-copilot/iam-collect/compare/v0.1.46...v0.1.47) (2025-05-09)
