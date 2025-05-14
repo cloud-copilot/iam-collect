@@ -52,8 +52,20 @@ const defaultConfig = `
   */
 
   /*
-  Optionally specify separate configurations for accounts:
+  Optionally specify a list of accounts to include. If empty, it will use the current credentials.
+  Can be overridden by the --accounts flag.
+
   "accounts": {
+    "included": [
+      "111111111111",
+      "222222222222"
+    ]
+  },
+  */
+
+  /*
+  Optionally specify separate configurations for accounts:
+  "accountConfigs": {
     "123456789012": {
       //Optional auth for the account:
       "auth": {
