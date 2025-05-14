@@ -10,6 +10,7 @@ import { AwsCredentialIdentity } from '@aws-sdk/types'
 export async function getTokenInfo(credentials: AwsCredentialIdentity): Promise<{
   accountId: string
   partition: string
+  arn: string
 }> {
   const stsClient = new STSClient({ credentials })
   const command = new GetCallerIdentityCommand({})
@@ -20,6 +21,7 @@ export async function getTokenInfo(credentials: AwsCredentialIdentity): Promise<
   const partition = arnParts[1]
   return {
     accountId: accountId!,
-    partition: partition
+    partition: partition,
+    arn: arn!
   }
 }

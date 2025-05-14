@@ -959,7 +959,7 @@ describe('getStorageConfig', () => {
 })
 
 describe('getConfiguredAccounts', () => {
-  it.todo('should return the default accounts', () => {
+  it('should return the default accounts', () => {
     // Given multiple configs with account details
     const configs: TopLevelConfig[] = [
       {
