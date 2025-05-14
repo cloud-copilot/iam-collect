@@ -1,3 +1,10 @@
+## [0.1.53](https://github.com/cloud-copilot/iam-collect/compare/v0.1.52...v0.1.53) (2025-05-14)
+
+
+### Features
+
+* Add indexing of accounts to organizations, buckets to accounts, vpcs to vpc endpoints, api gateway arns to accounts. Add indexing to the download process. Add a new command to manually update indexes. ([cb6bb4c](https://github.com/cloud-copilot/iam-collect/commit/cb6bb4cd7e93bf8b5573f21b5d938e5e3b15ea42))
+
 ## [0.1.52](https://github.com/cloud-copilot/iam-collect/compare/v0.1.51...v0.1.52) (2025-05-11)
 
 ## [0.1.51](https://github.com/cloud-copilot/iam-collect/compare/v0.1.50...v0.1.51) (2025-05-10)
