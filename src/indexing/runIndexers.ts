@@ -87,6 +87,8 @@ export async function runIndexJobs(
     throw new Error(`Failed to index some data. See logs for details.`)
   }
   log.info('Finished indexing', { jobs: jobs.length })
+
+  return indexResults
 }
 
 /**
@@ -113,6 +115,7 @@ async function runIndexers(
       await indexer.updateCache(cache.data, job.accountId, job.regions, storage)
     }
     saved = await indexer.saveCache(storage, cache.data, cache.lockId)
+    saveAttempts++
   }
   if (!saved) {
     throw new Error(`Failed to save indexer ${indexer.name} after ${saveAttempts} attempts`)
