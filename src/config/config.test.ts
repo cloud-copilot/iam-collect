@@ -3,6 +3,7 @@ import {
   accountServiceRegionConfig,
   AuthConfig,
   getAccountAuthConfig,
+  getConfiguredAccounts,
   getDefaultAuthConfig,
   getStorageConfig,
   regionsForService,
@@ -63,7 +64,7 @@ const servicesForAccountTests: {
         services: {
           included: ['s3']
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             services: {
               included: ['sns']
@@ -83,7 +84,7 @@ const servicesForAccountTests: {
         services: {
           excluded: ['s3']
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             services: {
               excluded: ['sns']
@@ -103,7 +104,7 @@ const servicesForAccountTests: {
         services: {
           excluded: ['s3']
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             services: {
               included: ['s3']
@@ -233,7 +234,7 @@ const getAccountAuthConfigTests: {
             pathAndName: 'my-role'
           }
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             auth: {
               role: {
@@ -258,7 +259,7 @@ const getAccountAuthConfigTests: {
       {
         iamCollectVersion: defaultVersion,
         storage: defaultStorage,
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             auth: {
               profile: 'my-account-profile',
@@ -405,7 +406,7 @@ const accountServiceRegionConfigTests: {
             }
           }
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             auth: {
               profile: 'account-profile'
@@ -446,7 +447,7 @@ const accountServiceRegionConfigTests: {
             }
           }
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             serviceConfigs: {
               s3: {
@@ -491,7 +492,7 @@ const accountServiceRegionConfigTests: {
             }
           }
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             serviceConfigs: {
               s3: {
@@ -537,7 +538,7 @@ const accountServiceRegionConfigTests: {
             }
           }
         },
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             auth: {
               profile: 'account-profile'
@@ -678,7 +679,7 @@ describe('syncEnabledForRegion', () => {
       {
         iamCollectVersion: defaultVersion,
         storage: defaultStorage,
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             serviceConfigs: {
               s3: {
@@ -748,7 +749,7 @@ describe('syncEnabledForRegion', () => {
       {
         iamCollectVersion: defaultVersion,
         storage: defaultStorage,
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             serviceConfigs: {
               s3: {
@@ -816,7 +817,7 @@ describe('syncEnabledForRegion', () => {
       {
         iamCollectVersion: defaultVersion,
         storage: defaultStorage,
-        accounts: {
+        accountConfigs: {
           '123456789012': {
             serviceConfigs: {
               s3: {
@@ -954,5 +955,71 @@ describe('getStorageConfig', () => {
 
     // Then it should return undefined
     expect(result).toBeUndefined()
+  })
+})
+
+describe('getConfiguredAccounts', () => {
+  it.todo('should return the default accounts', () => {
+    // Given multiple configs with account details
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: { included: ['123456789012', '987654321098'] }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: { included: ['111111111111'] }
+      }
+    ]
+
+    // When getDefaultAccounts is called
+    const result = getConfiguredAccounts(configs)
+
+    // Then it should return the default accounts
+    expect(result).toEqual(['111111111111'])
+  })
+
+  it('should return the default accounts of the last config that has it', () => {
+    // Given multiple configs with account details
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: { included: ['123456789012', '987654321098'] }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accounts: { included: ['111111111111'] }
+      }
+    ]
+
+    // When getDefaultAccounts is called
+    const result = getConfiguredAccounts(configs)
+
+    // Then it should return the default accounts
+    expect(result).toEqual(['111111111111'])
+  })
+
+  it('should return an empty array if no config has accounts', () => {
+    // Given multiple configs without account details
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      }
+    ]
+
+    // When getDefaultAccounts is called
+    const result = getConfiguredAccounts(configs)
+
+    // Then it should return an empty array
+    expect(result).toEqual([])
   })
 })

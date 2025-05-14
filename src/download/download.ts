@@ -3,6 +3,7 @@ import { getNewInitialCredentials } from '../aws/coreAuth.js'
 import {
   accountServiceRegionConfig,
   getAccountAuthConfig,
+  getConfiguredAccounts,
   getDefaultAuthConfig,
   getStorageConfig,
   regionsForService,
@@ -34,11 +35,16 @@ export async function downloadData(
   }
 
   if (accountIds.length === 0) {
-    const defaultAuthConfig = getDefaultAuthConfig(configs)
-    const defaultCredentials = await getNewInitialCredentials(defaultAuthConfig, {
-      phase: 'discover account'
-    })
-    accountIds = [defaultCredentials.accountId]
+    const configuredAccounts = getConfiguredAccounts(configs)
+    if (configuredAccounts.length > 0) {
+      accountIds = configuredAccounts
+    } else {
+      const defaultAuthConfig = getDefaultAuthConfig(configs)
+      const defaultCredentials = await getNewInitialCredentials(defaultAuthConfig, {
+        phase: 'discover account'
+      })
+      accountIds = [defaultCredentials.accountId]
+    }
   }
 
   const storageConfig = getStorageConfig(configs)

@@ -78,7 +78,10 @@ export interface TopLevelConfig extends BaseConfig {
   iamCollectVersion: string
   storage?: StorageConfig
   auth?: AuthConfig
-  accounts?: Record<string, AccountConfig>
+  accounts?: {
+    included?: string[]
+  }
+  accountConfigs?: Record<string, AccountConfig>
   serviceConfigs?: Record<string, ServiceConfig>
 }
 
@@ -129,7 +132,7 @@ export function servicesForAccount(
       services = services.filter((service) => !config.services!.excluded?.includes(service))
     }
 
-    const accountServices = config.accounts?.[account]?.services
+    const accountServices = config.accountConfigs?.[account]?.services
     if (accountServices) {
       if (accountServices.included) {
         for (const service of accountServices.included) {
@@ -172,7 +175,7 @@ export function regionsForService(
       }
     }
 
-    const accountConfig = config.accounts?.[account]
+    const accountConfig = config.accountConfigs?.[account]
     if (accountConfig) {
       if (accountConfig.regions?.included) {
         regions = accountConfig.regions.included
@@ -232,7 +235,7 @@ export function accountServiceRegionConfig(
       }
     }
 
-    const accountConfig = config.accounts?.[accountId]
+    const accountConfig = config.accountConfigs?.[accountId]
     if (accountConfig) {
       if (accountConfig.auth) {
         result.auth = accountConfig.auth
@@ -279,7 +282,7 @@ export function getAccountAuthConfig(
     if (config.auth) {
       result = config.auth
     }
-    const accountConfig = config.accounts?.[accountId]
+    const accountConfig = config.accountConfigs?.[accountId]
     if (accountConfig?.auth) {
       result = { ...(result || {}), ...accountConfig.auth }
     }
@@ -324,7 +327,7 @@ export function syncEnabledForRegion(
   // If none are found, return true
   for (const config of [...configs].reverse()) {
     const accountServiceConfig =
-      config.accounts?.[accountId]?.serviceConfigs?.[service]?.syncConfigs?.[syncName]
+      config.accountConfigs?.[accountId]?.serviceConfigs?.[service]?.syncConfigs?.[syncName]
     if (accountServiceConfig) {
       if (accountServiceConfig.regions?.excluded?.includes(region)) {
         return false
@@ -344,4 +347,20 @@ export function syncEnabledForRegion(
     }
   }
   return true
+}
+
+/**
+ * Get the default accounts from the provided configs.
+ *
+ * @param configs the configs to search for the default accounts
+ * @returns the default accounts, or an empty array if none found
+ */
+export function getConfiguredAccounts(configs: TopLevelConfig[]): string[] {
+  const reverseConfigs = [...configs].reverse()
+  for (const config of reverseConfigs) {
+    if (config.accounts?.included) {
+      return config.accounts.included
+    }
+  }
+  return []
 }
