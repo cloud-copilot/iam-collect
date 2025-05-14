@@ -1019,4 +1019,225 @@ describe('FileSystemAwsIamStore', () => {
       expect(result).toBeUndefined()
     })
   })
+
+  describe('findResourceMetadata', () => {
+    it('should pass the service', async () => {
+      // Given a specific account ID and options
+      const expectedResources = [{ id: 'a' }, { id: 'b' }]
+      const findMetadataSpy = vi
+        .spyOn(mockFsAdapter, 'findWithPattern')
+        .mockResolvedValue(expectedResources.map((item) => JSON.stringify(item)))
+
+      // When listing resources
+      const result = await store.findResourceMetadata('123456789012', {
+        service: 's3'
+      })
+
+      // Then the correct directory path should be used and the result should match
+      expect(findMetadataSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012',
+        ['s3', '*'],
+        'metadata.json'
+      )
+      expect(result).toEqual(expectedResources)
+    })
+
+    it('should pass the region if present', async () => {
+      // Given a specific account ID and options
+      const expectedResources = [{ id: 'a' }, { id: 'b' }]
+      const findMetadataSpy = vi
+        .spyOn(mockFsAdapter, 'findWithPattern')
+        .mockResolvedValue(expectedResources.map((item) => JSON.stringify(item)))
+
+      // When listing resources
+      const result = await store.findResourceMetadata('123456789012', {
+        service: 's3',
+        region: 'us-east-1'
+      })
+
+      // Then the correct directory path should be used and the result should match
+      expect(findMetadataSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012',
+        ['s3', 'us-east-1', '*'],
+        'metadata.json'
+      )
+      expect(result).toEqual(expectedResources)
+    })
+
+    it('should pass the resource type if present', async () => {
+      // Given a specific account ID and options
+      const expectedResources = [{ id: 'a' }, { id: 'b' }]
+      const findMetadataSpy = vi
+        .spyOn(mockFsAdapter, 'findWithPattern')
+        .mockResolvedValue(expectedResources.map((item) => JSON.stringify(item)))
+
+      // When listing resources
+      const result = await store.findResourceMetadata('123456789012', {
+        service: 's3',
+        region: '*',
+        resourceType: 'bucket'
+      })
+
+      // Then the correct directory path should be used and the result should match
+      expect(findMetadataSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012',
+        ['s3', '*', 'bucket', '*'],
+        'metadata.json'
+      )
+      expect(result).toEqual(expectedResources)
+    })
+  })
+
+  describe('getOrganizationMetadata', () => {
+    it('should return the data', async () => {
+      // Given a specific organization ID and metadata type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved
+      const result = await store.getOrganizationMetadata('o-12345', 'organization-config')
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/organization-config.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return the data if present and a default provided', async () => {
+      // Given a specific organization ID and metadata type
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFile')
+        .mockResolvedValue(JSON.stringify(expectedData))
+
+      // When metadata is retrieved with a default value
+      const result = await store.getOrganizationMetadata('o-12345', 'organization-config', {
+        defaultValue: true
+      })
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/organization-config.json'
+      )
+      expect(result).toEqual(expectedData)
+    })
+
+    it('should return the default if no data and default provided', async () => {
+      // Given a specific organization ID and metadata type
+      const defaultValue = { defaultValue: true }
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getOrganizationMetadata(
+        'o-12345',
+        'organization-config',
+        defaultValue
+      )
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/organization-config.json'
+      )
+      expect(result).toEqual(defaultValue)
+    })
+
+    it('should return undefined if no data and no default', async () => {
+      // Given a specific organization ID and metadata type
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFile').mockResolvedValue(undefined)
+
+      // When metadata is retrieved without a default value
+      const result = await store.getOrganizationMetadata('o-12345', 'organization-config')
+
+      // Then the correct file path should be used and the result should be undefined
+      expect(readFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/organization-config.json'
+      )
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('listAccountIds', () => {
+    it('should list the accounts', async () => {
+      // Given a specific organization ID
+      const expectedAccounts = ['123456789012', '987654321098']
+      const listDirectoriesSpy = vi
+        .spyOn(mockFsAdapter, 'listDirectory')
+        .mockResolvedValue(expectedAccounts)
+
+      // When listing accounts
+      const result = await store.listAccountIds()
+
+      // Then the correct file path should be used and the result should match
+      expect(listDirectoriesSpy).toHaveBeenCalledWith('/base/folder/aws/aws/accounts')
+      expect(result).toEqual(expectedAccounts)
+    })
+  })
+
+  describe('getIndex', () => {
+    it('should return the data', async () => {
+      // Given a specific index name
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFileWithHash')
+        .mockResolvedValue({ data: JSON.stringify(expectedData), hash: '39djd93' })
+
+      // When metadata is retrieved
+      const result = await store.getIndex('index', {})
+
+      // Then the correct file path should be used and the data should match
+      expect(readFileSpy).toHaveBeenCalledWith('/base/folder/aws/aws/indexes/index.json')
+      expect(result).toEqual({ data: expectedData, lockId: '39djd93' })
+    })
+
+    it('should return the data if present and a default provided', async () => {
+      // Given a specific index name
+      const expectedData = { Version: '2012-10-17', Statement: [] }
+      const readFileSpy = vi
+        .spyOn(mockFsAdapter, 'readFileWithHash')
+        .mockResolvedValue({ data: JSON.stringify(expectedData), hash: '39djd93' })
+
+      // When metadata is retrieved with a default value
+      const result = await store.getIndex('my-index', { defaultValue: true })
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith('/base/folder/aws/aws/indexes/my-index.json')
+      expect(result).toEqual({ data: expectedData, lockId: '39djd93' })
+    })
+
+    it('should return the default if no data and default provided', async () => {
+      // Given a specific index name
+      const defaultValue = { defaultValue: true }
+      const readFileSpy = vi.spyOn(mockFsAdapter, 'readFileWithHash').mockResolvedValue(undefined)
+
+      // When metadata is retrieved with a default value
+      const result = await store.getIndex('my-index', defaultValue)
+
+      // Then the correct file path should be used and the result should match the default value
+      expect(readFileSpy).toHaveBeenCalledWith('/base/folder/aws/aws/indexes/my-index.json')
+      expect(result).toEqual({ data: defaultValue, lockId: '' })
+    })
+  })
+
+  describe('saveIndex', () => {
+    it('should save the contents', async () => {
+      // Given a specific account ID and metadata type
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi
+        .spyOn(mockFsAdapter, 'writeWithOptimisticLock')
+        .mockResolvedValue(true)
+
+      // When metadata is saved
+      await store.saveIndex('index', data, '39djd93')
+
+      // Then the correct file path should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/indexes/index.json',
+        JSON.stringify(data),
+        '39djd93'
+      )
+    })
+  })
 })

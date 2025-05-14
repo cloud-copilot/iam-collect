@@ -1,4 +1,4 @@
-import { AwsService } from '../services.js'
+import { AwsService, lowerCaseService } from '../services.js'
 import { RestApisSync } from './apigateway/gateways.js'
 import { DynamoDBTableSync } from './dynamodb/tables.js'
 import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
@@ -94,14 +94,4 @@ export function getRegionalSyncsForService(service: AwsService): Sync[] {
     return []
   }
   return syncs.regional
-}
-
-/**
- * Convert a service name to lowercase.
- *
- * @param service The service name to convert
- * @returns The lowercase service name
- */
-function lowerCaseService(service: string): AwsService {
-  return service.toLowerCase() as AwsService
 }

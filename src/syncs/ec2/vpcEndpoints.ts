@@ -14,6 +14,9 @@ export const VpcEndpointsSync: Sync = createTypedSyncOperation(
       inputKey: 'NextToken',
       outputKey: 'NextToken'
     },
+    arguments: (accountId, region) => ({
+      Filters: [{ Name: 'vpc-endpoint-state', Values: ['available'] }]
+    }),
     arn: (resource, region, accountId, partition) => {
       return `arn:${partition}:ec2:${region}:${accountId}:vpc-endpoint/${resource.VpcEndpointId}`
     },
@@ -23,14 +26,33 @@ export const VpcEndpointsSync: Sync = createTypedSyncOperation(
       account,
       region
     }),
+    extraFields: {
+      vpcArn: async (client, resource, accountId, region, partition) => {
+        return vpcArn(accountId, region, partition, resource.VpcId!)
+      }
+    },
     tags: (resource) => resource.Tags,
     results: (resource) => ({
       metadata: {
         id: resource.VpcEndpointId,
-        vpc: resource.VpcId,
-        type: resource.VpcEndpointType
+        vpc: resource.extraFields.vpcArn,
+        type: resource.VpcEndpointType,
+        serviceName: resource.ServiceName
       },
       policy: parseIfPresent(resource.PolicyDocument)
     })
   })
 )
+
+/**
+ * Make a VPC ARN from the account ID, region, partition, and VPC ID.
+ *
+ * @param accountId
+ * @param region
+ * @param partition
+ * @param vpcId
+ * @returns
+ */
+function vpcArn(accountId: string, region: string, partition: string, vpcId: string): string {
+  return `arn:${partition}:ec2:${region}:${accountId}:vpc/${vpcId}`
+}

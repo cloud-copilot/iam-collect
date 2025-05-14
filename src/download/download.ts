@@ -11,20 +11,23 @@ import {
   TopLevelConfig
 } from '../config/config.js'
 import { getPartitionDefaults } from '../config/partitionDefaults.js'
+import { getIndexersForService } from '../indexing/indexMap.js'
+import { IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
+import { Job, runJobs } from '../jobs/jobQueue.js'
+import { defaultConcurrency } from '../jobs/util.js'
 import { createStorageClient } from '../persistence/util.js'
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
 import { getGlobalSyncsForService, getRegionalSyncsForService } from '../syncs/syncMap.js'
 import { log } from '../utils/log.js'
-import { Job, runJobs } from './jobQueue.js'
-import { defaultConcurrency } from './util.js'
 
 export async function downloadData(
   configs: TopLevelConfig[],
   accountIds: string[],
   regions: string[],
   services: string[],
-  concurrency: number | undefined
+  concurrency: number | undefined,
+  skipIndex: boolean
 ): Promise<void> {
   if (concurrency === undefined || concurrency <= 0) {
     concurrency = defaultConcurrency()
@@ -44,6 +47,7 @@ export async function downloadData(
   }
 
   const jobs: Job[] = []
+  const indexJobs: IndexJob[] = []
 
   for (const accountId of accountIds) {
     log.info('Queuing downloads for account', { accountId })
@@ -58,7 +62,6 @@ export async function downloadData(
     }
 
     const storage = createStorageClient(storageConfig, partition)
-
     if (services.length === 0) {
       services = allServices as unknown as string[]
     }
@@ -146,6 +149,16 @@ export async function downloadData(
           })
         }
       }
+
+      const indexers = getIndexersForService(service)
+      for (const indexer of indexers) {
+        indexJobs.push({
+          indexer,
+          partition,
+          accountId,
+          regions: serviceRegions
+        })
+      }
     }
   }
 
@@ -153,11 +166,18 @@ export async function downloadData(
   const results = await runJobs(jobs, concurrency)
   const failedJobs = results.filter((r) => r.status === 'rejected')
   if (failedJobs.length > 0) {
-    log.error('Some jobs failed', { failedJobs: failedJobs.length })
+    log.error('Some downloads failed', { failedJobs: failedJobs.length })
     for (const failedJob of failedJobs) {
-      log.error('Job failed', failedJob.reason, failedJob.properties)
+      log.error('Download failed', failedJob.reason, failedJob.properties)
     }
-    throw new Error(`Failed to download download some data. See logs for details.`)
+    throw new Error(`Failed to download some data. See logs for details.`)
   }
   log.info('Finished downloads', { jobs: jobs.length })
+
+  if (skipIndex) {
+    log.info('Skipping indexing')
+    return
+  }
+
+  await runIndexJobs(indexJobs, storageConfig, concurrency)
 }

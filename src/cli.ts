@@ -6,6 +6,8 @@ import { createDefaultConfiguration } from './config/createConfigFile.js'
 import { defaultConfigExists } from './config/defaultConfig.js'
 import { iamCollectVersion } from './config/packageVersion.js'
 import { downloadData } from './download/download.js'
+import { index } from './index/index.js'
+import { AwsService } from './services.js'
 import { LogLevels, setLogLevel } from './utils/log.js'
 
 const main = async () => {
@@ -18,7 +20,7 @@ const main = async () => {
         options: {}
       },
       download: {
-        description: 'Download IAM data',
+        description: 'Download IAM data and update indexes',
         options: {
           configFiles: {
             type: 'string',
@@ -44,6 +46,47 @@ const main = async () => {
             type: 'number',
             description:
               'The maximum number of concurrent downloads to allow. Defaults based on your system CPUs',
+            values: 'single'
+          },
+          noIndex: {
+            type: 'boolean',
+            description: 'Skip refreshing the indexes after downloading',
+            character: 'n'
+          }
+        }
+      },
+      index: {
+        description: 'Refresh the IAM data indexes',
+        options: {
+          configFiles: {
+            type: 'string',
+            description: 'The configuration files to use',
+            values: 'multiple'
+          },
+          partition: {
+            type: 'string',
+            description: 'The partition to refresh index data for. Defaults to aws',
+            values: 'single'
+          },
+          accounts: {
+            type: 'string',
+            description: 'The account IDs to refresh index data for',
+            values: 'multiple'
+          },
+          regions: {
+            type: 'string',
+            description: 'The regions to refresh index data for',
+            values: 'multiple'
+          },
+          services: {
+            type: 'string',
+            description: 'The services to refresh index data for',
+            values: 'multiple'
+          },
+          concurrency: {
+            type: 'number',
+            description:
+              'The maximum number of concurrent indexers to run. Defaults based on your system CPUs',
             values: 'single'
           }
         }
@@ -85,6 +128,19 @@ const main = async () => {
       cli.args.accounts,
       cli.args.regions,
       cli.args.services,
+      cli.args.concurrency,
+      cli.args.noIndex
+    )
+  } else if (cli.subcommand === 'index') {
+    const defaultConfig = './iam-collect.jsonc'
+    const configFiles = cli.args.configFiles?.length > 0 ? cli.args.configFiles : [defaultConfig]
+    const configs = loadConfigFiles(configFiles)
+    await index(
+      configs,
+      cli.args.partition || 'aws',
+      cli.args.accounts,
+      cli.args.regions,
+      cli.args.services as AwsService[],
       cli.args.concurrency
     )
   }
