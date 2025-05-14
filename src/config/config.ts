@@ -25,6 +25,41 @@ export interface AuthConfig {
   }
 }
 
+export interface RootAuthConfig extends AuthConfig {
+  /**
+   * An optional initial Role to assume in the first phase of the authentication process before
+   * assuming any roles in the target accounts.
+   */
+  initialRole?: (
+    | {
+        /**
+         * Specify the ARN OR the path and name of the role to assume.
+         *
+         * Use arn if you want to always assume a role in a specific account.
+         */
+        arn: string
+      }
+    | {
+        /**
+         * Specify the path and name OR the ARN of the role to assume.
+         *
+         * Use pathAndName if you want to assume a role in the same account as your default credentials.
+         */
+        pathAndName: string
+      }
+  ) & {
+    /**
+     * Optional, the external id to use when assuming the role.
+     */
+    externalId?: string
+
+    /**
+     * Optional, the session name to use when assuming the role.
+     */
+    sessionName?: string
+  }
+}
+
 export interface FileSystemStorageConfig {
   type: 'file'
   path: string
@@ -77,7 +112,7 @@ export interface TopLevelConfig extends BaseConfig {
   name?: string
   iamCollectVersion: string
   storage?: StorageConfig
-  auth?: AuthConfig
+  auth?: RootAuthConfig
   accounts?: {
     included?: string[]
   }
@@ -106,7 +141,7 @@ export interface ResolvedAccountServiceRegionConfig {
  * @param configs the configs to search for the default auth config
  * @returns the default auth config, or an empty object if none found
  */
-export function getDefaultAuthConfig(configs: TopLevelConfig[]): AuthConfig {
+export function getDefaultAuthConfig(configs: TopLevelConfig[]): RootAuthConfig {
   // Return the last config with an auth config, or an empty object if none found
   for (let i = configs.length - 1; i >= 0; i--) {
     const configAuth = configs[i].auth

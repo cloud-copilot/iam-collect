@@ -145,4 +145,144 @@ describe('getNewCredentials', () => {
       }
     })
   })
+
+  it('should assume the initial role first if the role is provided in the auth config', async () => {
+    //Given a config with an initial role and a role to assume
+    const accountId = '999999999999'
+    const authConfig = {
+      initialRole: {
+        pathAndName: 'collect/collectRole',
+        externalId: 'test-initial-external-id',
+        sessionName: 'test-initial-session'
+      },
+      role: {
+        pathAndName: 'test-role',
+        externalId: 'test-external-id',
+        sessionName: 'test-session'
+      }
+    }
+
+    // And the base credentials are valid
+    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(
+      vi.fn().mockResolvedValue({
+        accessKeyId: 'baseAccess'
+      })
+    )
+    // And the base credentials are for a different account Id
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '555555555555' })
+
+    // And the role can be assumed
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
+      vi.fn().mockResolvedValue({
+        accessKeyId: 'initialRoleAccess'
+      })
+    )
+
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
+      vi.fn().mockResolvedValue({
+        accessKeyId: 'accountRoleAccess'
+      })
+    )
+
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '999999999999' })
+
+    // When getNewCredentials is called
+    const credentials = await getNewCredentials(accountId, authConfig)
+
+    // Then it should assume the account credentials in the account
+    expect(credentials.accessKeyId).toEqual('accountRoleAccess')
+
+    // And it should have called fromTemporaryCredentials with the correct parameters
+    expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(1, {
+      masterCredentials: {
+        accessKeyId: 'baseAccess'
+      },
+      params: {
+        ExternalId: 'test-initial-external-id',
+        RoleArn: 'arn:aws:iam::555555555555:role/collect/collectRole',
+        RoleSessionName: 'test-initial-session'
+      }
+    })
+
+    expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(2, {
+      masterCredentials: expect.objectContaining({
+        accessKeyId: 'initialRoleAccess'
+      }),
+      params: {
+        ExternalId: 'test-external-id',
+        RoleArn: 'arn:aws:iam::999999999999:role/test-role',
+        RoleSessionName: 'test-session'
+      }
+    })
+  })
+
+  it('should assume the initial role first if the role is provided in the auth config using an arn', async () => {
+    //Given a config with an initial role and a role to assume
+    const accountId = '999999999999'
+    const authConfig = {
+      initialRole: {
+        arn: 'arn:aws:iam::555555555555:role/hard/codedRole',
+        externalId: 'test-initial-external-id',
+        sessionName: 'test-initial-session'
+      },
+      role: {
+        pathAndName: 'test-role',
+        externalId: 'test-external-id',
+        sessionName: 'test-session'
+      }
+    }
+
+    // And the base credentials are valid
+    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(
+      vi.fn().mockResolvedValue({
+        accessKeyId: 'baseAccess'
+      })
+    )
+    // And the base credentials are for a different account Id
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '555555555555' })
+
+    // And the role can be assumed
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
+      vi.fn().mockResolvedValue({
+        accessKeyId: 'initialRoleAccess'
+      })
+    )
+
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
+      vi.fn().mockResolvedValue({
+        accessKeyId: 'accountRoleAccess'
+      })
+    )
+
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '999999999999' })
+
+    // When getNewCredentials is called
+    const credentials = await getNewCredentials(accountId, authConfig)
+
+    // Then it should assume the account credentials in the account
+    expect(credentials.accessKeyId).toEqual('accountRoleAccess')
+
+    // And it should have called fromTemporaryCredentials with the correct parameters
+    expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(1, {
+      masterCredentials: {
+        accessKeyId: 'baseAccess'
+      },
+      params: {
+        ExternalId: 'test-initial-external-id',
+        RoleArn: 'arn:aws:iam::555555555555:role/hard/codedRole',
+        RoleSessionName: 'test-initial-session'
+      }
+    })
+
+    expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(2, {
+      masterCredentials: expect.objectContaining({
+        accessKeyId: 'initialRoleAccess'
+      }),
+      params: {
+        ExternalId: 'test-external-id',
+        RoleArn: 'arn:aws:iam::999999999999:role/test-role',
+        RoleSessionName: 'test-session'
+      }
+    })
+  })
 })
