@@ -70,8 +70,12 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     ).toLowerCase()
   }
 
+  private accountsPath(): string {
+    return join(this.baseFolder, 'accounts')
+  }
+
   private accountPath(accountId: string): string {
-    return join(this.baseFolder, 'accounts', accountId).toLowerCase()
+    return join(this.accountsPath(), accountId).toLowerCase()
   }
 
   private accountMetadataPath(accountId: string, metadataType: string): string {
@@ -115,6 +119,25 @@ export class FileSystemAwsIamStore implements AwsIamStore {
    */
   private ramPolicyFilePath(accountId: string, region: string | undefined, arn: string): string {
     return join(this.ramRegionPath(accountId, region), this.ramFileNameForArn(arn))
+  }
+
+  /**
+   * Get the path to the indexes directory.
+   *
+   * @returns The path to the indexes directory.
+   */
+  private indexesPath(): string {
+    return join(this.baseFolder, 'indexes')
+  }
+
+  /**
+   * The path to the index file for a given index name.
+   *
+   * @param indexName the name of the index
+   * @returns The path to the index file.
+   */
+  private indexPath(indexName: string): string {
+    return join(this.indexesPath(), `${indexName}.json`).toLowerCase()
   }
 
   async saveResourceMetadata(
@@ -166,6 +189,23 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   async listResources(accountId: string, options: ResourceTypeParts): Promise<string[]> {
     const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, sep)
     return await this.fsAdapter.listDirectory(dirPath)
+  }
+
+  async findResourceMetadata<T>(accountId: string, options: ResourceTypeParts): Promise<T[]> {
+    let searchBase = this.accountPath(accountId)
+
+    const pathParts = [options.service]
+    if (options.region) {
+      pathParts.push(options.region)
+    }
+    if (options.resourceType) {
+      pathParts.push(options.resourceType)
+    }
+    pathParts.push('*')
+
+    const strings = await this.fsAdapter.findWithPattern(searchBase, pathParts, 'metadata.json')
+
+    return strings.map((s) => JSON.parse(s))
   }
 
   async syncResourceList(
@@ -230,6 +270,15 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     defaultValue?: D
   ): Promise<D extends undefined ? T | undefined : T> {
     const filePath = this.accountMetadataPath(accountId, metadataType)
+    return this.contentOrDefault(filePath, defaultValue)
+  }
+
+  async getOrganizationMetadata<T, D extends T>(
+    organizationId: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T> {
+    const filePath = this.organizationMetadataPath(organizationId, metadataType)
     return this.contentOrDefault(filePath, defaultValue)
   }
 
@@ -382,6 +431,26 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     const region = splitArnParts(arn).region
     const filePath = this.ramPolicyFilePath(accountId, region, arn)
     return this.contentOrDefault(filePath, defaultValue)
+  }
+
+  async listAccountIds(): Promise<string[]> {
+    return this.fsAdapter.listDirectory(this.accountsPath())
+  }
+
+  async getIndex<T>(indexName: string, defaultValue: T): Promise<{ data: T; lockId: string }> {
+    const filePath = this.indexPath(indexName)
+    const contents = await this.fsAdapter.readFileWithHash(filePath)
+
+    if (contents) {
+      return { data: JSON.parse(contents.data), lockId: contents.hash }
+    }
+
+    return { data: defaultValue, lockId: '' }
+  }
+
+  async saveIndex(indexName: string, data: any, lockId: string): Promise<boolean> {
+    const filePath = this.indexPath(indexName)
+    return this.fsAdapter.writeWithOptimisticLock(filePath, JSON.stringify(data, null, 2), lockId)
   }
 
   /**

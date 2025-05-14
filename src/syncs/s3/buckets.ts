@@ -49,15 +49,18 @@ export const S3GeneralPurposeBucketSync: Sync = {
           getBucketEncryptionSettings(s3Client, bucket)
         ])
 
+        const arn = `arn:${credentials.partition}:s3:::${bucket.Name}`
+
         return {
-          arn: `arn:${credentials.partition}:s3:::${bucket.Name}`,
+          arn,
           tags: tags,
           bpa: blockPublicAccessConfig,
           policy: bucketPolicy,
           encryption: encryption?.Rules,
           metadata: {
             name: bucket.Name!,
-            region: region
+            region: region,
+            arn
           }
         }
       })

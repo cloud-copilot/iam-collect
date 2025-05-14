@@ -111,6 +111,11 @@ export interface AwsIamStore {
   listResources(accountId: string, options: ResourceTypeParts): Promise<string[]>
 
   /**
+   * Find all metadata for resource that meet a given set of criteria.
+   */
+  findResourceMetadata<T>(accountId: string, options: ResourceTypeParts): Promise<T[]>
+
+  /**
    * Synchronizes the list of stored resources with the provided list.
    * This method can be used to remove resources that no longer exist in the account.
    *
@@ -150,6 +155,19 @@ export interface AwsIamStore {
    */
   getAccountMetadata<T, D extends T>(
     accountId: string,
+    metadataType: string,
+    defaultValue?: D
+  ): Promise<D extends undefined ? T | undefined : T>
+
+  /**
+   * Get metadata for an AWS Organization
+   *
+   * @param organizationId the AWS organization ID
+   * @param metadataType the type of metadata to retrieve (e.g., "metadata")
+   * @param defaultValue the default value to return if the metadata is not found
+   */
+  getOrganizationMetadata<T, D extends T>(
+    organizationId: string,
     metadataType: string,
     defaultValue?: D
   ): Promise<D extends undefined ? T | undefined : T>
@@ -334,4 +352,28 @@ export interface AwsIamStore {
     arn: string,
     defaultValue?: D
   ): Promise<D extends undefined ? T | undefined : T>
+
+  /**
+   * List the account IDs that have directories in the store
+   */
+  listAccountIds(): Promise<string[]>
+
+  /**
+   * Get an index for a given index name.
+   *
+   * @param indexName the name of the index to retrieve
+   * @param defaultValue the default value to return if the index is not found
+   * @return the index data and lock ID
+   */
+  getIndex<T>(indexName: string, defaultValue: T): Promise<{ data: T; lockId: string }>
+
+  /**
+   * Save an index with an optimistic locking check
+   *
+   * @param indexName the name of the index to save
+   * @param data the index data to save
+   * @param lockId the lock ID to use for optimistic locking
+   * @return true if the index was saved successfully, false if there was an optimistic locking failure
+   */
+  saveIndex<T>(indexName: string, data: T, lockId: string): Promise<boolean>
 }

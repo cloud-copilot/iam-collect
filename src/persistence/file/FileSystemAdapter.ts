@@ -1,12 +1,34 @@
+import { createHash } from 'crypto'
 import { access, mkdir, readdir, readFile, rm, unlink, writeFile } from 'fs/promises'
-import { dirname } from 'path'
+import { dirname, join } from 'path'
+import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 
-export class FileSystemAdapter {
+export class FileSystemAdapter implements PathBasedPersistenceAdapter {
   async writeFile(filePath: string, data: string | Buffer): Promise<void> {
     // Ensure the directory exists
     const dir = dirname(filePath)
     await mkdir(dir, { recursive: true })
     await writeFile(filePath, data)
+  }
+
+  /**
+   * Write the contents of a file. If the file already exists, it will be overwritten if the
+   * lock ID matches the current hash of the file.
+   *
+   * @param filePath The path to the file to write
+   * @param data The data to write to the file
+   */
+  async writeWithOptimisticLock(
+    filePath: string,
+    data: string | Buffer,
+    lockId: string
+  ): Promise<boolean> {
+    const currentData = await this.readFileWithHash(filePath)
+    if (currentData && currentData.hash !== lockId) {
+      return false
+    }
+    await this.writeFile(filePath, data)
+    return true
   }
 
   /**
@@ -23,6 +45,27 @@ export class FileSystemAdapter {
       return undefined
     }
     return await readFile(filePath, { encoding: 'utf8' })
+  }
+
+  /**
+   * Read the contents of a file and compute its SHA-256 hash. If the file does not exist, return undefined.
+   *
+   * @param filePath The path to the file to read
+   * @returns An object containing the contents of the file as a string and its SHA-256 hash as a hex string, or undefined if the file does not exist.
+   */
+  async readFileWithHash(filePath: string): Promise<{ data: string; hash: string } | undefined> {
+    const contents = await this.readFile(filePath)
+    if (!contents) {
+      return undefined
+    }
+
+    const hash = createHash('sha256')
+    hash.update(contents)
+
+    return {
+      data: contents,
+      hash: hash.digest('hex')
+    }
   }
 
   async deleteFile(filePath: string): Promise<void> {
@@ -69,5 +112,43 @@ export class FileSystemAdapter {
       }
       throw err
     }
+  }
+
+  /**
+   * Find files based on a pattern of directories and a filename. The pattern can include wildcards (*) to match any directory.
+   *
+   * @param baseDir the base directory to start searching from
+   * @param pathParts the parts of the path to search for, where '*' can be used as a wildcard
+   * @param filename the name of the file to search for
+   * @returns an array of strings representing the paths to the files that match the pattern and filename
+   */
+  async findWithPattern(baseDir: string, pathParts: string[], filename: string): Promise<string[]> {
+    let baseDirs = [baseDir]
+    for (const part of pathParts) {
+      if (part == '*') {
+        const subDirs = []
+        for (const dir of baseDirs) {
+          const entries = await this.listDirectory(dir)
+          for (const entry of entries) {
+            if (entry !== filename) {
+              subDirs.push(join(dir, entry))
+            }
+          }
+        }
+        baseDirs = subDirs
+      } else {
+        baseDirs = baseDirs.map((dir) => join(dir, part))
+      }
+    }
+
+    const results: string[] = []
+    for (const dir of baseDirs) {
+      const data = await this.readFile(join(dir, filename))
+      if (data) {
+        results.push(data)
+      }
+    }
+
+    return results
   }
 }

@@ -73,12 +73,14 @@ export const OrganizationSync: Sync = {
 
     const organization = await getOrganizationDetails(organizationClient)
     if (!organization) {
+      await saveOrgForAccount(storage, accountId, undefined)
       return
     }
     const organizationId = organization.Id!
 
     const root = await getOrganizationRoot(organizationClient)
     if (!root) {
+      await saveOrgForAccount(storage, accountId, undefined)
       return
     }
 
@@ -243,6 +245,7 @@ export const OrganizationSync: Sync = {
 
     // Sync organization resource policy
     await syncOrganizationResourcePolicy(organizationClient, storage, organizationId)
+    await saveOrgForAccount(storage, accountId, organizationId)
   }
 }
 
@@ -564,5 +567,24 @@ async function getOrganizationResourcePolicy(
       return undefined
     }
     throw error
+  }
+}
+
+/**
+ * Save the organization ID for an account if it is not already saved.
+ *
+ * @param storage the AwsIamStore to use for persistence
+ * @param accountId the ID of the account to save the organization ID for
+ * @param organizationId the ID of the organization to save
+ */
+async function saveOrgForAccount(
+  storage: AwsIamStore,
+  accountId: string,
+  organizationId: string | undefined
+): Promise<void> {
+  if (organizationId) {
+    await storage.saveAccountMetadata(accountId, 'organization', { organizationId })
+  } else {
+    await storage.saveAccountMetadata(accountId, 'organization', undefined)
   }
 }
