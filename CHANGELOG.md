@@ -1,3 +1,10 @@
+## [0.1.55](https://github.com/cloud-copilot/iam-collect/compare/v0.1.54...v0.1.55) (2025-05-14)
+
+
+### Features
+
+* Allow assuming a role to get default credentials before authenticating to specific accounts. ([5c9be8b](https://github.com/cloud-copilot/iam-collect/commit/5c9be8bf8e8a5018e9d066f1f9e1c45c004d5174))
+
 ## [0.1.54](https://github.com/cloud-copilot/iam-collect/compare/v0.1.53...v0.1.54) (2025-05-14)
 
 ## [0.1.53](https://github.com/cloud-copilot/iam-collect/compare/v0.1.52...v0.1.53) (2025-05-14)
