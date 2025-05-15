@@ -20,7 +20,7 @@ You can configure the file storage backend by specifying the `type` as `file` an
 
 Configure S3 storage by specifying the `type` as `s3` and providing the bucket name. You can also specify the region, an s3 endpoint, and a prefix.
 
-By default the S3 storage will use the default configured credentials (or your default credential chain if none is configured). If you want to customize this you can specify an `auth` block, this will have the standard fields of an auth block as described in the [Authentication](./Authentication.md) documentation. You can also specify an `account` if the role to assume is in a different account.
+By default the S3 storage will use the default configured credentials (or your default credential chain if none is configured). If you want to customize this you can specify an `auth` block, this will have the standard fields of a root `auth` block as described in the [Authentication](./Authentication.md) documentation.
 
 ### Example S3 Storage Configuration with Default Credentials
 
@@ -43,8 +43,11 @@ By default the S3 storage will use the default configured credentials (or your d
 ### Example S3 Storage Configuration with Custom Credentials
 
 ```jsonc
-"storage": {
+  "storage": {
+    //This is how you specify the storage type
     "type": "s3",
+
+    //The name of your bucket
     "bucket": "my-bucket",
 
     //An optional prefix
@@ -61,12 +64,13 @@ By default the S3 storage will use the default configured credentials (or your d
       // Optional, if you have a specific profile configured that you would like to use.
       "profile": "my-profile",
 
-      // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role.
-      "role": {
-        // Required if using a role, the path and name of the role to assume.
-        "pathAndName": "role-name",
-        // Which account to assume the role in for connecting to S3 for storage.
-        "account": "123456789012",
+      // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role. If a role is not specified, the default credentials will be used from the environment or the profile specified.
+      "initialRole": {
+        // **Specify either `arn` or `pathAndName`, NOT both.**
+        // Use ARN to jump to a role in any account
+        "arn": "arn:aws:iam::123456789012:role/iam-collect-role",
+        // Use pathAndName if to go to assume a role in the same account as your profile or default credentials.
+        "pathAndName": "IAMCollect",
 
         // Optional, the session name to use when assuming the role.
         "sessionName": "session-name",
