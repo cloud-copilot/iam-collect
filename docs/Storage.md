@@ -16,7 +16,7 @@ You can configure the file storage backend by specifying the `type` as `file` an
   }
 ```
 
-## Configuring S3 Storage (Not Yet Implemented)
+## Configuring S3 Storage
 
 Configure S3 storage by specifying the `type` as `s3` and providing the bucket name. You can also specify the region, an s3 endpoint, and a prefix.
 
@@ -26,7 +26,9 @@ By default the S3 storage will use the default configured credentials (or your d
 
 ```jsonc
   "storage": {
+    // This is how you specify the storage type
     "type": "s3",
+    //The name of your bucket
     "bucket": "my-bucket",
 
     //An optional prefix
