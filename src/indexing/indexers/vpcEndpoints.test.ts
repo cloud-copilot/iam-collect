@@ -27,6 +27,7 @@ describe('VpcEndpointIndexer', () => {
       const storage = new FileSystemAwsIamStore(
         'mockStore',
         'aws',
+        '/',
         new InMemoryPathBasedPersistenceAdapter()
       )
 
@@ -98,6 +99,7 @@ describe('VpcEndpointIndexer', () => {
       const storage = new FileSystemAwsIamStore(
         'mockStore',
         'aws',
+        '/',
         new InMemoryPathBasedPersistenceAdapter()
       )
 

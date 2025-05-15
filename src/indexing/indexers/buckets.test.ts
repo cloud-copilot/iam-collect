@@ -18,6 +18,7 @@ describe('S3BucketIndexer', () => {
       const storage = new FileSystemAwsIamStore(
         'mockStore',
         'aws',
+        '/',
         new InMemoryPathBasedPersistenceAdapter()
       )
 
@@ -58,6 +59,7 @@ describe('S3BucketIndexer', () => {
       const storage = new FileSystemAwsIamStore(
         'mockStore',
         'aws',
+        '/',
         new InMemoryPathBasedPersistenceAdapter()
       )
 
