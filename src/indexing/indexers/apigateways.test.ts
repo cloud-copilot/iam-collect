@@ -20,6 +20,7 @@ describe('ApiGatewayIndexer', () => {
       const storage = new FileSystemAwsIamStore(
         'mockStore',
         'aws',
+        '/',
         new InMemoryPathBasedPersistenceAdapter()
       )
       ;[
@@ -59,6 +60,7 @@ describe('ApiGatewayIndexer', () => {
       const storage = new FileSystemAwsIamStore(
         'mockStore',
         'aws',
+        '/',
         new InMemoryPathBasedPersistenceAdapter()
       )
       ;[

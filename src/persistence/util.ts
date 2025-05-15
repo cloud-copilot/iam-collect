@@ -1,7 +1,9 @@
+import { sep } from 'path'
 import { StorageConfig } from '../config/config.js'
 import { splitArnParts } from '../utils/arn.js'
 import { AwsIamStore } from './AwsIamStore.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
+import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
 
 /**
  * Create a storage client based on the provided storage configuration and partition.
@@ -12,9 +14,15 @@ import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
  */
 export function createStorageClient(storageConfig: StorageConfig, partition: string): AwsIamStore {
   if (storageConfig.type === 'file') {
-    return new FileSystemAwsIamStore(storageConfig.path, partition)
+    return new FileSystemAwsIamStore(storageConfig.path, partition, sep)
+  } else if (storageConfig.type === 's3') {
+    const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig)
+    return new FileSystemAwsIamStore(storageConfig.prefix || '', partition, '/', persistenceAdapter)
   }
-  throw new Error(`Unsupported storage type: ${storageConfig.type}. Supported types are: file.`)
+
+  throw new Error(
+    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file.`
+  )
 }
 
 /**

@@ -11,7 +11,7 @@ describe('FileSystemAwsIamStore', () => {
 
   beforeEach(() => {
     mockFsAdapter = new FileSystemAdapter() as unknown as FileSystemAdapter
-    store = new FileSystemAwsIamStore('/base/folder', 'aws', mockFsAdapter)
+    store = new FileSystemAwsIamStore('/base/folder', 'aws', '/', mockFsAdapter)
   })
 
   describe('saveResourceMetadata', () => {

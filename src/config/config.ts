@@ -71,9 +71,7 @@ export interface S3StorageConfig {
   prefix?: string
   region: string
   endpoint?: string
-  auth?: AuthConfig & {
-    accountId: string
-  }
+  auth?: RootAuthConfig
 }
 
 export type StorageConfig = FileSystemStorageConfig | S3StorageConfig

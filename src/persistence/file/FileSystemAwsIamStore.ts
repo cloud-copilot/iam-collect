@@ -1,4 +1,4 @@
-import { join, sep } from 'path'
+import { join } from 'path'
 import { splitArnParts } from '../../utils/arn.js'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
@@ -10,6 +10,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   constructor(
     private readonly baseFolder: string,
     private readonly partition: string,
+    private readonly separator: string,
     fsAdapter?: FileSystemAdapter
   ) {
     this.baseFolder = join(baseFolder, 'aws', partition)
@@ -83,7 +84,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   }
 
   private buildResourcePath(accountId: string, arn: string): string {
-    return resourcePrefix(this.accountPath(accountId), arn, sep).toLowerCase()
+    return resourcePrefix(this.accountPath(accountId), arn, this.separator).toLowerCase()
   }
 
   private buildMetadataPath(accountId: string, arn: string, metadataType: string): string {
@@ -187,7 +188,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   }
 
   async listResources(accountId: string, options: ResourceTypeParts): Promise<string[]> {
-    const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, sep)
+    const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, this.separator)
     return await this.fsAdapter.listDirectory(dirPath)
   }
 
@@ -213,7 +214,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     options: ResourceTypeParts,
     desiredResources: string[]
   ): Promise<void> {
-    const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, sep)
+    const dirPath = resourceTypePrefix(this.accountPath(accountId), { ...options }, this.separator)
     const existingSubDirs = (await this.fsAdapter.listDirectory(dirPath)).map((subDir) =>
       join(dirPath, subDir)
     )
