@@ -44,7 +44,7 @@ By default the S3 storage will use the default configured credentials (or your d
 
 ```jsonc
   "storage": {
-    //This is how you specify the storage type
+    // This is how you specify the storage type
     "type": "s3",
 
     //The name of your bucket
