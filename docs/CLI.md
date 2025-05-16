@@ -1,13 +1,17 @@
 # CLI
 
-CLI Help can be accessed with `iam-collect --help` or `iam-collect <subcommand> --help`.
+CLI help can be accessed with `iam-collect --help` or `iam-collect <subcommand> --help`.
 
 All subcommands and `--` arguments support partial matching as long as the input matches one and only one subcommand/argument. For example:
 
 - `iam-collect d` is equivalent to `iam-collect download`
 - `iam-collect d --acc 123456789012` is equivalent to `iam-collect download --accounts 123456789012`
 
-All arguments that accept a list of values (e.g., `--accounts`, `--regions`, `--services`) are space separated.
+All arguments that accept a list of values (e.g., `--accounts`, `--regions`, `--services`) are space separated. For example:
+
+```bash
+iam-collect download --accounts 123456789012 987654321098
+```
 
 ## Commands
 

@@ -22,4 +22,4 @@ The default configuration file is `iam-collect.jsonc` in the current directory y
 
 You can use the `--config-files` option to specify a configuration file or multiple configuration files. The files will be merged together, with the last file taking precedence in case of conflicts.
 
-Take a look at the [authorization](Authorization.md), [filtering](Filtering.md), and [storage](Storage.md) docs for more information on how to customize behavior using the configuration file.
+Take a look at the [authentication](Authentication.md), [filtering](Filtering.md), and [storage](Storage.md) docs for more information on how to customize behavior using the configuration file.

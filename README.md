@@ -16,12 +16,12 @@ Get every possible policy in any set of AWS accounts. This is built to run out o
 8. [Indexing](docs/Indexing.md)
 9. [CLI](docs/CLI.md)
 10. [History](docs/History.md)
-11. [Supported Services and Data Downloaded](#supported-services-and-data-downloaded)
+11. [Supported Services and Data](#supported-services-and-data)
 
 ## iam-collect Tenets
 
 1. _Centralized_ Store [all your data](#supported-services-and-data-downloaded) across all partitions, organizations, accounts, and regions in one place. This is a single source of truth for all your IAM data.
-2. _Easy_ A few commands and you can get started and everything should just work. If resources no longer exist, data is cleaned up automatically
+2. _Easy_ A few commands and you can get started and everything should just work. If resources no longer exist, data is cleaned up automatically.
 3. _Configurable_ Store your data on [disk or in S3](docs/Storage.md). You can configure exactly what [accounts, regions, and services](docs/Filtering.md) you want to collect data for; and [customize auth](docs/Authentication.md) for each.
 
 ## Introduction
@@ -70,8 +70,6 @@ npm install -g @cloud-copilot/iam-collect
 
 ### Initialize
 
-First you need to initialize the configuration file. This will create a commented iam-collect.jsonc file with comments for the different elements.
-
 ```bash
 iam-collect init
 ```
@@ -84,7 +82,7 @@ This will create a file called `iam-collect.jsonc` in the current directory with
 iam-collect download
 ```
 
-This will download the IAM data from the current account to the `./iam-data` directory. You can change the output directory by modifying the `path` property in the `storage` configuration. See the [storage docs](docs/Storage.md) for more details.
+This will download the IAM data from the current account to the `./iam-data` directory. You can change the output directory by modifying the `storage.path` property in the configuration. See the [storage docs](docs/Storage.md) for more details.
 
 ### Enjoy
 
@@ -92,7 +90,7 @@ This will download the IAM data from the current account to the `./iam-data` dir
 ls -R ./iam-data
 ```
 
-This will show you your data that was downloaded. See the [storage docs](docs/Storage.md#StorageLayoutExplained) for more details on the layout of the data.
+This will show you your data that was downloaded. See the [storage docs](docs/Storage.md#storage-layout-explained) for more details on the layout of the data.
 
 ## Additional Docs
 
@@ -104,7 +102,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 - [CLI](docs/CLI.md) - Details on the CLI commands and options.
 - [History](docs/History.md) - How to track history of changes.
 
-## Supported Services and Data Downloaded
+## Supported Services and Data
 
 | Service           | Resource Type                     | Data Downloaded                                                                                                        |
 | ----------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
