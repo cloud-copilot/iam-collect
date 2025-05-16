@@ -6,26 +6,6 @@ export interface AuthConfig {
    */
   profile?: string
 
-  // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role.
-  role?: {
-    /**
-     * The path and name of the role to assume. Required if using a role.
-     */
-    pathAndName: string
-
-    /**
-     * Optional, the external id to use when assuming the role.
-     */
-    externalId?: string
-
-    /**
-     * Optional, the session name to use when assuming the role.
-     */
-    sessionName?: string
-  }
-}
-
-export interface RootAuthConfig extends AuthConfig {
   /**
    * An optional initial Role to assume in the first phase of the authentication process before
    * assuming any roles in the target accounts.
@@ -58,6 +38,32 @@ export interface RootAuthConfig extends AuthConfig {
      */
     sessionName?: string
   }
+
+  // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role.
+  role?: {
+    /**
+     * The path and name of the role to assume. Required if using a role.
+     */
+    pathAndName: string
+
+    /**
+     * Optional, the external id to use when assuming the role.
+     */
+    externalId?: string
+
+    /**
+     * Optional, the session name to use when assuming the role.
+     */
+    sessionName?: string
+  }
+}
+
+/**
+ * An AuthConfig that is completely optional for all fields.
+ * This is used to allow for partial auth configs in the account/service/region configs.
+ */
+export interface OptionalAuthConfig extends Omit<AuthConfig, 'role'> {
+  role?: Partial<AuthConfig['role']>
 }
 
 export interface FileSystemStorageConfig {
@@ -71,7 +77,7 @@ export interface S3StorageConfig {
   prefix?: string
   region: string
   endpoint?: string
-  auth?: RootAuthConfig
+  auth?: AuthConfig
 }
 
 export type StorageConfig = FileSystemStorageConfig | S3StorageConfig
@@ -88,10 +94,11 @@ interface BaseConfig {
   auth?: AuthConfig
 }
 
-interface ServiceConfig extends BaseConfig {
+interface ServiceConfig extends Omit<BaseConfig, 'auth'> {
   endpoint?: string
   regionConfigs?: Record<string, Omit<ServiceConfig, 'regionConfigs'>>
   syncConfigs?: Record<string, SyncConfig>
+  auth?: OptionalAuthConfig
 }
 
 interface SyncConfig {
@@ -102,15 +109,16 @@ interface SyncConfig {
   auth?: AuthConfig
 }
 
-interface AccountConfig extends BaseConfig {
+interface AccountConfig extends Omit<BaseConfig, 'auth'> {
   serviceConfigs?: Record<string, ServiceConfig>
+  auth?: OptionalAuthConfig
 }
 
 export interface TopLevelConfig extends BaseConfig {
   name?: string
   iamCollectVersion: string
   storage?: StorageConfig
-  auth?: RootAuthConfig
+  auth?: AuthConfig
   accounts?: {
     included?: string[]
   }
@@ -121,7 +129,7 @@ export interface TopLevelConfig extends BaseConfig {
 type ServicesForAccount = AwsService[]
 type RegionsForAccountService = string[]
 interface AccountServiceRegionConfig {
-  auth: AuthConfig
+  auth?: AuthConfig
   endpoint?: string
 }
 
@@ -139,7 +147,7 @@ export interface ResolvedAccountServiceRegionConfig {
  * @param configs the configs to search for the default auth config
  * @returns the default auth config, or an empty object if none found
  */
-export function getDefaultAuthConfig(configs: TopLevelConfig[]): RootAuthConfig {
+export function getDefaultAuthConfig(configs: TopLevelConfig[]): AuthConfig {
   // Return the last config with an auth config, or an empty object if none found
   for (let i = configs.length - 1; i >= 0; i--) {
     const configAuth = configs[i].auth
@@ -158,24 +166,24 @@ export function servicesForAccount(
   let services = allServices
   for (const config of configs) {
     if (config.services?.included) {
-      services = config.services.included
+      services = intersection(allServices, config.services.included)
     }
 
     if (config.services?.excluded) {
-      services = services.filter((service) => !config.services!.excluded?.includes(service))
+      services = difference(services, config.services.excluded)
     }
 
     const accountServices = config.accountConfigs?.[account]?.services
     if (accountServices) {
       if (accountServices.included) {
         for (const service of accountServices.included) {
-          if (!services.includes(service)) {
+          if (!services.includes(service) && allServices.includes(service)) {
             services.push(service)
           }
         }
       }
       if (accountServices.excluded) {
-        services = services.filter((service) => !accountServices.excluded?.includes(service))
+        services = difference(services, accountServices.excluded)
       }
     }
   }
@@ -183,6 +191,15 @@ export function servicesForAccount(
   return services as ServicesForAccount
 }
 
+/**
+ * Get the regions for a specific service and account.
+ *
+ * @param service the service to get the regions for
+ * @param account the account to get the regions for
+ * @param configs the configs to search
+ * @param allRegions the list of all regions to filter from
+ * @returns the regions for the service and account
+ */
 export function regionsForService(
   service: string,
   account: string,
@@ -192,38 +209,38 @@ export function regionsForService(
   let regions = allRegions
   for (const config of configs) {
     if (config.regions?.included) {
-      regions = config.regions.included
+      regions = intersection(allRegions, config.regions.included)
     }
     if (config.regions?.excluded) {
-      regions = regions.filter((region) => !config.regions!.excluded?.includes(region))
+      regions = difference(regions, config.regions.excluded)
     }
 
     const serviceConfig = config.serviceConfigs?.[service]
     if (serviceConfig) {
       if (serviceConfig.regions?.included) {
-        regions = serviceConfig.regions.included
+        regions = intersection(allRegions, serviceConfig.regions.included)
       }
       if (serviceConfig.regions?.excluded) {
-        regions = regions.filter((region) => !serviceConfig.regions!.excluded?.includes(region))
+        regions = difference(regions, serviceConfig.regions.excluded)
       }
     }
 
     const accountConfig = config.accountConfigs?.[account]
     if (accountConfig) {
       if (accountConfig.regions?.included) {
-        regions = accountConfig.regions.included
+        regions = intersection(allRegions, accountConfig.regions.included)
       }
       if (accountConfig.regions?.excluded) {
-        regions = regions.filter((region) => !accountConfig.regions!.excluded?.includes(region))
+        regions = difference(regions, accountConfig.regions.excluded)
       }
 
       const accountServices = accountConfig.serviceConfigs?.[service]
       if (accountServices) {
         if (accountServices.regions?.included) {
-          regions = accountServices.regions.included
+          regions = intersection(allRegions, accountServices.regions.included)
         }
         if (accountServices.regions?.excluded) {
-          regions = regions.filter((region) => !accountServices.regions!.excluded?.includes(region))
+          regions = difference(regions, accountServices.regions.excluded)
         }
       }
     }
@@ -251,7 +268,7 @@ export function accountServiceRegionConfig(
     const serviceConfig = config.serviceConfigs?.[service]
     if (serviceConfig) {
       if (serviceConfig.auth) {
-        result.auth = { ...result.auth, ...serviceConfig.auth }
+        result.auth = mergeAuthConfigs(result.auth, serviceConfig.auth)
       }
       if (serviceConfig.endpoint) {
         result.endpoint = serviceConfig.endpoint
@@ -260,7 +277,7 @@ export function accountServiceRegionConfig(
       const regionConfig = serviceConfig.regionConfigs?.[region]
       if (regionConfig) {
         if (regionConfig.auth) {
-          result.auth = { ...result.auth, ...regionConfig.auth }
+          result.auth = mergeAuthConfigs(result.auth, regionConfig.auth)
         }
         if (regionConfig.endpoint) {
           result.endpoint = regionConfig.endpoint
@@ -271,13 +288,13 @@ export function accountServiceRegionConfig(
     const accountConfig = config.accountConfigs?.[accountId]
     if (accountConfig) {
       if (accountConfig.auth) {
-        result.auth = accountConfig.auth
+        result.auth = mergeAuthConfigs(result.auth, accountConfig.auth)
       }
 
       const accountServiceConfig = accountConfig.serviceConfigs?.[service]
       if (accountServiceConfig) {
         if (accountServiceConfig.auth) {
-          result.auth = { ...result.auth, ...accountServiceConfig.auth }
+          result.auth = mergeAuthConfigs(result.auth, accountServiceConfig.auth)
         }
         if (accountServiceConfig.endpoint) {
           result.endpoint = accountServiceConfig.endpoint
@@ -286,7 +303,7 @@ export function accountServiceRegionConfig(
         const accountRegionConfig = accountServiceConfig.regionConfigs?.[region]
         if (accountRegionConfig) {
           if (accountRegionConfig.auth) {
-            result.auth = { ...result.auth, ...accountRegionConfig.auth }
+            result.auth = mergeAuthConfigs(result.auth, accountRegionConfig.auth)
           }
           if (accountRegionConfig.endpoint) {
             result.endpoint = accountRegionConfig.endpoint
@@ -317,7 +334,7 @@ export function getAccountAuthConfig(
     }
     const accountConfig = config.accountConfigs?.[accountId]
     if (accountConfig?.auth) {
-      result = { ...(result || {}), ...accountConfig.auth }
+      result = mergeAuthConfigs(result, accountConfig.auth)
     }
   }
   return result
@@ -396,4 +413,44 @@ export function getConfiguredAccounts(configs: TopLevelConfig[]): string[] {
     }
   }
   return []
+}
+
+function mergeAuthConfigs(
+  initialConfig: AuthConfig | undefined,
+  newConfig: AuthConfig | OptionalAuthConfig | undefined
+): AuthConfig {
+  if (!initialConfig) {
+    initialConfig = {}
+  }
+  if (!newConfig) {
+    return initialConfig
+  }
+
+  if ('profile' in newConfig) {
+    initialConfig.profile = newConfig.profile
+  }
+
+  if ('initialRole' in newConfig) {
+    initialConfig.initialRole = {
+      ...(initialConfig.initialRole || {}),
+      ...newConfig.initialRole
+    } as AuthConfig['initialRole']
+  }
+
+  if ('role' in newConfig) {
+    initialConfig.role = {
+      ...(initialConfig.role || {}),
+      ...newConfig.role
+    } as AuthConfig['role']
+  }
+
+  return initialConfig
+}
+
+function intersection<T>(a: T[], b: T[]): T[] {
+  return a.filter((value) => b.includes(value))
+}
+
+function difference<T>(a: T[], b: T[]): T[] {
+  return a.filter((value) => !b.includes(value))
 }

@@ -114,6 +114,26 @@ const servicesForAccountTests: {
       }
     ],
     result: ['s3', 'kms', 'sns', 'sqs']
+  },
+  {
+    name: 'account includes should not override all services',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        services: {
+          excluded: ['s3']
+        },
+        accountConfigs: {
+          '123456789012': {
+            services: {
+              included: ['s3', 'lambda']
+            }
+          }
+        }
+      }
+    ],
+    result: defaultServicesForAccount
   }
 ]
 
@@ -156,7 +176,7 @@ const regionsForServiceTests: {
     result: ['us-east-1']
   },
   {
-    name: 'should remove exlcuded regions',
+    name: 'should remove excluded regions',
     configs: [
       {
         iamCollectVersion: defaultVersion,
@@ -166,6 +186,134 @@ const regionsForServiceTests: {
       }
     ],
     result: defaultRegionsForService.slice(0).filter((r) => r != 'us-west-1' && r != 'us-west-2')
+  },
+  {
+    name: 'service includes should override top level excludes',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          excluded: ['us-west-1', 'us-west-2']
+        },
+        serviceConfigs: {
+          s3: {
+            regions: {
+              included: ['us-west-1', 'us-east-2']
+            }
+          }
+        }
+      }
+    ],
+    result: ['us-west-1', 'us-east-2']
+  },
+  {
+    name: 'service excludes should override top level includes',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: ['us-east-1', 'us-east-2']
+        },
+        serviceConfigs: {
+          s3: {
+            regions: {
+              excluded: ['us-east-1']
+            }
+          }
+        }
+      }
+    ],
+    result: ['us-east-2']
+  },
+  {
+    name: 'account includes should override top level excludes',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          excluded: ['us-west-1', 'us-west-2']
+        },
+        accountConfigs: {
+          '123456789012': {
+            regions: {
+              included: ['us-west-1', 'us-east-2']
+            }
+          }
+        }
+      }
+    ],
+    result: ['us-west-1', 'us-east-2']
+  },
+  {
+    name: 'account excludes should override top level includes',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: ['us-east-1', 'us-east-2']
+        },
+        accountConfigs: {
+          '123456789012': {
+            regions: {
+              excluded: ['us-east-1']
+            }
+          }
+        }
+      }
+    ],
+    result: ['us-east-2']
+  },
+  {
+    name: 'account service configs should override top level configs',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: ['us-east-1', 'us-east-2']
+        },
+        accountConfigs: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                regions: {
+                  included: ['us-east-1']
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: ['us-east-1']
+  },
+  {
+    name: 'account service excludes should override top level includes',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: ['us-east-1', 'us-east-2']
+        },
+        accountConfigs: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                regions: {
+                  excluded: ['us-east-1']
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: ['us-east-2']
   }
 ]
 
@@ -275,6 +423,45 @@ const getAccountAuthConfigTests: {
       profile: 'my-account-profile',
       role: {
         pathAndName: 'override-role'
+      }
+    }
+  },
+  {
+    name: 'should merge account specific role details with the default config',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'iam-collect',
+          role: {
+            pathAndName: 'infra/iam-collect'
+          }
+        },
+        accountConfigs: {
+          '123456789012': {
+            auth: {
+              role: {
+                externalId: 'my-external-id'
+              }
+            }
+          },
+          '222222222222': {
+            auth: {
+              role: {
+                externalId: 'other-external-id'
+              }
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'iam-collect',
+      role: {
+        pathAndName: 'infra/iam-collect',
+        externalId: 'my-external-id'
       }
     }
   }
