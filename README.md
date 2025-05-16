@@ -138,3 +138,5 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | sqs               | Queues                            | name, arn, tags, kms key id, policy                                                                                    |
 | sso               | Instances                         | id, arn, name, owner account id, status, tags                                                                          |
 | sso               | Permission Sets                   | name, description, AWS managed policies, customer managed policies, inline policy, permission boundary, accounts, tags |
+
+If you don't see the data you are looking for, please check the [open resource issues](https://github.com/cloud-copilot/iam-collect/issues?q=is%3Aissue%20state%3Aopen%20label%3Aresource) and comment on the issue or create a new one.
