@@ -6,10 +6,11 @@ With an empty config file and no arguments, `iam-collect download` will download
 
 **Effective Filter Logic**
 
-> The actual set of accounts, services, and regions scanned is determined by:
+> To determine the final set of accounts, services, and regions to scan, iam-collect will:
 >
-> 1. Taking the intersection of any CLI-provided list (via `--accounts`, `--services`, `--regions`) and the corresponding `included` lists in the config (if present).
-> 2. Removing any items found in the corresponding `excluded` lists in the config.
+> 1. Start with any CLI-provided lists (via `--accounts`, `--services`, `--regions`). Any list not specified defaults to "all".
+> 2. Narrow lists with the corresponding `included` lists in the config, if present.
+> 3. Removing any items found in the corresponding `excluded` lists in the config, if present.
 >
 > CLI flags act as an upper bound, limiting the maximum scope regardless of config settings.
 
@@ -31,9 +32,11 @@ Alternatively, override the config by passing a list to the CLI:
 iam-collect download --accounts 123456789012 210987654321
 ```
 
+If no accounts are specified on the CLI, or in the config, iam-collect will scan the account linked to your current (or [configured](Authentication.md)) credentials.
+
 ## Selecting Services
 
-We tried to stay as closely to service codes as specified in the [SAR](https://docs.aws.amazon.com/service-authorization/latest/reference/reference.html). A list of supported codes is in [services.ts](https://github.com/cloud-copilot/iam-collect/blob/main/src/services.ts)
+We tried to stay as closely to service codes as specified in the [SAR](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html). A list of supported codes is in [services.ts](https://github.com/cloud-copilot/iam-collect/blob/main/src/services.ts)
 
 To limit which AWS services are scanned across all accounts and regions, use the top-level `services` block in your config:
 

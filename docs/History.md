@@ -4,7 +4,7 @@ iam-collect does not have any mechanism to track history of changes. There are m
 
 You can use Git or S3 versioning to track object changes.
 
-You can also use something as simple as separate folder for each run. For example, if you store the data on disk you can run this to automatically separate data by date:
+You can also use something as simple as separate folders for each run. For example, if you store the data on disk you can run this to automatically separate data by date:
 
 ```bash
 iam-collect download && mv iam-data iam-data-`date '+%Y-%m-%d'`

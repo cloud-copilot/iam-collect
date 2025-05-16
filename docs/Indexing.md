@@ -9,11 +9,11 @@ For this we index some resource data in the `indexes` folder for each partition.
 
 ## Optimistic Locking
 
-We use optimistic locking to prevent concurrent index updates from clobbering each other:
+We use optimistic locking to prevent concurrent index updates from corrupting the index:
 
-- **Filesystem backend**: Before writing an updated index file, iam-collect computes a hash of the existing file on disk and compares it against the new content’s hash.
+- **Filesystem storage**: Before writing an updated index file, iam-collect computes a hash of the existing file on disk and compares it against the new content’s hash.
 
-- **S3 backend**: When storing indexes in S3, we leverage Amazon S3’s [conditional writes feature](https://aws.amazon.com/about-aws/whats-new/2024/11/amazon-s3-functionality-conditional-writes/).
+- **S3 storage**: When storing data in S3, we leverage Amazon S3’s [conditional writes feature](https://aws.amazon.com/about-aws/whats-new/2024/11/amazon-s3-functionality-conditional-writes/).
 
 If optimistic locking fails, the index update will try a total of three times before returning an error to the user.
 
