@@ -4,7 +4,7 @@ import {
   fromTemporaryCredentials
 } from '@aws-sdk/credential-providers'
 import { AwsCredentialIdentity } from '@aws-sdk/types'
-import { AuthConfig, RootAuthConfig } from '../config/config.js'
+import { AuthConfig } from '../config/config.js'
 import { log } from '../utils/log.js'
 import { randomCharacters } from '../utils/strings.js'
 import { getTokenInfo } from './tokens.js'
@@ -100,7 +100,7 @@ export async function getNewCredentials(
  * @returns new credentials based on the provided auth configuration
  */
 export async function getNewInitialCredentials(
-  authConfig: RootAuthConfig | undefined,
+  authConfig: AuthConfig | undefined,
   logInfo: Record<string, unknown> = {}
 ): Promise<AwsCredentialIdentityWithMetaData> {
   let credentials: AwsCredentialIdentity

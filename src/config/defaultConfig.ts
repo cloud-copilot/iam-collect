@@ -42,11 +42,9 @@ const defaultConfig = `
     "prefix": "iam-data/",
     "region": "us-west-2",
     "endpoint": "https://s3.us-west-2.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
-    //Optional auth configuration, see https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
+    //Optional auth configuration, see https://github.com/cloud-copilot/iam-collect/docs/Storage.md
     "auth": {
-      //The type of authentication to use
-      // Can include accountId
-      "accountId": "123456789012"
+      // See https://github.com/cloud-copilot/iam-collect/docs/Storage.md
     }
   },
   */
@@ -118,7 +116,7 @@ const defaultConfig = `
 
   // Optional block for authentication, see , see https://github.com/cloud-copilot/iam-collect/docs/Authentication.md
   // "auth": {
-  //  //The type of authentication to use
+  //  //The type of authentication to use before connecting to any individual accounts
   // }
 
 

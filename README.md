@@ -4,15 +4,53 @@
 
 Get every possible policy in any set of AWS accounts. This is built to run out of the box in simple use cases, and also work in terribly oppressive environments with a little more configuration. If you want to analyze IAM data at scale this is what you've been looking for.
 
-# BETA
+## Table of Contents
 
-This is still in beta, commands and configuration options are likely to change.
+1. [Tenets](#iam-collect-tenets)
+2. [Introduction](#introduction)
+3. [Getting Started](#getting-started)
+4. [Configuration](docs/Configuration.md)
+5. [Authentication](docs/Authentication.md)
+6. [Storage](docs/Storage.md)
+7. [Filtering](docs/Filtering.md)
+8. [Indexing](docs/Indexing.md)
+9. [CLI](docs/CLI.md)
+10. [History](docs/History.md)
+11. [Supported Services and Data Downloaded](#supported-services-and-data-downloaded)
 
-## Quick Start
+## iam-collect Tenets
 
-By default, iam-collect will use the credentials configured in your environment. If you have the permissions in the SID `CollectIAMData` in the [example policy](src/aws/collect-policy.json) everything will work for the current account you have credentials for.
+1. _Centralized_ Store [all your data](#supported-services-and-data-downloaded) across all partitions, organizations, accounts, and regions in one place. This is a single source of truth for all your IAM data.
+2. _Easy_ A few commands and you can get started and everything should just work. If resources no longer exist, data is cleaned up automatically
+3. _Configurable_ Store your data on [disk or in S3](docs/Storage.md). You can configure exactly what [accounts, regions, and services](docs/Filtering.md) you want to collect data for; and [customize auth](docs/Authentication.md) for each.
 
-Make sure you can run `aws sts get-caller-identity` and a command that requires a region be set such as `aws ec2 describe-instances`.
+## Introduction
+
+### What is iam-collect?
+
+iam-collect is a command-line tool that aggregates every IAM-related resource and policy across any number of AWS accounts, regions, and partitions into a single, consistent dataset. It requires minimal setup for simple use cases and allows flexible configuration to operate in even the most restrictive (compliance oriented) environments to give you a single source of truth for your IAM data.
+
+### Why use it?
+
+- **Centralized store:** Consolidate IAM data from multiple partitions, organizations, and accounts into one structured store.
+- **Get everything:** Collect all the polices from all the resources in all your accounts. Terraform will show you what was intended, iam-collect will show you what is actually there.
+- **Audit and compliance:** Generate comprehensive snapshots of your IAM landscape to support security reviews, audits, and forensics. The structured approach to storage makes it easy to build automation and tooling around the data.
+
+### How it works at a glance
+
+Every time you run `iam-collect download` it will:
+
+1. **Scan:** Connect to AWS account(s) using your configured credentials or roles and retrieve IAM resources (users, roles, policies, etc.) from each target account.
+2. **Store:** Persist the data to your chosen storage (local filesystem or S3), organizing it by partition, account, service, and resource.
+3. **Index:** Build search-friendly JSON indexes that map resources to accounts and other relationships for fast lookups.
+
+Then you use the data to analyze your IAM landscape, build reports, or integrate with other tools.
+
+## Getting Started
+
+By default, iam-collect will use the credentials configured in your environment using the [default credential chain](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-credential-providers/#fromnodeproviderchain). If you have the permissions in the SID `CollectIAMData` in the [example policy](src/aws/collect-policy.json) everything will work for the current account you have credentials for.
+
+You don't need the AWS CLI, but a good way to make sure your credentials are configured is to ensure you can run `aws sts get-caller-identity` and a command that requires a region be set such as `aws ec2 describe-instances`.
 
 ```bash
 npm install -g @cloud-copilot/iam-collect
@@ -22,13 +60,15 @@ iam-collect init
 iam-collect download
 ```
 
-## Installation
+### Install
+
+You need Node.js >= 20.
 
 ```bash
 npm install -g @cloud-copilot/iam-collect
 ```
 
-## Initialization
+### Initialize
 
 First you need to initialize the configuration file. This will create a commented iam-collect.jsonc file with comments for the different elements.
 
@@ -38,15 +78,33 @@ iam-collect init
 
 This will create a file called `iam-collect.jsonc` in the current directory with a simple default configuration and many comments on how to customize the configuration.
 
-## Downloading IAM Data
+### Download
 
 ```bash
 iam-collect download
 ```
 
-This will download the IAM data from the current account to the `./iam-data` directory. You can change the output directory by modifying the `path` property in the `storage` configuration.
+This will download the IAM data from the current account to the `./iam-data` directory. You can change the output directory by modifying the `path` property in the `storage` configuration. See the [storage docs](docs/Storage.md) for more details.
 
-# Supported Services and Data Downloaded
+### Enjoy
+
+```bash
+ls -R ./iam-data
+```
+
+This will show you your data that was downloaded. See the [storage docs](docs/Storage.md#StorageLayoutExplained) for more details on the layout of the data.
+
+## Additional Docs
+
+- [Configuration](docs/Configuration.md) - Set the configuration files to use.
+- [Authentication](docs/Authentication.md) - Configure authentication for different accounts, services, and regions.
+- [Storage](docs/Storage.md) - Configure where your data is stored.
+- [Filtering](docs/Filtering.md) - Configure what accounts, services, and regions are downloaded.
+- [Indexing](docs/Indexing.md) - Disable or manually run indexing.
+- [CLI](docs/CLI.md) - Details on the CLI commands and options.
+- [History](docs/History.md) - How to track history of changes.
+
+## Supported Services and Data Downloaded
 
 | Service           | Resource Type                     | Data Downloaded                                                                                                        |
 | ----------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |

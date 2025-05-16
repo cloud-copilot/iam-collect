@@ -4,7 +4,7 @@
 
 iam-collect supports two storage backends: local file storage and S3-compatible storage. You can configure the storage backend in your config file in the `storage` section object with the `type` property. Valid values are `file` or `s3`.
 
-## Configuring File Storage
+### Configuring File Storage
 
 You can configure the file storage backend by specifying the `type` as `file` and providing a `path` where the data will be stored. The path can be relative to the config file or an absolute path.
 
@@ -16,13 +16,13 @@ You can configure the file storage backend by specifying the `type` as `file` an
   }
 ```
 
-## Configuring S3 Storage
+### Configuring S3 Storage
 
 Configure S3 storage by specifying the `type` as `s3` and providing the bucket name. You can also specify the region, an s3 endpoint, and a prefix.
 
 By default the S3 storage will use the default configured credentials (or your default credential chain if none is configured). If you want to customize this you can specify an `auth` block, this will have the standard fields of a root `auth` block as described in the [Authentication](./Authentication.md) documentation.
 
-### Example S3 Storage Configuration with Default Credentials
+#### Example S3 Storage Configuration with Default Credentials
 
 ```jsonc
   "storage": {
@@ -42,7 +42,7 @@ By default the S3 storage will use the default configured credentials (or your d
   },
 ```
 
-### Example S3 Storage Configuration with Custom Credentials
+#### Example S3 Storage Configuration with Custom Credentials
 
 ```jsonc
   "storage": {
@@ -83,3 +83,43 @@ By default the S3 storage will use the default configured credentials (or your d
     }
   },
 ```
+
+## Storage Layout Explained
+
+The layout of the storage is designed to be usable by someone familiar with AWS resource ARNs and scale to any number of accounts, organization, and resources.
+
+```text
+aws/                                          # always `aws` for now, may add other clouds later
+└── <partition>/                              # aws | aws-cn | aws-us-gov
+    ├── accounts/
+    │   └── <account-id>/                     # 12-digit AWS account ID
+    │       ├── <service-name>/               # e.g., iam, s3, ec2
+    │       │   └── <region>/                 # e.g., us-east-1 if applicable
+    │       │       └── <resource-type>/      # e.g., user, policy, table, if applicable, omitted for s3 buckets
+    │       │           └── <resource-id>/    # resource identifier
+    │       │               ├── metadata.json # Data about the resource
+    │       │               └── policy.json   # resource policy, or other data about the resource
+    │       └── ram/                          # resources owned by the account shared via RAM
+    │           └── <resourceArn>.json        # The RAM share metadata and resource policy
+    ├── organizations/
+    │   └── <organization-id>/                # AWS Organization ID
+    │       ├── ous/                          # organizational units metadata
+    │       ├── rcps/                         # resource control policies
+    │       ├── scps/                         # service control policies
+    │       └── ....json                      # different metadata about the org such as accounts, or structure
+    └── indexes/                              # search indexes for fast lookups
+        ├── buckets-to-accounts.json
+        ├── accounts-to-orgs.json
+        └── ...                               # other index files
+```
+
+- **Accounts**: Under `accounts/`, each account directory contains:
+
+  - **Resource folders**: Nested by `<service-name>/<region>/<resource-type>/<resource-id>/`, each holding `metadata.json` and `data.json`.
+  - **RAM**: A `ram/` folder with JSON files (`<resourceArn>.json`) for Resource Access Manager shares.
+
+- **Organizations**: Under `organizations/`, each org directory includes `accounts.json` (listing account IDs) and subfolders for `ous/`, `rcps/`, and `scps/` containing respective metadata.
+
+- **Indexes**: The `indexes/` folder contains JSON files that serve as search indexes for faster lookups, such as mapping buckets to accounts or accounts to organizations.
+
+- **Partitions**: The top-level partition directories correspond to AWS partitions like `aws`, `aws-cn`, or `aws-us-gov`.
