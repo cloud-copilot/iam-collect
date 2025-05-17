@@ -41,7 +41,7 @@ export function createStorageClient(
   }
 
   throw new Error(
-    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file.`
+    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file and s3.`
   )
 }
 
