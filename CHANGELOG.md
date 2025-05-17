@@ -1,3 +1,10 @@
+## [0.1.63](https://github.com/cloud-copilot/iam-collect/compare/v0.1.62...v0.1.63) (2025-05-17)
+
+
+### Features
+
+* Exporting functions and types to use in client libraries ([cd6415c](https://github.com/cloud-copilot/iam-collect/commit/cd6415caf196f8ef60624ebe9f965326c6d0299c))
+
 ## [0.1.62](https://github.com/cloud-copilot/iam-collect/compare/v0.1.61...v0.1.62) (2025-05-17)
 
 
