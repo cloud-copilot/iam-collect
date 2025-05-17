@@ -1,10 +1,18 @@
 import { sep } from 'path'
-import { StorageConfig } from '../config/config.js'
+import { getStorageConfig, StorageConfig, TopLevelConfig } from '../config/config.js'
 import { splitArnParts } from '../utils/arn.js'
 import { AwsIamStore } from './AwsIamStore.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
 
+/**
+ * Create a storage client based on the provided configurations and partition.
+ *
+ * @param configs - The top-level configurations that define the storage settings.
+ * @param partition - The partition to use for the storage client.
+ * @returns The storage client instance to use
+ */
+export function createStorageClient(configs: TopLevelConfig[], partition: string): AwsIamStore
 /**
  * Create a storage client based on the provided storage configuration and partition.
  *
@@ -12,7 +20,19 @@ import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapte
  * @param partition - The partition to use for the storage client.
  * @returns The storage client instance to use
  */
-export function createStorageClient(storageConfig: StorageConfig, partition: string): AwsIamStore {
+export function createStorageClient(storageConfig: StorageConfig, partition: string): AwsIamStore
+export function createStorageClient(
+  storageConfig: StorageConfig | TopLevelConfig[],
+  partition: string
+): AwsIamStore {
+  if (Array.isArray(storageConfig)) {
+    const foundConfig = getStorageConfig(storageConfig)
+    if (!foundConfig) {
+      throw new Error('No storage configuration found. Cannot create storage client.')
+    }
+    storageConfig = foundConfig
+  }
+
   if (storageConfig.type === 'file') {
     return new FileSystemAwsIamStore(storageConfig.path, partition, sep)
   } else if (storageConfig.type === 's3') {
@@ -21,7 +41,7 @@ export function createStorageClient(storageConfig: StorageConfig, partition: str
   }
 
   throw new Error(
-    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file.`
+    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file and s3.`
   )
 }
 
