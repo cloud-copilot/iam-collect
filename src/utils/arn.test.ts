@@ -97,6 +97,19 @@ const splitArnPartsTests: {
       resourceType: 'restapis',
       resourcePath: '1234567890'
     }
+  },
+  {
+    name: 'should split a glue root catalog ARN',
+    arn: 'arn:aws:glue:us-east-1:111111111111:catalog',
+    expected: {
+      partition: 'aws',
+      service: 'glue',
+      region: 'us-east-1',
+      accountId: '111111111111',
+      resource: 'catalog',
+      resourceType: 'catalog',
+      resourcePath: ''
+    }
   }
 ]
 

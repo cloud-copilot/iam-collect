@@ -120,6 +120,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | ec2               | VPC Endpoints                     | id, name, type, vpc, policy                                                                                            |
 | elasticfilesystem | File Systems                      | name, id, key, encryption, tags, policy                                                                                |
 | glacier           | Vaults                            | name, arn, region, tags, policy                                                                                        |
+| glue              | Root Catalogs                     | policy                                                                                                                 |
 | kms               | Keys                              | id, policy, tags                                                                                                       |
 | lambda            | Functions                         | name, role, tags, policy                                                                                               |
 | ram               | Shared Resources                  | arn, resource shares, resource policy                                                                                  |

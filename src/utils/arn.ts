@@ -69,6 +69,8 @@ export function getResourceSegments(
   let splitIndex = slashIndex
   if (slashIndex != -1 && colonIndex != -1) {
     splitIndex = Math.min(slashIndex, colonIndex) + 1
+  } else if (slashIndex == -1 && colonIndex == -1) {
+    splitIndex = resourceString.length + 1
   } else if (colonIndex == -1) {
     splitIndex = slashIndex + 1
   } else if (slashIndex == -1) {
