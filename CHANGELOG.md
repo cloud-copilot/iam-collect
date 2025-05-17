@@ -1,3 +1,10 @@
+## [0.1.62](https://github.com/cloud-copilot/iam-collect/compare/v0.1.61...v0.1.62) (2025-05-17)
+
+
+### Features
+
+* Sync Glue catalog policies ([ca10f0c](https://github.com/cloud-copilot/iam-collect/commit/ca10f0cef90b3fe8919e8d1be7416ed9d2ac9cab))
+
 ## [0.1.61](https://github.com/cloud-copilot/iam-collect/compare/v0.1.60...v0.1.61) (2025-05-17)
 
 ## [0.1.60](https://github.com/cloud-copilot/iam-collect/compare/v0.1.59...v0.1.60) (2025-05-16)
