@@ -3,6 +3,7 @@ import { getStorageConfig, StorageConfig, TopLevelConfig } from '../config/confi
 import { splitArnParts } from '../utils/arn.js'
 import { AwsIamStore } from './AwsIamStore.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
+import { InMemoryPathBasedPersistenceAdapter } from './InMemoryPathBasedPersistenceAdapter.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
 
 /**
@@ -43,6 +44,15 @@ export function createStorageClient(
   throw new Error(
     `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file and s3.`
   )
+}
+
+/**
+ * Create an in-memory storage client with the 'aws' partition.
+ *
+ * This is useful for testing.
+ */
+export function createInMemoryStorageClient(): AwsIamStore {
+  return new FileSystemAwsIamStore('mock', 'aws', '/', new InMemoryPathBasedPersistenceAdapter())
 }
 
 /**
