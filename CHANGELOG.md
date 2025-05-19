@@ -1,3 +1,10 @@
+## [0.1.65](https://github.com/cloud-copilot/iam-collect/compare/v0.1.64...v0.1.65) (2025-05-19)
+
+
+### Features
+
+* Export In Memory Store for testing ([3f42f2c](https://github.com/cloud-copilot/iam-collect/commit/3f42f2c72b52883a21e8b3811ccb8432e783623a))
+
 ## [0.1.64](https://github.com/cloud-copilot/iam-collect/compare/v0.1.63...v0.1.64) (2025-05-19)
 
 
