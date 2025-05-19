@@ -1,3 +1,10 @@
+## [0.1.64](https://github.com/cloud-copilot/iam-collect/compare/v0.1.63...v0.1.64) (2025-05-19)
+
+
+### Features
+
+* Export AwsIamStore ([ae90786](https://github.com/cloud-copilot/iam-collect/commit/ae90786899d2dde66ee4a06ecab5779e551d423f))
+
 ## [0.1.63](https://github.com/cloud-copilot/iam-collect/compare/v0.1.62...v0.1.63) (2025-05-17)
 
 
