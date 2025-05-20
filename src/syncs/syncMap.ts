@@ -1,5 +1,6 @@
 import { AwsService, lowerCaseService } from '../services.js'
 import { RestApisSync } from './apigateway/gateways.js'
+import { BackupVaultsSync } from './backup/backupVaults.js'
 import { DynamoDBTableSync } from './dynamodb/tables.js'
 import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
 import { EcrSyncs } from './ecr/ecrSyncs.js'
@@ -28,6 +29,7 @@ import { Sync } from './sync.js'
 const allSyncs = [
   AccountS3BpaSync,
   AuthorizationDetailsSync,
+  BackupVaultsSync,
   DynamoDBTableSync,
   ...EcrSyncs,
   ElasticFileSystemsSync,
