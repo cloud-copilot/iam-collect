@@ -124,6 +124,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | glue              | Root Catalogs                     | policy                                                                                                                 |
 | kms               | Keys                              | id, policy, tags                                                                                                       |
 | lambda            | Functions                         | name, role, tags, policy                                                                                               |
+| lambda            | Layer Versions                    | name, arn, version, policy                                                                                             |
 | ram               | Shared Resources                  | arn, resource shares, resource policy                                                                                  |
 | s3                | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints         |
 | s3                | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |

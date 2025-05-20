@@ -10,7 +10,7 @@ import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { IdentityProviderSyncs } from './iam/identityProviders.js'
 import { InstanceProfilesSync } from './iam/instanceProfiles.js'
 import { KeySync } from './kms/key.js'
-import { LambdaSync } from './lambda/lambda.js'
+import { LambdaLayerVersionsSync, LambdaSync } from './lambda/lambda.js'
 import { OrganizationSync } from './organizations/organizations.js'
 import { RamResourcesSync } from './ram/ramShares.js'
 import { S3AccessPointsSync } from './s3/accessPoints.js'
@@ -39,6 +39,7 @@ const allSyncs = [
   GlueCatalogSync,
   KeySync,
   LambdaSync,
+  LambdaLayerVersionsSync,
   OrganizationSync,
   RamResourcesSync,
   RestApisSync,
