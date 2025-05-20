@@ -34,6 +34,18 @@ export interface Sync {
 }
 
 export type DataRecord = Record<string, any> & { arn: string }
+
+/**
+ * Synchronize the data for a given set of resources.
+ * This will:
+ * 1. Delete any resources that meet the `resourceTypeParts` and are not in the `records` list.
+ * 2. Save all resources that are in the `records`.
+ *
+ * @param records
+ * @param storage
+ * @param accountId
+ * @param resourceTypeParts
+ */
 export async function syncData(
   records: DataRecord[],
   storage: AwsIamStore,

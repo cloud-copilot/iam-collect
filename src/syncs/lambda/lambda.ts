@@ -1,12 +1,17 @@
 import {
+  GetLayerVersionPolicyCommand,
   GetPolicyCommand,
   LambdaClient,
   ListFunctionsCommand,
+  ListLayersCommand,
+  ListLayerVersionsCommand,
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
+import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
-import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
+import { DataRecord, Sync, syncData } from '../sync.js'
+import { createResourceSyncType, createTypedSyncOperation, paginateResource } from '../typedSync.js'
 
 export const LambdaSync = createTypedSyncOperation(
   'lambda',
@@ -54,3 +59,64 @@ export const LambdaSync = createTypedSyncOperation(
     })
   })
 )
+
+export const LambdaLayerVersionsSync: Sync = {
+  awsService: 'lambda',
+  name: 'lambdaLayerVersions',
+  execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
+    const lambdaClient = AwsClientPool.defaultInstance.client(
+      LambdaClient,
+      credentials,
+      region,
+      endpoint
+    )
+    const allLayers = await paginateResource(lambdaClient, ListLayersCommand, 'Layers', {
+      inputKey: 'Marker',
+      outputKey: 'NextMarker'
+    })
+
+    const allLayerVersions: DataRecord[] = []
+    for (const layer of allLayers) {
+      const layerVersions = await paginateResource(
+        lambdaClient,
+        ListLayerVersionsCommand,
+        'LayerVersions',
+        {
+          inputKey: 'Marker',
+          outputKey: 'NextMarker'
+        },
+        {
+          LayerName: layer.LayerName
+        }
+      )
+
+      for (const version of layerVersions) {
+        const policy = await runAndCatch404(async () => {
+          const policyResult = await lambdaClient.send(
+            new GetLayerVersionPolicyCommand({
+              LayerName: layer.LayerName!,
+              VersionNumber: version.Version
+            })
+          )
+          return parseIfPresent(policyResult.Policy)
+        })
+
+        allLayerVersions.push({
+          arn: version.LayerVersionArn!,
+          metadata: {
+            name: layer.LayerName,
+            version: version.Version
+          },
+          policy: policy
+        })
+      }
+    }
+
+    await syncData(allLayerVersions, storage, accountId, {
+      service: 'lambda',
+      resourceType: 'layer',
+      account: accountId,
+      region: region
+    })
+  }
+}
