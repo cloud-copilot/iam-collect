@@ -1,3 +1,10 @@
+## [0.1.66](https://github.com/cloud-copilot/iam-collect/compare/v0.1.65...v0.1.66) (2025-05-20)
+
+
+### Features
+
+* Sync Backup vault policies ([f538aaf](https://github.com/cloud-copilot/iam-collect/commit/f538aaf5f66d0f9971adcaaa05ae1629110f2d6e))
+
 ## [0.1.65](https://github.com/cloud-copilot/iam-collect/compare/v0.1.64...v0.1.65) (2025-05-19)
 
 
