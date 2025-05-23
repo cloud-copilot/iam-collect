@@ -11,6 +11,7 @@
         "backup:ListBackupVaults",
         "backup:ListTags",
         "dynamodb:GetResourcePolicy",
+        "dynamodb:ListStreams",
         "dynamodb:ListTables",
         "dynamodb:ListTagsOfResource",
         "ec2:DescribeVpcEndpoints",
