@@ -1,3 +1,10 @@
+## [0.1.69](https://github.com/cloud-copilot/iam-collect/compare/v0.1.68...v0.1.69) (2025-05-23)
+
+
+### Features
+
+* Index principals to the trust policies they are trusted in ([ffa6720](https://github.com/cloud-copilot/iam-collect/commit/ffa67209f4742dad0cc8721e6ab7047c493ba759))
+
 ## [0.1.68](https://github.com/cloud-copilot/iam-collect/compare/v0.1.67...v0.1.68) (2025-05-20)
 
 
