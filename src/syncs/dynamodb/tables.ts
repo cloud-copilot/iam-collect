@@ -26,7 +26,13 @@ export const DynamoDBTableSync = createTypedSyncOperation(
       service: 'dynamodb',
       resourceType: 'table',
       account: accountId,
-      region: region
+      region: region,
+      metadata: {
+        // We set this to true to indicate that this is a table resource
+        // and not a stream resource. This is important for the
+        // DynamoDBTableSync to work correctly.
+        table: 'true'
+      }
     }),
     extraFields: {
       policy: async (client, table, accountId, region, partition) => {
@@ -66,7 +72,8 @@ export const DynamoDBTableSync = createTypedSyncOperation(
       tableArn(partition, region, accountId, table.name),
     results: (table) => ({
       metadata: {
-        name: table.name!
+        name: table.name!,
+        table: 'true'
       },
       policy: table.extraFields.policy
     })
