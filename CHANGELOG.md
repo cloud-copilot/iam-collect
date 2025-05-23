@@ -1,3 +1,10 @@
+## [0.1.70](https://github.com/cloud-copilot/iam-collect/compare/v0.1.69...v0.1.70) (2025-05-23)
+
+
+### Features
+
+* Sync dynamo db streams ([70b7287](https://github.com/cloud-copilot/iam-collect/commit/70b728773b8ebbd90cf6e57bba8bf0af4f0aef03))
+
 ## [0.1.69](https://github.com/cloud-copilot/iam-collect/compare/v0.1.68...v0.1.69) (2025-05-23)
 
 
