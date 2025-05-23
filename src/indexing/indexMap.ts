@@ -3,11 +3,13 @@ import { Indexer } from './indexer.js'
 import { AccountOrganizationIndexer } from './indexers/accountOrgs.js'
 import { ApiGatewayIndexer } from './indexers/apigateways.js'
 import { S3BucketIndexer } from './indexers/buckets.js'
+import { IamPrincipalsToTrustPoliciesIndexer } from './indexers/iamPrincipalsToTrustPolicies.js'
 import { VpcEndpointIndexer } from './indexers/vpcEndpoints.js'
 
 const allIndexers: Indexer<any>[] = [
   AccountOrganizationIndexer,
   ApiGatewayIndexer,
+  IamPrincipalsToTrustPoliciesIndexer,
   S3BucketIndexer,
   VpcEndpointIndexer
 ]
