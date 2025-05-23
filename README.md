@@ -115,6 +115,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | iam               | Instance Profiles                 | arn, name, roles, id, path, tags                                                                                       |
 | apigateway        | Rest APIs                         | id, name, policy, tags                                                                                                 |
 | backup            | Backup Vaults                     | name, key arn, tags, policy                                                                                            |
+| dynamodb          | Streams                           | name, arn, region, resource policy                                                                                     |
 | dynamodb          | Tables                            | name, arn, region, tags, resource policy                                                                               |
 | ecr               | Repositories                      | name, arn, region, tags, resource policy, key id                                                                       |
 | ecr               | Registries                        | policy                                                                                                                 |
