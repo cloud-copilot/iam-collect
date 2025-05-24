@@ -17,6 +17,7 @@ export const allServices = [
   'ram',
   's3',
   's3express',
+  's3outposts',
   's3tables',
   'secretsmanager',
   'sns',
