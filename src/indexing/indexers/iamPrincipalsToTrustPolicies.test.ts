@@ -21,7 +21,7 @@ describe('iamPrincipalsToTrustPolicies', () => {
 
     // Save a role resource and its trust policy for account1, TestRole
     await storage.saveResourceMetadata(accountId, roleArn, 'metadata', { arn: roleArn })
-    await storage.saveResourceMetadata(accountId, roleArn, 'trust-policy', {
+    await storage.saveResourceMetadata(accountId, roleArn, 'policy', {
       Version: '2012-10-17',
       Statement: [
         {
@@ -33,7 +33,7 @@ describe('iamPrincipalsToTrustPolicies', () => {
 
     // Save a second role in account1
     await storage.saveResourceMetadata(accountId, roleArn2, 'metadata', { arn: roleArn2 })
-    await storage.saveResourceMetadata(accountId, roleArn2, 'trust-policy', {
+    await storage.saveResourceMetadata(accountId, roleArn2, 'policy', {
       Version: '2012-10-17',
       Statement: [
         {
@@ -45,7 +45,7 @@ describe('iamPrincipalsToTrustPolicies', () => {
 
     // Save a third role in account1
     await storage.saveResourceMetadata(accountId, roleArn3, 'metadata', { arn: roleArn3 })
-    await storage.saveResourceMetadata(accountId, roleArn3, 'trust-policy', {
+    await storage.saveResourceMetadata(accountId, roleArn3, 'policy', {
       Version: '2012-10-17',
       Statement: [
         {
@@ -59,7 +59,7 @@ describe('iamPrincipalsToTrustPolicies', () => {
     await storage.saveResourceMetadata(otherAccountId, otherRoleArn, 'metadata', {
       arn: otherRoleArn
     })
-    await storage.saveResourceMetadata(otherAccountId, otherRoleArn, 'trust-policy', {
+    await storage.saveResourceMetadata(otherAccountId, otherRoleArn, 'policy', {
       Version: '2012-10-17',
       Statement: [
         {
@@ -98,7 +98,7 @@ describe('iamPrincipalsToTrustPolicies', () => {
     const principalArn = 'arn:aws:iam::otheraccount:root'
 
     await storage.saveResourceMetadata(accountId, roleArn, 'metadata', { arn: roleArn })
-    await storage.saveResourceMetadata(accountId, roleArn, 'trust-policy', {
+    await storage.saveResourceMetadata(accountId, roleArn, 'policy', {
       Version: '2012-10-17',
       Statement: [
         {

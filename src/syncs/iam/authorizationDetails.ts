@@ -57,7 +57,7 @@ export const AuthorizationDetailsSync: Sync = {
       return {
         arn: role.Arn!,
         'managed-policies': role.AttachedManagedPolicies?.map((p) => p.PolicyArn),
-        'trust-policy': role.AssumeRolePolicyDocument,
+        policy: role.AssumeRolePolicyDocument,
         'instance-profiles': role.InstanceProfileList?.map((i) => i.Arn),
         'inline-policies': role.RolePolicyList,
         tags: convertTagsToRecord(role.Tags),

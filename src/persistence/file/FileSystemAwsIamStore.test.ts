@@ -24,13 +24,13 @@ describe('FileSystemAwsIamStore', () => {
       await store.saveResourceMetadata(
         '123456789012',
         'arn:aws:iam::123456789012:role/Test-Role',
-        'trust-policy',
+        'policy',
         data
       )
 
       // Then the correct file path should be used
       expect(writeFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'.toLowerCase(),
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/policy.json'.toLowerCase(),
         data
       )
     })
@@ -84,13 +84,13 @@ describe('FileSystemAwsIamStore', () => {
         await store.saveResourceMetadata(
           '123456789012',
           'arn:aws:iam::123456789012:role/test-role',
-          'trust-policy',
+          'policy',
           emptyValue
         )
 
         // Then the correct file path should be used
         expect(deleteFileSpy, `empty value: "${emptyValue}"`).toHaveBeenCalledWith(
-          '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
+          '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/policy.json'
         )
       }
     })
@@ -99,7 +99,7 @@ describe('FileSystemAwsIamStore', () => {
   describe('listResourceMetadata', () => {
     it('should list resource metadata types', async () => {
       // Given a specific ARN
-      const expectedMetadataTypes = ['trust-policy', 'inline-policies']
+      const expectedMetadataTypes = ['policy', 'inline-policies']
       const listDirectorySpy = vi
         .spyOn(mockFsAdapter, 'listDirectory')
         .mockResolvedValue(expectedMetadataTypes.map((type) => `${type}.json`))
@@ -147,12 +147,12 @@ describe('FileSystemAwsIamStore', () => {
       const result = await store.getResourceMetadata(
         '123456789012',
         'arn:aws:iam::123456789012:role/test-role',
-        'trust-policy'
+        'policy'
       )
 
       // Then the correct file path should be used and the data should match
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/policy.json'
       )
       expect(result).toEqual(expectedData)
     })
@@ -207,12 +207,12 @@ describe('FileSystemAwsIamStore', () => {
       const result = await store.getResourceMetadata(
         '123456789012',
         'arn:aws:iam::123456789012:role/test-role',
-        'trust-policy'
+        'policy'
       )
 
       // Then the correct file path should be used and the result should be undefined
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/policy.json'
       )
       expect(result).toBeUndefined()
     })
@@ -226,13 +226,13 @@ describe('FileSystemAwsIamStore', () => {
       const result = await store.getResourceMetadata(
         '123456789012',
         'arn:aws:iam::123456789012:role/test-role',
-        'trust-policy',
+        'policy',
         defaultValue
       )
 
       // Then the correct file path should be used and the result should match the default value
       expect(readFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/policy.json'
       )
       expect(result).toEqual(defaultValue)
     })
@@ -247,12 +247,12 @@ describe('FileSystemAwsIamStore', () => {
       await store.deleteResourceMetadata(
         '123456789012',
         'arn:aws:iam::123456789012:role/test-role',
-        'trust-policy'
+        'policy'
       )
 
       // Then the correct file path should be used
       expect(deleteFileSpy).toHaveBeenCalledWith(
-        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/trust-policy.json'
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/policy.json'
       )
     })
 

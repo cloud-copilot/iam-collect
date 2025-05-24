@@ -29,11 +29,7 @@ export const IamPrincipalsToTrustPoliciesIndexer: Indexer<PrincipalsToTrustPolic
     })
 
     for (const role of roles) {
-      const trustPolicy = await storage.getResourceMetadata<any, any>(
-        accountId,
-        role.arn,
-        'trust-policy'
-      )
+      const trustPolicy = await storage.getResourceMetadata<any, any>(accountId, role.arn, 'policy')
       if (trustPolicy) {
         const parsedPolicy = loadPolicy(trustPolicy)
         updateCacheForPolicy(existingCache, accountId, role.arn, parsedPolicy)

@@ -50,7 +50,7 @@ export interface AwsIamStore {
    *
    * @param accountId - The AWS account ID where the resource exists.
    * @param arn - The ARN of the resource.
-   * @param metadataType - A key representing the metadata type (e.g., "trust-policy", "inline-policies").
+   * @param metadataType - A key representing the metadata type (e.g., "policy", "inline-policies").
    * @param data - The metadata content to save (as a string or Buffer).
    */
   saveResourceMetadata(
@@ -65,7 +65,7 @@ export interface AwsIamStore {
    *
    * @param accountId - The AWS account ID where the resource exists.
    * @param arn - The ARN of the resource.
-   * @returns An array of metadata types (e.g., ["trust-policy", "inline-policies"]).
+   * @returns An array of metadata types (e.g., ["policy", "inline-policies"]).
    */
   listResourceMetadata(accountId: string, arn: string): Promise<string[]>
 
