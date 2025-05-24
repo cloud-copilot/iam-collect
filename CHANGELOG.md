@@ -1,3 +1,10 @@
+## [0.1.73](https://github.com/cloud-copilot/iam-collect/compare/v0.1.72...v0.1.73) (2025-05-24)
+
+
+### Features
+
+* Sync S3 Outpost Buckets and Access Points ([1afc8cc](https://github.com/cloud-copilot/iam-collect/commit/1afc8cca9342d7e2b41fa63ca919d3c30d0a5926))
+
 ## [0.1.72](https://github.com/cloud-copilot/iam-collect/compare/v0.1.71...v0.1.72) (2025-05-24)
 
 ## [0.1.71](https://github.com/cloud-copilot/iam-collect/compare/v0.1.70...v0.1.71) (2025-05-23)
