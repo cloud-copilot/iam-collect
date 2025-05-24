@@ -1,5 +1,5 @@
+import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { join } from 'path'
-import { splitArnParts } from '../../utils/arn.js'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
 import { FileSystemAdapter } from './FileSystemAdapter.js'

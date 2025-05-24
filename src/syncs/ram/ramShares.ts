@@ -1,7 +1,7 @@
 import { ResourceOwner } from '@aws-sdk/client-api-gateway'
 import { GetResourcePoliciesCommand, ListResourcesCommand, RAMClient } from '@aws-sdk/client-ram'
+import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { AwsClientPool } from '../../aws/ClientPool.js'
-import { splitArnParts } from '../../utils/arn.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { Sync } from '../sync.js'
 import { paginateResource } from '../typedSync.js'

@@ -1,4 +1,4 @@
-import { splitArnParts } from '../../utils/arn.js'
+import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { Indexer } from '../indexer.js'
 
 interface VpcEndpointMetadata {
