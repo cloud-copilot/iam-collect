@@ -28,7 +28,6 @@ export class AwsClientPool {
     const cacheKey = this.getCacheKey(ClientType, credentials, region, endpoint)
 
     if (!this.clientCache.has(cacheKey)) {
-      // logInfo('CreatingNewAwsClient', undefined, { cacheKey })
       const client = new ClientType({
         credentials,
         region,
@@ -36,8 +35,6 @@ export class AwsClientPool {
         retryMode: RETRY_MODES.ADAPTIVE
       })
       this.clientCache.set(cacheKey, client)
-    } else {
-      // logInfo('ReusingAwsClient', undefined, { cacheKey })
     }
 
     return this.clientCache.get(cacheKey) as T
