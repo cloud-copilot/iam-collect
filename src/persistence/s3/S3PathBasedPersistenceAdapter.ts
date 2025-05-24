@@ -8,11 +8,11 @@ import {
   PutObjectCommandInput,
   S3Client
 } from '@aws-sdk/client-s3'
+import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { getCredentials } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { getNewInitialCredentials } from '../../aws/coreAuth.js'
 import { S3StorageConfig } from '../../config/config.js'
-import { splitArnParts } from '../../utils/arn.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
 import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'

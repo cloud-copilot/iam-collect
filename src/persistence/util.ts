@@ -1,6 +1,6 @@
+import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { sep } from 'path'
 import { getStorageConfig, StorageConfig, TopLevelConfig } from '../config/config.js'
-import { splitArnParts } from '../utils/arn.js'
 import { AwsIamStore } from './AwsIamStore.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { InMemoryPathBasedPersistenceAdapter } from './InMemoryPathBasedPersistenceAdapter.js'
