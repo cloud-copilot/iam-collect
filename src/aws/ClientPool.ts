@@ -36,7 +36,7 @@ export class AwsClientPool {
         retryMode: RETRY_MODES.ADAPTIVE,
         requestHandler: new NodeHttpHandler({
           connectionTimeout: 5_000,
-          socketTimeout: 30_000
+          socketTimeout: 15_000
         })
       })
       this.clientCache.set(cacheKey, client)
