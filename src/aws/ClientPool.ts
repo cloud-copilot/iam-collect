@@ -1,3 +1,4 @@
+import { NodeHttpHandler } from '@smithy/node-http-handler'
 import type { Client } from '@smithy/smithy-client'
 import { RETRY_MODES } from '@smithy/util-retry'
 import { AwsCredentialIdentityWithMetaData } from './coreAuth.js'
@@ -32,7 +33,11 @@ export class AwsClientPool {
         credentials,
         region,
         maxAttempts: 10,
-        retryMode: RETRY_MODES.ADAPTIVE
+        retryMode: RETRY_MODES.ADAPTIVE,
+        requestHandler: new NodeHttpHandler({
+          connectionTimeout: 5_000,
+          socketTimeout: 30_000
+        })
       })
       this.clientCache.set(cacheKey, client)
     }
