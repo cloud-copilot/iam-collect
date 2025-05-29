@@ -24,7 +24,6 @@ export const S3DirectoryBucketsSync = createTypedSyncOperation(
       directoryBucketArn(partition, region, account, bucket.Name!),
     extraFields: {
       policy: async (client, bucket) => {
-        new S3Client({})
         return runAndCatch404(async () => {
           const policy = await client.send(new GetBucketPolicyCommand({ Bucket: bucket.Name! }))
           return parseIfPresent(policy.Policy)

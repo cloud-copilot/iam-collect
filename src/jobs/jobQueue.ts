@@ -1,3 +1,5 @@
+import { log } from '../utils/log.js'
+
 /**
  * Represents the outcome of a job:
  * - `fulfilled` with a `value` if it succeeded
@@ -50,11 +52,21 @@ export async function runJobs<T = void, P = Record<string, unknown>>(
         workerId
       }
 
+      const startTime = Date.now()
+      const interval = setInterval(() => {
+        log.warn(
+          `Long-running job detected.`,
+          { minutes: Math.floor((Date.now() - startTime) / 60000) },
+          { ...context, ...jobs[i].properties }
+        )
+      }, 60_000)
       try {
         const value = await jobs[i].execute({ ...context, properties: jobs[i].properties })
         results[i] = { status: 'fulfilled', value, properties: jobs[i].properties }
       } catch (reason) {
         results[i] = { status: 'rejected', reason, properties: jobs[i].properties }
+      } finally {
+        clearInterval(interval)
       }
     }
   }

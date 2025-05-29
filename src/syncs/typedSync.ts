@@ -3,6 +3,7 @@ import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
+import { log } from '../utils/log.js'
 import { convertTagsToRecord, Tags } from '../utils/tags.js'
 import { DataRecord, Sync, syncData, SyncOptions } from './sync.js'
 
@@ -372,12 +373,14 @@ export function createTypedSyncOperation<
     ) => {
       const awsId = credentials.accountId
 
+      log.trace('getting resources', { region: region, accountId, service: awsService, name })
       const resources = await paginateResourceConfig(
         resourceTypeSync,
         credentials,
         region,
         endpoint
       )
+      log.trace('received resources', { region: region, accountId, service: awsService, name })
 
       const records: DataRecord[] = resources.map((resource) => {
         const result = resourceTypeSync.results(resource)
