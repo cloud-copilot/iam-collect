@@ -150,7 +150,7 @@ export async function downloadData(
                 asrConfig.endpoint,
                 syncOptions
               )
-              log.trace(logDetails, 'Finished regional sync')
+              log.debug(logDetails, 'Finished regional sync')
             }
           })
         }
