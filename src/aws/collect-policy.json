@@ -24,6 +24,7 @@
         "elasticfilesystem:ListTagsForResource",
         "glacier:GetVaultAccessPolicy",
         "glacier:ListVaults",
+        "glacier:ListTagsForVault",
         "glue:GetResourcePolicy",
         "iam:GetAccountAuthorizationDetails",
         "iam:GetOpenIDConnectProvider",
