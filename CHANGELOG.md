@@ -1,3 +1,10 @@
+## [0.1.77](https://github.com/cloud-copilot/iam-collect/compare/v0.1.76...v0.1.77) (2025-05-29)
+
+
+### Features
+
+* Add HTTP timeouts ([7a74895](https://github.com/cloud-copilot/iam-collect/commit/7a74895f1c01a659a173a82e878f203ec7edee83))
+
 ## [0.1.76](https://github.com/cloud-copilot/iam-collect/compare/v0.1.75...v0.1.76) (2025-05-29)
 
 
