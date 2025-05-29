@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { parseCliArguments } from '@cloud-copilot/cli'
+import { conductLogAnalysis } from './analysis/analyze.js'
 import { loadConfigFiles } from './config/configFile.js'
 import { createDefaultConfiguration } from './config/createConfigFile.js'
 import { defaultConfigExists } from './config/defaultConfig.js'
@@ -90,6 +91,16 @@ const main = async () => {
             values: 'single'
           }
         }
+      },
+      'analyze-logs': {
+        description: 'Analyze iam-collect trace logs and summarize job execution times',
+        options: {
+          logFile: {
+            type: 'string',
+            description: 'The path to the log file to analyze',
+            values: 'single'
+          }
+        }
       }
     },
     {
@@ -143,6 +154,15 @@ const main = async () => {
       cli.args.services as AwsService[],
       cli.args.concurrency
     )
+  } else if (cli.subcommand === 'analyze-logs') {
+    if (!cli.args.logFile) {
+      console.error('You must specify a log file to analyze using --log-file')
+      process.exit(1)
+    }
+    const allComplete = await conductLogAnalysis(cli.args.logFile)
+    if (!allComplete) {
+      process.exit(1)
+    }
   }
 }
 
