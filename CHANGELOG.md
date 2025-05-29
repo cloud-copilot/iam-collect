@@ -1,3 +1,10 @@
+## [0.1.78](https://github.com/cloud-copilot/iam-collect/compare/v0.1.77...v0.1.78) (2025-05-29)
+
+
+### Features
+
+* Add a subcommand to analyze trace logs ([3cf9a78](https://github.com/cloud-copilot/iam-collect/commit/3cf9a78f3ea9d9fcc2d14143153c4ab5ac4c6c25))
+
 ## [0.1.77](https://github.com/cloud-copilot/iam-collect/compare/v0.1.76...v0.1.77) (2025-05-29)
 
 
