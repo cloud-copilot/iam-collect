@@ -1,3 +1,10 @@
+## [0.1.76](https://github.com/cloud-copilot/iam-collect/compare/v0.1.75...v0.1.76) (2025-05-29)
+
+
+### Features
+
+* Log long running jobs as warnings ([97f32cd](https://github.com/cloud-copilot/iam-collect/commit/97f32cd7f93b3fa783d73b16c08a96230504e1d7))
+
 ## [0.1.75](https://github.com/cloud-copilot/iam-collect/compare/v0.1.74...v0.1.75) (2025-05-24)
 
 
