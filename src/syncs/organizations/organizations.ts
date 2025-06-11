@@ -475,8 +475,9 @@ async function syncPolicies(
     }
   )
 
-  const newPolicyIds = new Set(policies.map((p) => p.Id!))
+  const newPolicyIds = new Set(policies.map((p) => p.Id!.toLowerCase()))
   const policiesToDelete = existingPolicies.filter((id) => !newPolicyIds.has(id))
+  // Delete policies that are no longer present in the organization
   for (const policyToDelete of policiesToDelete) {
     await storage.deleteOrganizationPolicy(organizationId, fileType, policyToDelete)
   }
