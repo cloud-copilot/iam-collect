@@ -1,3 +1,10 @@
+## [0.1.81](https://github.com/cloud-copilot/iam-collect/compare/v0.1.80...v0.1.81) (2025-06-11)
+
+
+### Features
+
+* Rename saved IAM policy documents and vpc endpoint policies. ([ed943d8](https://github.com/cloud-copilot/iam-collect/commit/ed943d84f47fc6d23271444662107820188a2d3f))
+
 ## [0.1.80](https://github.com/cloud-copilot/iam-collect/compare/v0.1.79...v0.1.80) (2025-06-08)
 
 ## [0.1.79](https://github.com/cloud-copilot/iam-collect/compare/v0.1.78...v0.1.79) (2025-05-31)
