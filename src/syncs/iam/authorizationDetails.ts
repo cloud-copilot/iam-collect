@@ -118,8 +118,10 @@ export const AuthorizationDetailsSync: Sync = {
           createDate: policy.CreateDate,
           updateDate: policy.UpdateDate
         },
-        policy: policy.PolicyVersionList?.filter((version) => version.IsDefaultVersion).at(0)
-          ?.Document,
+        'current-policy': policy.PolicyVersionList?.filter(
+          (version) => version.IsDefaultVersion
+        ).at(0)?.Document,
+        policy: undefined,
         tags: convertTagsToRecord(policy.Tags)
       }
     })
@@ -145,8 +147,10 @@ export const AuthorizationDetailsSync: Sync = {
           createDate: policy.CreateDate,
           updateDate: policy.UpdateDate
         },
-        policy: policy.PolicyVersionList?.filter((version) => version.IsDefaultVersion).at(0)
-          ?.Document
+        'current-policy': policy.PolicyVersionList?.filter(
+          (version) => version.IsDefaultVersion
+        ).at(0)?.Document,
+        policy: undefined
       }
     })
 

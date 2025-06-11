@@ -39,7 +39,8 @@ export const VpcEndpointsSync: Sync = createTypedSyncOperation(
         type: resource.VpcEndpointType,
         serviceName: resource.ServiceName
       },
-      policy: parseIfPresent(resource.PolicyDocument)
+      policy: undefined,
+      'endpoint-policy': parseIfPresent(resource.PolicyDocument)
     })
   })
 )
