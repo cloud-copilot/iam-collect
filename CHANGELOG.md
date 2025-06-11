@@ -1,3 +1,10 @@
+## [0.1.82](https://github.com/cloud-copilot/iam-collect/compare/v0.1.81...v0.1.82) (2025-06-11)
+
+
+### Bug Fixes
+
+* Don't redownload default SCPs and RCPs ([8a2c4b1](https://github.com/cloud-copilot/iam-collect/commit/8a2c4b1862174fa008d21d3ac507429c25107b48))
+
 ## [0.1.81](https://github.com/cloud-copilot/iam-collect/compare/v0.1.80...v0.1.81) (2025-06-11)
 
 
