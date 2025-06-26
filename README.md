@@ -140,6 +140,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | organizations     | SCPs, RCPs                        | id, arn, name, description, tags, policy                                                                               |
 | sns               | Topics                            | name, arn, tags, kms key id, policy                                                                                    |
 | sqs               | Queues                            | name, arn, tags, kms key id, policy                                                                                    |
+| secretsmanager    | Secrets                           | name, arn, tags, kms key id, policy                                                                                    |
 | sso               | Instances                         | id, arn, name, owner account id, status, tags                                                                          |
 | sso               | Permission Sets                   | name, description, AWS managed policies, customer managed policies, inline policy, permission boundary, accounts, tags |
 
