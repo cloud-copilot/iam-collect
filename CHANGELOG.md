@@ -1,3 +1,10 @@
+## [0.1.86](https://github.com/cloud-copilot/iam-collect/compare/v0.1.85...v0.1.86) (2025-07-01)
+
+
+### Features
+
+* Improved indexing of VPC and VPC Endpoints ([6703ebd](https://github.com/cloud-copilot/iam-collect/commit/6703ebdfc40cb9b4a7ee145ed6a2c8388edf9f25))
+
 ## [0.1.85](https://github.com/cloud-copilot/iam-collect/compare/v0.1.84...v0.1.85) (2025-06-26)
 
 ## [0.1.84](https://github.com/cloud-copilot/iam-collect/compare/v0.1.83...v0.1.84) (2025-06-21)
