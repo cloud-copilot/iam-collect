@@ -1,3 +1,10 @@
+## [0.1.87](https://github.com/cloud-copilot/iam-collect/compare/v0.1.86...v0.1.87) (2025-07-05)
+
+
+### Features
+
+* Start downloads sooner in the process, even as new jobs are being queued. ([f5ca595](https://github.com/cloud-copilot/iam-collect/commit/f5ca5954283b3134ea82a5be09cf026898c77131))
+
 ## [0.1.86](https://github.com/cloud-copilot/iam-collect/compare/v0.1.85...v0.1.86) (2025-07-01)
 
 
