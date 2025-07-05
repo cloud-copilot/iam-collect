@@ -181,7 +181,6 @@ export async function downloadData(
     }
     throw new Error(`Failed to download some data. See logs for details.`)
   }
-  log.info('Finished downloads', { jobs: downloadRunner.getResults().length })
 
   if (skipIndex) {
     log.info('Skipping indexing')
