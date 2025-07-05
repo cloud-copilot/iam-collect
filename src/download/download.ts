@@ -14,7 +14,7 @@ import {
 import { getPartitionDefaults } from '../config/partitionDefaults.js'
 import { getIndexersForService } from '../indexing/indexMap.js'
 import { IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
-import { Job, runJobs } from '../jobs/jobQueue.js'
+import { JobRunner } from '../jobs/jobRunner.js'
 import { defaultConcurrency } from '../jobs/util.js'
 import { createStorageClient } from '../persistence/util.js'
 import { getEnabledRegions } from '../regions.js'
@@ -52,8 +52,10 @@ export async function downloadData(
     throw new Error('No storage configuration found. Cannot download data.')
   }
 
-  const jobs: Job[] = []
   const indexJobs: IndexJob[] = []
+
+  log.debug('Starting download runner', { concurrency })
+  const downloadRunner = new JobRunner(concurrency)
 
   for (const accountId of accountIds) {
     log.info('Queuing downloads for account', { accountId })
@@ -89,7 +91,7 @@ export async function downloadData(
       )
 
       for (const globalSync of globalSyncs) {
-        jobs.push({
+        downloadRunner.enqueue({
           properties: { service, accountId, sync: globalSync.name },
           execute: async (context) => {
             const logDetails = {
@@ -132,7 +134,7 @@ export async function downloadData(
             log.debug({ service, accountId, region, syncName: sync.name }, 'Skipping regional sync')
             continue
           }
-          jobs.push({
+          downloadRunner.enqueue({
             properties: { service, accountId, region, sync: sync.name },
             execute: async (context) => {
               const logDetails = {
@@ -150,7 +152,7 @@ export async function downloadData(
                 asrConfig.endpoint,
                 syncOptions
               )
-              log.debug(logDetails, 'Finished regional sync')
+              log.trace(logDetails, 'Finished regional sync')
             }
           })
         }
@@ -168,9 +170,10 @@ export async function downloadData(
     }
   }
 
-  log.debug('Starting downloads', { jobs: jobs.length, concurrency })
-  const results = await runJobs(jobs, concurrency)
-  const failedJobs = results.filter((r) => r.status === 'rejected')
+  log.info('Waiting for downloads to complete')
+  await downloadRunner.finishAllWork()
+  log.info('Finished downloads', { jobs: downloadRunner.getResults().length })
+  const failedJobs = downloadRunner.getResults().filter((r) => r.status === 'rejected')
   if (failedJobs.length > 0) {
     log.error('Some downloads failed', { failedJobs: failedJobs.length })
     for (const failedJob of failedJobs) {
@@ -178,7 +181,6 @@ export async function downloadData(
     }
     throw new Error(`Failed to download some data. See logs for details.`)
   }
-  log.info('Finished downloads', { jobs: jobs.length })
 
   if (skipIndex) {
     log.info('Skipping indexing')
