@@ -1,3 +1,10 @@
+## [0.1.90](https://github.com/cloud-copilot/iam-collect/compare/v0.1.89...v0.1.90) (2025-07-15)
+
+
+### Bug Fixes
+
+* Limit downloading IAM Managed Policy tags to 5 max requests ([c8109cb](https://github.com/cloud-copilot/iam-collect/commit/c8109cb5917e6c088a91213da57e6624dd2a6c8d))
+
 ## [0.1.89](https://github.com/cloud-copilot/iam-collect/compare/v0.1.88...v0.1.89) (2025-07-12)
 
 ## [0.1.88](https://github.com/cloud-copilot/iam-collect/compare/v0.1.87...v0.1.88) (2025-07-08)
