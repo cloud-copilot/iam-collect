@@ -1,26 +1,11 @@
 import {
-  AccessKeyLastUsed,
-  AccessKeyMetadata,
-  GetAccessKeyLastUsedCommand,
   GetAccountAuthorizationDetailsCommand,
   GetAccountAuthorizationDetailsResponse,
-  GetLoginProfileCommand,
-  GetRolePolicyCommand,
-  GetUserPolicyCommand,
   GroupDetail,
   IAMClient,
-  ListAccessKeysCommand,
-  ListAttachedRolePoliciesCommand,
-  ListAttachedUserPoliciesCommand,
-  ListGroupsForUserCommand,
-  ListMFADevicesCommand,
   ListPolicyTagsCommand,
-  ListRolePoliciesCommand,
-  ListUserPoliciesCommand,
   ListUsersCommand,
-  LoginProfile,
   ManagedPolicyDetail,
-  MFADevice,
   RoleDetail,
   Tag,
   User,
@@ -29,14 +14,12 @@ import {
 
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { Job, runJobs } from '../../jobs/jobQueue.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
+import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
-
-interface AccessKeyWithLastUsed extends AccessKeyMetadata {
-  lastUsed?: AccessKeyLastUsed
-}
 
 export const AuthorizationDetailsSync: Sync = {
   awsService: 'iam',
@@ -187,92 +170,6 @@ export const AuthorizationDetailsSync: Sync = {
 }
 
 /**
- * Get the access keys for an IAM user.
- *
- * @param region The region to use for the API call
- * @param credentials The credentials to use for the API call
- * @param userName The name of the user to lookup the access keys for
- * @returns Returns a list of access keys for the user. Will return an empty array if there are no access keys
- */
-export async function getAccessKeysForUser(
-  client: IAMClient,
-  userName: string
-): Promise<AccessKeyWithLastUsed[]> {
-  const listAccessKeysCommand = new ListAccessKeysCommand({ UserName: userName })
-
-  const result = await runAndCatch404(() => {
-    return client.send(listAccessKeysCommand)
-  })
-  const accessKeys = result?.AccessKeyMetadata || []
-
-  const lastUsed = await Promise.all(
-    accessKeys.map(async (key) => {
-      const command = new GetAccessKeyLastUsedCommand({ AccessKeyId: key.AccessKeyId })
-      const result = await client.send(command)
-      return { keyId: key.AccessKeyId, results: result.AccessKeyLastUsed }
-    })
-  )
-
-  return accessKeys.map((key) => {
-    return {
-      ...key,
-      lastUsed: lastUsed.find((lu) => lu.keyId == key.AccessKeyId)?.results || undefined
-    }
-  })
-}
-
-/**
- * Get the login profile for an IAM user if it exists.
- *
- * @param region The region to use for the API call
- * @param credentials The credentials to use for the API call
- * @param userName The name of the user to lookup the login profile for
- * @returns Returns the login profile for the user if it exists. Otherwise returns undefined
- */
-export async function getLoginProfileForUser(
-  client: IAMClient,
-  userName: string
-): Promise<LoginProfile | undefined> {
-  const loginProfileCommand = new GetLoginProfileCommand({ UserName: userName })
-
-  return runAndCatch404<LoginProfile>(async () => {
-    const loginProfile = await client.send(loginProfileCommand)
-    return loginProfile.LoginProfile
-  })
-}
-
-/**
- * Get the MFA devices for an IAM user.
- *
- * @param region The region to use for the API call
- * @param credentials The credentials to use for the API call
- * @param userName The name of the user to lookup the MFA devices for
- * @returns Returns a list of MFA devices for the user. Will return an empty array if there are no MFA devices.
- */
-export async function getMfaDevicesForUser(
-  client: IAMClient,
-  userName: string
-): Promise<MFADevice[]> {
-  const listMfaDevicesCommand = new ListMFADevicesCommand({ UserName: userName })
-  const result = await runAndCatch404<MFADevice[]>(async () => {
-    const result = await client.send(listMfaDevicesCommand)
-    return result.MFADevices || []
-  })
-
-  return result || []
-}
-
-/**
- * Parses a username out of an ARN. Does not validate the ARN is a valid IAM user ARN.
- *
- * @param arn The arn to parse the username out of
- * @returns Returns the username from the ARN
- */
-export function parseUsernameFromArn(arn: string): string {
-  return arn.split('/').at(-1)!
-}
-
-/**
  * Get all IAM users in an account.
  *
  * @param region The region to use for the API call
@@ -294,89 +191,6 @@ export async function getAllUsers(client: IAMClient): Promise<User[]> {
   }
 
   return userList
-}
-
-export interface UserWithMetadata extends User {
-  metadata: {
-    hasConsoleAccess: boolean
-    createdAt: Date
-    passwordChanged?: Date
-    passwordLastUsed?: Date
-    mfaEnabled: boolean
-    numberAccessKeys: number
-    oldestAccessKey?: Date
-    accessKeyLastUsed?: Date
-    accessKeys?: AccessKeyWithLastUsed[]
-    managedPolicies: string[]
-    inlinePolicies: any[]
-    groups: string[]
-  }
-}
-
-/**
- * Get all IAM users in an account with metadata about each user.
- *
- * @param region The region to use for the API call
- * @param credentials The credentials to use for the API call
- * @returns Returns all users for the account with metadata about each user
- */
-export async function getAllUsersWithMetadata(client: IAMClient): Promise<UserWithMetadata[]> {
-  const users = await getAllUsers(client)
-  await Promise.all(users.map(async (user) => addMetaDataToUser(client, user as any)))
-  return users as UserWithMetadata[]
-}
-
-async function addMetaDataToUser(client: IAMClient, user: UserWithMetadata) {
-  user.metadata = {
-    hasConsoleAccess: false,
-    createdAt: user.CreateDate!,
-    passwordChanged: undefined,
-    passwordLastUsed: user.PasswordLastUsed,
-    mfaEnabled: false,
-    numberAccessKeys: 0,
-    accessKeys: [],
-    managedPolicies: [],
-    inlinePolicies: [],
-    groups: []
-  }
-
-  const [
-    loginProfile,
-    accessKeys,
-    mfaDevices,
-    userManagedPolicies,
-    userInlinePolicies,
-    userGroups
-  ] = await Promise.all([
-    getLoginProfileForUser(client, user.UserName!),
-    getAccessKeysForUser(client, user.UserName!),
-    getMfaDevicesForUser(client, user.UserName!),
-    getManagedPoliciesAttachedToUser(client, user.UserName!),
-    getInlinePolicesAttachedToUser(client, user.UserName!),
-    getGroupsForUser(client, user.UserName!)
-  ])
-
-  if (loginProfile) {
-    user.metadata.hasConsoleAccess = true
-    user.metadata.passwordChanged = loginProfile.CreateDate!
-  }
-
-  const activeKeys = accessKeys.filter((k) => k.Status == 'Active')
-  user.metadata.numberAccessKeys = activeKeys.length
-  user.metadata.oldestAccessKey = activeKeys
-    .map((k) => k.CreateDate!)
-    .sort()
-    .at(0)
-  user.metadata.accessKeyLastUsed = activeKeys
-    .map((k) => k.lastUsed?.LastUsedDate)
-    .sort()
-    .at(0)
-  user.metadata.accessKeys = activeKeys
-
-  user.metadata.mfaEnabled = mfaDevices.length > 0
-  user.metadata.managedPolicies = userManagedPolicies
-  user.metadata.inlinePolicies = userInlinePolicies
-  user.metadata.groups = userGroups
 }
 
 interface ManagedPolicyDetailWithExtraData extends ManagedPolicyDetail {
@@ -433,7 +247,7 @@ export async function getAuthorizationDetails(client: IAMClient): Promise<{
     marker = response.Marker
   } while (isTruncated)
 
-  const policiesWithTags = await getTagsForMangedPolicies(client, policyDetails)
+  const policiesWithTags = await getTagsForManagedPolicies(client, policyDetails)
 
   return {
     groups: groupDetails,
@@ -444,11 +258,21 @@ export async function getAuthorizationDetails(client: IAMClient): Promise<{
   }
 }
 
-async function getTagsForMangedPolicies(
+/**
+ * Download the tags for the managed policies.
+ *
+ * @param client the IAM client to use for the API call
+ * @param policies the policies to get the tags for
+ * @returns the policies with the tags added
+ */
+async function getTagsForManagedPolicies(
   client: IAMClient,
   policies: ManagedPolicyDetail[]
 ): Promise<ManagedPolicyDetailWithExtraData[]> {
-  const promises = policies.map(async (policy) => {
+  const policiesWithTags: ManagedPolicyDetailWithExtraData[] = []
+
+  const execute = async (context: any) => {
+    const { policy } = context.properties
     const command = new ListPolicyTagsCommand({ PolicyArn: policy.Arn! })
     const tags = await runAndCatch404(async () => {
       const result = await client.send(command)
@@ -458,51 +282,32 @@ async function getTagsForMangedPolicies(
       ...policy,
       Tags: tags
     }
-  })
+  }
 
-  return Promise.all(promises)
-}
-
-interface AttachedPolicy {
-  name: string
-  document: any
-}
-
-/**
- * Gets the policies that are attached directly to a role. Does not include managed policies.
- *
- * @param credentials The credentials to use for the API call
- * @param roleName The name of the role to get the policies for
- * @returns Returns the policies that are attached directly to the role
- */
-export async function getPoliciesAttachedDirectlyToRole(
-  client: IAMClient,
-  roleName: string
-): Promise<AttachedPolicy[]> {
-  const command = new ListRolePoliciesCommand({ RoleName: roleName })
-  const results = await client.send(command)
-  const roleNames = results.PolicyNames
-
-  const policyDetails = await Promise.all(
-    roleNames!.map(async (policyName) => {
-      const policyCommand = new GetRolePolicyCommand({ RoleName: roleName, PolicyName: policyName })
-      const policyResult = await client.send(policyCommand)
-      return policyResult
+  const jobs: Job<ManagedPolicyDetailWithExtraData, Record<string, unknown>>[] = policies.map(
+    (policy) => ({
+      properties: {
+        policy
+      },
+      execute
     })
   )
 
-  return policyDetails.map((policyDetail) => ({
-    name: policyDetail.PolicyName!,
-    document: JSON.parse(decodeURIComponent(policyDetail.PolicyDocument!))
-  }))
-}
+  const jobResults = await runJobs(jobs, 5)
+  for (const jobResult of jobResults) {
+    if (jobResult.status === 'fulfilled') {
+      policiesWithTags.push(jobResult.value)
+    } else {
+      // Log the error but continue processing other policies
+      const policyArn = (jobResult.properties.policy as ManagedPolicyDetail).Arn
+      log.error('Failed to get tags for policy', jobResult.reason, {
+        policyArn
+      })
+      throw new Error(`Failed to get tags for policy ${policyArn}. See logs for details.`)
+    }
+  }
 
-export async function getManagedPoliciesAttachedToRole(client: IAMClient, roleName: string) {
-  const command = new ListAttachedRolePoliciesCommand({ RoleName: roleName })
-  const results = await client.send(command)
-
-  const policies = results.AttachedPolicies!
-  return policies
+  return policiesWithTags
 }
 
 /**
@@ -579,66 +384,4 @@ function parseUserDocs(user: UserDetail) {
   }
 
   return user
-}
-
-/**
- * Get the managed policies attached to a user.
- *
- * @param client The IAM client to use
- * @param username The user's username
- * @returns Returns the ARNs of the managed policies attached to the user
- */
-async function getManagedPoliciesAttachedToUser(
-  client: IAMClient,
-  username: string
-): Promise<string[]> {
-  const command = new ListAttachedUserPoliciesCommand({ UserName: username })
-  const results = await client.send(command)
-  const policyArns = results.AttachedPolicies!.map((policy) => policy.PolicyArn!)
-
-  return policyArns
-}
-
-/**
- * Get the inline policies attached to a user.
- *
- * @param client The IAM client to use
- * @param username The username of the user
- * @returns Returns the inline policies attached to the user
- */
-async function getInlinePolicesAttachedToUser(
-  client: IAMClient,
-  username: string
-): Promise<{ name: string; document: any }[]> {
-  const command = new ListUserPoliciesCommand({ UserName: username })
-  const results = await client.send(command)
-  const policyNames = results.PolicyNames
-
-  const policyDetails = await Promise.all(
-    policyNames!.map(async (policyName) => {
-      const policyCommand = new GetUserPolicyCommand({ UserName: username, PolicyName: policyName })
-      const policyResult = await client.send(policyCommand)
-      return {
-        name: policyName,
-        document: JSON.parse(decodeURIComponent(policyResult.PolicyDocument!))
-      }
-    })
-  )
-
-  return policyDetails
-}
-
-/**
- * Get the groups a user is a member of.
- *
- * @param client The IAM client to use
- * @param username The username of the user
- * @returns Returns the ARNs of the groups the user is a member of
- */
-async function getGroupsForUser(client: IAMClient, username: string): Promise<string[]> {
-  const command = new ListGroupsForUserCommand({ UserName: username })
-  const results = await client.send(command)
-  const groupArns = results.Groups!.map((group) => group.Arn!)
-
-  return groupArns
 }
