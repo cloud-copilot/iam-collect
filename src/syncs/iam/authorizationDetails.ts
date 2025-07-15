@@ -247,7 +247,7 @@ export async function getAuthorizationDetails(client: IAMClient): Promise<{
     marker = response.Marker
   } while (isTruncated)
 
-  const policiesWithTags = await getTagsForMangedPolicies(client, policyDetails)
+  const policiesWithTags = await getTagsForManagedPolicies(client, policyDetails)
 
   return {
     groups: groupDetails,
@@ -265,7 +265,7 @@ export async function getAuthorizationDetails(client: IAMClient): Promise<{
  * @param policies the policies to get the tags for
  * @returns the policies with the tags added
  */
-async function getTagsForMangedPolicies(
+async function getTagsForManagedPolicies(
   client: IAMClient,
   policies: ManagedPolicyDetail[]
 ): Promise<ManagedPolicyDetailWithExtraData[]> {
