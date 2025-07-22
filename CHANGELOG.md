@@ -1,3 +1,10 @@
+## [0.1.92](https://github.com/cloud-copilot/iam-collect/compare/v0.1.91...v0.1.92) (2025-07-22)
+
+
+### Features
+
+* Allow disabling initialRole on specified accounts. ([9b98467](https://github.com/cloud-copilot/iam-collect/commit/9b9846759fa97056e16653b74051831e6fd7e6f0))
+
 ## [0.1.91](https://github.com/cloud-copilot/iam-collect/compare/v0.1.90...v0.1.91) (2025-07-19)
 
 ## [0.1.90](https://github.com/cloud-copilot/iam-collect/compare/v0.1.89...v0.1.90) (2025-07-15)
