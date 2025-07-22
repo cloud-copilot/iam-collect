@@ -10,34 +10,36 @@ export interface AuthConfig {
    * An optional initial Role to assume in the first phase of the authentication process before
    * assuming any roles in the target accounts.
    */
-  initialRole?: (
-    | {
+  initialRole?:
+    | ((
+        | {
+            /**
+             * Specify the ARN OR the path and name of the role to assume.
+             *
+             * Use arn if you want to always assume a role in a specific account.
+             */
+            arn: string
+          }
+        | {
+            /**
+             * Specify the path and name OR the ARN of the role to assume.
+             *
+             * Use pathAndName if you want to assume a role in the same account as your default credentials.
+             */
+            pathAndName: string
+          }
+      ) & {
         /**
-         * Specify the ARN OR the path and name of the role to assume.
-         *
-         * Use arn if you want to always assume a role in a specific account.
+         * Optional, the external id to use when assuming the role.
          */
-        arn: string
-      }
-    | {
-        /**
-         * Specify the path and name OR the ARN of the role to assume.
-         *
-         * Use pathAndName if you want to assume a role in the same account as your default credentials.
-         */
-        pathAndName: string
-      }
-  ) & {
-    /**
-     * Optional, the external id to use when assuming the role.
-     */
-    externalId?: string
+        externalId?: string
 
-    /**
-     * Optional, the session name to use when assuming the role.
-     */
-    sessionName?: string
-  }
+        /**
+         * Optional, the session name to use when assuming the role.
+         */
+        sessionName?: string
+      })
+    | null
 
   // Optional if you want to assume a role, if profile and role are both present, the profile will be used to assume the role.
   role?: {
@@ -425,16 +427,21 @@ function mergeAuthConfigs(
   if (!newConfig) {
     return initialConfig
   }
+  initialConfig = structuredClone(initialConfig)
 
   if ('profile' in newConfig) {
     initialConfig.profile = newConfig.profile
   }
 
   if ('initialRole' in newConfig) {
-    initialConfig.initialRole = {
-      ...(initialConfig.initialRole || {}),
-      ...newConfig.initialRole
-    } as AuthConfig['initialRole']
+    if (newConfig.initialRole === null) {
+      delete initialConfig.initialRole
+    } else {
+      initialConfig.initialRole = {
+        ...(initialConfig.initialRole || {}),
+        ...newConfig.initialRole
+      } as AuthConfig['initialRole']
+    }
   }
 
   if ('role' in newConfig) {
