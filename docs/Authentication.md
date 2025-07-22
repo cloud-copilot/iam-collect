@@ -18,6 +18,8 @@ Authentication is configured in the `iam-collect.jsonc` file. Anytime `auth` is 
   `initialRole` is used to bootstrap the process of assuming roles in different accounts.
   So you can use your default credentials to assume an initial scanning role.  Then that role
   will be used to assume the `role` specified in the `role` section for each account that is scanned.
+
+  Set to `null` on an individual account to skip assuming the initial role for that account.
   */
   "initialRole": {
     // **Specify either `arn` or `pathAndName`, NOT both.**
@@ -106,6 +108,29 @@ Replace `<account-id>` with the 12-digit AWS account ID.
 ```
 
 In this example the process will start by authenticating with the `collect-profile` profile. Then for each account, it will assume the `infra/iam-collect` role using the external ID specified in the `accountConfigs` section. So for `account-id-1` it will use `external-id-1` and for `account-id-2` it will use `external-id-2`.
+
+## Skip initial Role for a Specific Account
+
+To skip assuming the initial role for a specific account, set the `initialRole` to `null` in the `accountConfigs` section:
+
+```jsonc
+{
+  "auth": {
+    /* root-level auth */
+    "initialRole": {
+      "pathAndName": "MyInitialOrgrole"
+    }
+  },
+  "accountConfigs": {
+    "<special-account-id>": {
+      "auth": {
+        // Skip the initial role for this account only
+        "initialRole": null
+      }
+    }
+  }
+}
+```
 
 ## Overriding Auth By Account/Service
 

@@ -401,6 +401,41 @@ const getAccountAuthConfigTests: {
     }
   },
   {
+    name: 'should delete initialRole if override by account is null',
+    accountId: '123456789012',
+    configs: [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        auth: {
+          profile: 'default',
+          role: {
+            pathAndName: 'my-role'
+          },
+          initialRole: {
+            pathAndName: 'initial-role'
+          }
+        },
+        accountConfigs: {
+          '123456789012': {
+            auth: {
+              role: {
+                pathAndName: 'override-role'
+              },
+              initialRole: null
+            }
+          }
+        }
+      }
+    ],
+    result: {
+      profile: 'default',
+      role: {
+        pathAndName: 'override-role'
+      }
+    }
+  },
+  {
     name: 'should return the account specific config if no default config is provided',
     accountId: '123456789012',
     configs: [
