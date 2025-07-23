@@ -1,3 +1,10 @@
+## [0.1.93](https://github.com/cloud-copilot/iam-collect/compare/v0.1.92...v0.1.93) (2025-07-23)
+
+
+### Bug Fixes
+
+* Fix parsing of API Gateway resource policies ([2b2d4b7](https://github.com/cloud-copilot/iam-collect/commit/2b2d4b7687135fb2ae93ce7a451ab93c281173d4))
+
 ## [0.1.92](https://github.com/cloud-copilot/iam-collect/compare/v0.1.91...v0.1.92) (2025-07-22)
 
 

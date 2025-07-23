@@ -1,6 +1,6 @@
 {
   "name": "@cloud-copilot/iam-collect",
-  "version": "0.1.92",
+  "version": "0.1.93",
   "description": "Collect IAM information from AWS Accounts",
   "repository": {
     "type": "git",
