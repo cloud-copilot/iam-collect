@@ -1,3 +1,10 @@
+## [0.1.95](https://github.com/cloud-copilot/iam-collect/compare/v0.1.94...v0.1.95) (2025-07-24)
+
+
+### Features
+
+* Warn of KMS key policy access denied errors, but do not fail ([00031ae](https://github.com/cloud-copilot/iam-collect/commit/00031ae678c8cc1a644bcb1dff10ae73a6829c9e))
+
 ## [0.1.94](https://github.com/cloud-copilot/iam-collect/compare/v0.1.93...v0.1.94) (2025-07-24)
 
 
