@@ -18,6 +18,9 @@ export const SqsQueueSync = createTypedSyncOperation(
       inputKey: 'NextToken',
       outputKey: 'NextToken'
     },
+    arguments: (accountId, region) => ({
+      MaxResults: 1000
+    }),
     arn: (queue, region, account, partition) => {
       const queueName = queue.name.split('/').pop()
       return `arn:${partition}:sqs:${region}:${account}:${queueName}`

@@ -104,44 +104,44 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 
 ## Supported Services and Data
 
-| Service           | Resource Type                     | Data Downloaded                                                                                                        |
-| ----------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| iam               | Users                             | name, path, id, groups, tags, inline policies, managed policies, permission boundary                                   |
-| iam               | Groups                            | name, path, id, inline policies, managed policies                                                                      |
-| iam               | Roles                             | name, path, id, trust policy, inline policies, managed policies, instance profiles, tags, permission boundary          |
-| iam               | Customer and AWS Managed Policies | name, path, id, default version, default version doc, tags                                                             |
-| iam               | OIDC Providers                    | arn, audiences, thumbprints, url, tags                                                                                 |
-| iam               | SAML Providers                    | arn, metadata document, uuid, private keys, valid until, tags                                                          |
-| iam               | Instance Profiles                 | arn, name, roles, id, path, tags                                                                                       |
-| apigateway        | Rest APIs                         | id, name, policy, tags                                                                                                 |
-| backup            | Backup Vaults                     | name, key arn, tags, policy                                                                                            |
-| dynamodb          | Streams                           | name, arn, region, resource policy                                                                                     |
-| dynamodb          | Tables                            | name, arn, region, tags, resource policy                                                                               |
-| ecr               | Repositories                      | name, arn, region, tags, resource policy, key id                                                                       |
-| ecr               | Registries                        | policy                                                                                                                 |
-| ec2               | VPC Endpoints                     | id, name, type, vpc, policy                                                                                            |
-| elasticfilesystem | File Systems                      | name, id, key, encryption, tags, policy                                                                                |
-| glacier           | Vaults                            | name, arn, region, tags, policy                                                                                        |
-| glue              | Root Catalogs                     | policy                                                                                                                 |
-| kms               | Keys                              | id, policy, tags                                                                                                       |
-| lambda            | Functions                         | name, role, tags, policy                                                                                               |
-| lambda            | Layer Versions                    | name, arn, version, policy                                                                                             |
-| ram               | Shared Resources                  | arn, resource shares, resource policy                                                                                  |
-| s3                | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints         |
-| s3                | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                      |
-| s3                | Multi Region Access Points        | name, alias, regions, policy, block public access configuration                                                        |
-| s3express         | Directory Buckets                 | name, encryption settings, policy                                                                                      |
-| s3outposts        | Outpost Buckets                   | name, region, tags, policy                                                                                             |
-| s3outposts        | Outpost Access Points             | name, bucket, bucket account, policy, network origin, vpc                                                              |
-| s3tables          | Table Buckets                     | name, region, bucket policy, encryption                                                                                |
-| organizations     | Organizations                     | id, arn, root account id, enabled policy types, org structure                                                          |
-| organizations     | Organizational Units              | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
-| organizations     | Accounts                          | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                   |
-| organizations     | SCPs, RCPs                        | id, arn, name, description, tags, policy                                                                               |
-| sns               | Topics                            | name, arn, tags, kms key id, policy                                                                                    |
-| sqs               | Queues                            | name, arn, tags, kms key id, policy                                                                                    |
-| secretsmanager    | Secrets                           | name, arn, tags, kms key id, policy                                                                                    |
-| sso               | Instances                         | id, arn, name, owner account id, status, tags                                                                          |
-| sso               | Permission Sets                   | name, description, AWS managed policies, customer managed policies, inline policy, permission boundary, accounts, tags |
+| Service           | Resource Type                     | Data Downloaded                                                                                                                     |
+| ----------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| iam               | Users                             | name, path, id, groups, tags, inline policies, managed policies, permission boundary                                                |
+| iam               | Groups                            | name, path, id, inline policies, managed policies                                                                                   |
+| iam               | Roles                             | name, path, id, trust policy, inline policies, managed policies, instance profiles, tags (excluded by default), permission boundary |
+| iam               | Customer and AWS Managed Policies | name, path, id, default version, default version doc, tags                                                                          |
+| iam               | OIDC Providers                    | arn, audiences, thumbprints, url, tags                                                                                              |
+| iam               | SAML Providers                    | arn, metadata document, uuid, private keys, valid until, tags                                                                       |
+| iam               | Instance Profiles                 | arn, name, roles, id, path, tags                                                                                                    |
+| apigateway        | Rest APIs                         | id, name, policy, tags                                                                                                              |
+| backup            | Backup Vaults                     | name, key arn, tags, policy                                                                                                         |
+| dynamodb          | Streams                           | name, arn, region, resource policy                                                                                                  |
+| dynamodb          | Tables                            | name, arn, region, tags, resource policy                                                                                            |
+| ecr               | Repositories                      | name, arn, region, tags, resource policy, key id                                                                                    |
+| ecr               | Registries                        | policy                                                                                                                              |
+| ec2               | VPC Endpoints                     | id, name, type, vpc, policy                                                                                                         |
+| elasticfilesystem | File Systems                      | name, id, key, encryption, tags, policy                                                                                             |
+| glacier           | Vaults                            | name, arn, region, tags, policy                                                                                                     |
+| glue              | Root Catalogs                     | policy                                                                                                                              |
+| kms               | Keys                              | id, policy, tags                                                                                                                    |
+| lambda            | Functions                         | name, role, tags, policy                                                                                                            |
+| lambda            | Layer Versions                    | name, arn, version, policy                                                                                                          |
+| ram               | Shared Resources                  | arn, resource shares, resource policy                                                                                               |
+| s3                | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints                      |
+| s3                | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                                   |
+| s3                | Multi Region Access Points        | name, alias, regions, policy, block public access configuration                                                                     |
+| s3express         | Directory Buckets                 | name, encryption settings, policy                                                                                                   |
+| s3outposts        | Outpost Buckets                   | name, region, tags, policy                                                                                                          |
+| s3outposts        | Outpost Access Points             | name, bucket, bucket account, policy, network origin, vpc                                                                           |
+| s3tables          | Table Buckets                     | name, region, bucket policy, encryption                                                                                             |
+| organizations     | Organizations                     | id, arn, root account id, enabled policy types, org structure                                                                       |
+| organizations     | Organizational Units              | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                                |
+| organizations     | Accounts                          | id, arn, parent ou, enabled SCPs, enabled RCPs, tags                                                                                |
+| organizations     | SCPs, RCPs                        | id, arn, name, description, tags, policy                                                                                            |
+| sns               | Topics                            | name, arn, tags, kms key id, policy                                                                                                 |
+| sqs               | Queues                            | name, arn, tags, kms key id, policy                                                                                                 |
+| secretsmanager    | Secrets                           | name, arn, tags, kms key id, policy                                                                                                 |
+| sso               | Instances                         | id, arn, name, owner account id, status, tags                                                                                       |
+| sso               | Permission Sets                   | name, description, AWS managed policies, customer managed policies, inline policy, permission boundary, accounts, tags              |
 
 If you don't see the data you are looking for, please check the [open resource issues](https://github.com/cloud-copilot/iam-collect/issues?q=is%3Aissue%20state%3Aopen%20label%3Aresource) and comment on the issue or create a new one.

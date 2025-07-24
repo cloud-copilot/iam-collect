@@ -104,6 +104,7 @@ interface ServiceConfig extends Omit<BaseConfig, 'auth'> {
 }
 
 interface SyncConfig {
+  custom?: Record<string, any>
   regions?: {
     included?: string[]
     excluded?: string[]
@@ -130,6 +131,7 @@ export interface TopLevelConfig extends BaseConfig {
 
 type ServicesForAccount = AwsService[]
 type RegionsForAccountService = string[]
+type RegionsForAccount = string[]
 interface AccountServiceRegionConfig {
   auth?: AuthConfig
   endpoint?: string
@@ -191,6 +193,49 @@ export function servicesForAccount(
   }
 
   return services as ServicesForAccount
+}
+
+/**
+ * Look up the custom config for a specific sync for a service in an account and region.
+ *
+ * @param service the service to look up the sync for
+ * @param syncName the name of the sync to look up
+ * @param account the account to look up the sync for
+ * @param region the region to look up the sync for
+ * @param configs the configs to search
+ * @returns the custom config for the sync, or undefined if not found
+ */
+export function customConfigForSync(
+  service: string,
+  syncName: string,
+  account: string,
+  region: string,
+  configs: TopLevelConfig[]
+): Record<string, any> | undefined {
+  // Look up the custom config for the specified service and sync name
+  for (const config of [...configs].reverse()) {
+    const accountServiceConfig = config.accountConfigs?.[account]?.serviceConfigs?.[service]
+    const accountServiceRegionConfig =
+      accountServiceConfig?.regionConfigs?.[region]?.syncConfigs?.[syncName]
+    if (accountServiceRegionConfig?.custom) {
+      return accountServiceRegionConfig.custom
+    }
+    if (accountServiceConfig?.syncConfigs?.[syncName]?.custom) {
+      return accountServiceConfig.syncConfigs[syncName].custom
+    }
+
+    const serviceRegionConfig = config.serviceConfigs?.[service]?.regionConfigs?.[region]
+    if (serviceRegionConfig?.syncConfigs?.[syncName]?.custom) {
+      return serviceRegionConfig.syncConfigs[syncName].custom
+    }
+
+    const serviceConfig = config.serviceConfigs?.[service]
+    if (serviceConfig?.syncConfigs?.[syncName]?.custom) {
+      return serviceConfig.syncConfigs[syncName].custom
+    }
+  }
+
+  return undefined
 }
 
 /**

@@ -1,8 +1,12 @@
+import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 
-export interface SyncOptions {}
+export interface SyncOptions {
+  workerPool: ConcurrentWorkerPool
+  customConfig?: Record<string, any>
+}
 
 export interface Sync {
   /**

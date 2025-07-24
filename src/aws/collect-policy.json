@@ -99,12 +99,6 @@
         "sso:ListTagsForResource"
       ],
       "Resource": "*"
-    },
-    {
-      "Sid": "AssumeRoles",
-      "Effect": "Allow",
-      "Action": "sts:AssumeRole",
-      "Resource": "*"
     }
   ]
 }

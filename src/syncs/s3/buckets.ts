@@ -16,6 +16,12 @@ import { runAndCatch404 } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
+interface SuccessfulJob {
+  status: 'fulfilled'
+  value: any
+  properties: any
+}
+
 export const S3GeneralPurposeBucketSync: Sync = {
   awsService: 's3',
   name: 'generalPurposeBuckets',
@@ -42,11 +48,47 @@ export const S3GeneralPurposeBucketSync: Sync = {
 
     const augmentedBuckets = await Promise.all(
       allBuckets.map(async (bucket) => {
+        const [tagsJob, blockPublicAccessConfigJob, bucketPolicyJob, encryptionJob] =
+          await Promise.all(
+            syncOptions.workerPool.enqueueAll([
+              {
+                execute: () => {
+                  return getTagsForBucket(s3Client, bucket)
+                },
+                properties: {}
+              },
+              {
+                execute: () => {
+                  return getBucketPublicAccessSettings(s3Client, bucket)
+                },
+                properties: {}
+              },
+              {
+                execute: () => {
+                  return getBucketPolicy(s3Client, bucket, credentials.accountId)
+                },
+                properties: {}
+              },
+              {
+                execute: () => {
+                  return getBucketEncryptionSettings(s3Client, bucket)
+                },
+                properties: {}
+              }
+            ])
+          )
+
+        for (const job of [tagsJob, blockPublicAccessConfigJob, bucketPolicyJob, encryptionJob]) {
+          if (job.status === 'rejected') {
+            throw job.reason
+          }
+        }
+
         const [tags, blockPublicAccessConfig, bucketPolicy, encryption] = await Promise.all([
-          getTagsForBucket(s3Client, bucket),
-          getBucketPublicAccessSettings(s3Client, bucket),
-          getBucketPolicy(s3Client, bucket, credentials.accountId),
-          getBucketEncryptionSettings(s3Client, bucket)
+          (tagsJob as SuccessfulJob).value,
+          (blockPublicAccessConfigJob as SuccessfulJob).value,
+          (bucketPolicyJob as SuccessfulJob).value,
+          (encryptionJob as SuccessfulJob).value
         ])
 
         const arn = `arn:${credentials.partition}:s3:::${bucket.Name}`
