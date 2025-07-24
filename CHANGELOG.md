@@ -1,3 +1,10 @@
+## [0.1.94](https://github.com/cloud-copilot/iam-collect/compare/v0.1.93...v0.1.94) (2025-07-24)
+
+
+### Features
+
+* Maintain a maximum concurrency across all jobs ([#180](https://github.com/cloud-copilot/iam-collect/issues/180)) ([08e8b11](https://github.com/cloud-copilot/iam-collect/commit/08e8b114780871cbd372a576a6a4576fd63b13cc))
+
 ## [0.1.93](https://github.com/cloud-copilot/iam-collect/compare/v0.1.92...v0.1.93) (2025-07-23)
 
 
