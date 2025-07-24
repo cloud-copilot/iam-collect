@@ -196,28 +196,6 @@ export function servicesForAccount(
 }
 
 /**
- * Look up any regions that have been configured for a specific account or overall, which
- * may be none.
- *
- * @param account the account to get the regions for
- * @param configs the configs to search
- */
-// export function configuredRegionsForAccount(
-//   account: string,
-//   configs: TopLevelConfig[]
-// ): RegionsForAccount {
-//   let allRegions: RegionsForAccount[] = []
-//   for (const config of configs) {
-//     if (config.regions?.included) {
-//       allRegions.push(config.regions.included)
-//     }
-//     if (config.accountConfigs?.[account]?.regions?.included) {
-//       allRegions.push(config.accountConfigs[account].regions.included)
-//     }
-//   }
-// }
-
-/**
  * Look up the custom config for a specific sync for a service in an account and region.
  *
  * @param service the service to look up the sync for
