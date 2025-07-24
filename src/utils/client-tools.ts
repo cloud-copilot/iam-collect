@@ -25,7 +25,8 @@ export async function runAndCatch404<T>(
  * @throws If operation returns a non 400 error, rethrows that error.
  */
 export async function runAndCatchAccessDenied<T>(
-  operation: () => Promise<T | undefined>
+  operation: () => Promise<T | undefined>,
+  onError?: (error: any) => Promise<T | undefined>
 ): Promise<T | undefined> {
   try {
     const result = await operation()
@@ -34,6 +35,9 @@ export async function runAndCatchAccessDenied<T>(
     const errorName = e.name
 
     if (errorName == 'AccessDeniedException' || errorName == 'AccessDenied') {
+      if (onError) {
+        return onError(e)
+      }
       return undefined
     }
     throw e
@@ -51,13 +55,17 @@ export async function runAndCatchAccessDenied<T>(
 
 export async function runAndCatchError<T>(
   errorName: string,
-  operation: () => Promise<T | undefined>
+  operation: () => Promise<T | undefined>,
+  onError?: (error: any) => Promise<T | undefined>
 ): Promise<T | undefined> {
   try {
     const result = await operation()
     return result
   } catch (e: any) {
     if (e.name == errorName) {
+      if (onError) {
+        return onError(e)
+      }
       return undefined
     }
     throw e
