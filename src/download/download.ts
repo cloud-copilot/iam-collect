@@ -1,7 +1,9 @@
+import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { getCredentials } from '../aws/auth.js'
 import { getNewInitialCredentials } from '../aws/coreAuth.js'
 import {
   accountServiceRegionConfig,
+  customConfigForSync,
   getAccountAuthConfig,
   getConfiguredAccounts,
   getDefaultAuthConfig,
@@ -56,6 +58,7 @@ export async function downloadData(
 
   log.debug('Starting download runner', { concurrency })
   const downloadRunner = new JobRunner(concurrency)
+  const workerPool = new ConcurrentWorkerPool(concurrency, log)
 
   for (const accountId of accountIds) {
     log.info('Queuing downloads for account', { accountId })
@@ -73,7 +76,9 @@ export async function downloadData(
     if (services.length === 0) {
       services = allServices as unknown as string[]
     }
-    const syncOptions = {}
+    const syncOptions = {
+      workerPool
+    }
 
     const enabledServices = servicesForAccount(accountId, accountConfigs, services)
     for (const service of enabledServices) {
@@ -91,6 +96,14 @@ export async function downloadData(
       )
 
       for (const globalSync of globalSyncs) {
+        const customConfig = customConfigForSync(
+          service,
+          globalSync.name,
+          accountId,
+          globalRegion,
+          accountConfigs
+        )
+
         downloadRunner.enqueue({
           properties: { service, accountId, sync: globalSync.name },
           execute: async (context) => {
@@ -106,7 +119,7 @@ export async function downloadData(
               globalCredentials,
               storage,
               globalConfig.endpoint,
-              syncOptions
+              { ...syncOptions, customConfig }
             )
             log.trace(logDetails, 'Finished global sync')
           }
@@ -134,6 +147,13 @@ export async function downloadData(
             log.debug({ service, accountId, region, syncName: sync.name }, 'Skipping regional sync')
             continue
           }
+          const customConfig = customConfigForSync(
+            service,
+            sync.name,
+            accountId,
+            region,
+            accountConfigs
+          )
           downloadRunner.enqueue({
             properties: { service, accountId, region, sync: sync.name },
             execute: async (context) => {
@@ -150,7 +170,7 @@ export async function downloadData(
                 regionalCredentials,
                 storage,
                 asrConfig.endpoint,
-                syncOptions
+                { ...syncOptions, customConfig }
               )
               log.trace(logDetails, 'Finished regional sync')
             }

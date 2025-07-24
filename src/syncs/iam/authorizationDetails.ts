@@ -12,9 +12,9 @@ import {
   UserDetail
 } from '@aws-sdk/client-iam'
 
+import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
-import { Job, runJobs } from '../../jobs/jobQueue.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
@@ -34,7 +34,11 @@ export const AuthorizationDetailsSync: Sync = {
     syncOptions: SyncOptions
   ): Promise<void> => {
     const client = AwsClientPool.defaultInstance.client(IAMClient, credentials, region, endpoint)
-    const authDetails = await getAuthorizationDetails(client)
+    const authDetails = await getAuthorizationDetails(
+      client,
+      syncOptions.workerPool,
+      syncOptions.customConfig
+    )
     const roles = authDetails.roles || []
     const roleData = roles.map((role) => {
       return {
@@ -204,7 +208,11 @@ interface ManagedPolicyDetailWithExtraData extends ManagedPolicyDetail {
  * @param credentials The credentials to use for the API call
  * @returns Returns the results of the Authorization Details call for this account
  */
-export async function getAuthorizationDetails(client: IAMClient): Promise<{
+export async function getAuthorizationDetails(
+  client: IAMClient,
+  concurrentWorkerPool: ConcurrentWorkerPool<any, any>,
+  customConfig?: Record<string, any>
+): Promise<{
   groups: GroupDetail[]
   roles: RoleDetail[]
   policies: ManagedPolicyDetailWithExtraData[]
@@ -240,14 +248,17 @@ export async function getAuthorizationDetails(client: IAMClient): Promise<{
       } else {
         policyDetails.push(policyDetail)
       }
-      // policyDetails.push(...(response.Policies?.map(parsePolicyDocs) || []))
     }
 
     isTruncated = !!response.IsTruncated
     marker = response.Marker
   } while (isTruncated)
 
-  const policiesWithTags = await getTagsForManagedPolicies(client, policyDetails)
+  let policiesWithTags: ManagedPolicyDetailWithExtraData[] = policyDetails
+  if (customConfig?.includePolicyTags) {
+    log.info('Including policy tags in authorization details sync')
+    policiesWithTags = await getTagsForManagedPolicies(client, policyDetails, concurrentWorkerPool)
+  }
 
   return {
     groups: groupDetails,
@@ -267,10 +278,10 @@ export async function getAuthorizationDetails(client: IAMClient): Promise<{
  */
 async function getTagsForManagedPolicies(
   client: IAMClient,
-  policies: ManagedPolicyDetail[]
+  policies: ManagedPolicyDetail[],
+  concurrentWorkerPool: ConcurrentWorkerPool<any, any>
 ): Promise<ManagedPolicyDetailWithExtraData[]> {
   const policiesWithTags: ManagedPolicyDetailWithExtraData[] = []
-
   const execute = async (context: any) => {
     const { policy } = context.properties
     const command = new ListPolicyTagsCommand({ PolicyArn: policy.Arn! })
@@ -283,7 +294,6 @@ async function getTagsForManagedPolicies(
       Tags: tags
     }
   }
-
   const jobs: Job<ManagedPolicyDetailWithExtraData, Record<string, unknown>>[] = policies.map(
     (policy) => ({
       properties: {
@@ -292,8 +302,7 @@ async function getTagsForManagedPolicies(
       execute
     })
   )
-
-  const jobResults = await runJobs(jobs, 5)
+  const jobResults = await Promise.all(concurrentWorkerPool.enqueueAll(jobs))
   for (const jobResult of jobResults) {
     if (jobResult.status === 'fulfilled') {
       policiesWithTags.push(jobResult.value)
@@ -306,7 +315,6 @@ async function getTagsForManagedPolicies(
       throw new Error(`Failed to get tags for policy ${policyArn}. See logs for details.`)
     }
   }
-
   return policiesWithTags
 }
 

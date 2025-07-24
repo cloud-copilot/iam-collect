@@ -1,3 +1,4 @@
+import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
 import type { Client, Command } from '@smithy/smithy-client'
 import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
@@ -271,7 +272,8 @@ export async function paginateResourceConfig<
   resourceTypeSync: ResourceSyncType<C, Cmd, K, ExtraFieldsFunc>,
   credentials: AwsCredentialIdentityWithMetaData,
   region: string,
-  endpoint: string | undefined
+  endpoint: string | undefined,
+  workerPool: ConcurrentWorkerPool<any, any>
 ): Promise<ExtendedResourceElementType<C, Cmd, K, ExtraFieldsFunc>[]> {
   const accountId = credentials.accountId
   const partition = credentials.partition
@@ -310,26 +312,40 @@ export async function paginateResourceConfig<
             ) => Promise<{}>
           >(fields)
         //Get the extra field values
-        const extraFieldValues: [string, any][] = await Promise.all(
-          extraFields.map(async ([key, callback]) => {
-            const value = await callback(
-              client as any,
-              resource,
-              credentials.accountId,
-              region,
-              partition
+        const extraFieldPromises = workerPool.enqueueAll(
+          extraFields.map(([key, callback]) => ({
+            properties: { field: key },
+            execute: async (context): Promise<[string, any]> => {
+              const value = await callback(
+                client as any,
+                resource,
+                credentials.accountId,
+                region,
+                partition
+              )
+              return [key, value] as [string, any]
+            }
+          })) as Job<[string, any], Record<string, unknown>>[]
+        )
+
+        const extraFieldValues = await Promise.all(extraFieldPromises)
+        resource.extraFields = {}
+        let anyFailure = false
+        for (const result of extraFieldValues) {
+          if (result.status === 'rejected') {
+            log.error(
+              { error: result.reason, field: result.properties.field },
+              'Failed to get extra field value'
             )
-            return [key, value]
-          })
-        )
-
-        //Map the extra field values to an object
-        const extraFieldsObject = extraFieldValues.reduce(
-          (acc, [key, value]) => ({ ...acc, [key]: value }),
-          {}
-        )
-
-        resource.extraFields = extraFieldsObject
+            anyFailure = true
+          } else {
+            const value = result.value as [string, any]
+            resource.extraFields[value[0]] = value[1]
+          }
+        }
+        if (anyFailure) {
+          throw new Error('Failed to get some extra field values')
+        }
       })
     )
   }
@@ -378,7 +394,8 @@ export function createTypedSyncOperation<
         resourceTypeSync,
         credentials,
         region,
-        endpoint
+        endpoint,
+        syncOptions.workerPool
       )
       log.trace('received resources', { region: region, accountId, service: awsService, name })
 

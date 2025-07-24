@@ -4,6 +4,15 @@ const partitionDefaults: Record<string, TopLevelConfig> = {
   aws: {
     iamCollectVersion: '0.0.0',
     serviceConfigs: {
+      iam: {
+        syncConfigs: {
+          authorizationDetails: {
+            custom: {
+              includePolicyTags: false
+            }
+          }
+        }
+      },
       s3: {
         syncConfigs: {
           multiRegionAccessPoints: {
@@ -38,6 +47,15 @@ const partitionDefaults: Record<string, TopLevelConfig> = {
       excluded: ['s3express']
     },
     serviceConfigs: {
+      iam: {
+        syncConfigs: {
+          authorizationDetails: {
+            custom: {
+              includePolicyTags: false
+            }
+          }
+        }
+      },
       s3: {
         syncConfigs: {
           multiRegionAccessPoints: {
@@ -55,6 +73,15 @@ const partitionDefaults: Record<string, TopLevelConfig> = {
       excluded: ['s3express']
     },
     serviceConfigs: {
+      iam: {
+        syncConfigs: {
+          authorizationDetails: {
+            custom: {
+              includePolicyTags: false
+            }
+          }
+        }
+      },
       s3: {
         syncConfigs: {
           multiRegionAccessPoints: {

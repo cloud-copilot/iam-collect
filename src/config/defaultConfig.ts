@@ -62,6 +62,34 @@ const defaultConfig = `
   */
 
   /*
+  "serviceConfigs": {
+    "iam": {
+      "syncConfigs": {
+        "authorizationDetails": {
+          "custom": {
+            // If true, the authorization details sync will include tags for managed policies.
+            // This can significantly increase the time it takes to sync.
+            "includePolicyTags": true
+          }
+        }
+      }
+    }
+    "s3": {
+      "syncConfigs": {
+        "multiRegionAccessPoints": {
+          "regions": {
+            // Multi-Region Access Points are only available in us-west-2 in the aws partition
+            // If using a different partition, you can specify the region for that partition here
+            "included": ["us-west-2"]
+          }
+        }
+      }
+    }
+  },
+
+  */
+
+  /*
   Optionally specify separate configurations for accounts:
   "accountConfigs": {
     "123456789012": {

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   accountServiceRegionConfig,
   AuthConfig,
+  customConfigForSync,
   getAccountAuthConfig,
   getConfiguredAccounts,
   getDefaultAuthConfig,
@@ -1243,5 +1244,232 @@ describe('getConfiguredAccounts', () => {
 
     // Then it should return an empty array
     expect(result).toEqual([])
+  })
+})
+
+describe('customConfigForSync', () => {
+  it('should return undefined if no custom config is found', () => {
+    // Given configs with no custom sync config
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {}
+            }
+          }
+        }
+      }
+    ]
+
+    // When customConfigForSync is called
+    const result = customConfigForSync('s3', 'buckets', '123456789012', 'us-east-1', configs)
+
+    // Then it should return undefined
+    expect(result).toBeUndefined()
+  })
+
+  it('should return service level custom config', () => {
+    // Given configs with service level custom config
+    const customConfig = { batchSize: 100, timeout: 30000 }
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {
+                custom: customConfig
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When customConfigForSync is called
+    const result = customConfigForSync('s3', 'buckets', '123456789012', 'us-east-1', configs)
+
+    // Then it should return the service level custom config
+    expect(result).toEqual(customConfig)
+  })
+
+  it('should return service region level custom config', () => {
+    // Given configs with service region level custom config
+    const serviceCustomConfig = { batchSize: 100 }
+    const regionCustomConfig = { batchSize: 200, retries: 3 }
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {
+                custom: serviceCustomConfig
+              }
+            },
+            regionConfigs: {
+              'us-east-1': {
+                syncConfigs: {
+                  buckets: {
+                    custom: regionCustomConfig
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When customConfigForSync is called
+    const result = customConfigForSync('s3', 'buckets', '123456789012', 'us-east-1', configs)
+
+    // Then it should return the region level custom config
+    expect(result).toEqual(regionCustomConfig)
+  })
+
+  it('should return account service level custom config', () => {
+    // Given configs with account service level custom config
+    const serviceCustomConfig = { batchSize: 100 }
+    const accountServiceCustomConfig = { batchSize: 150, parallel: true }
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {
+                custom: serviceCustomConfig
+              }
+            }
+          }
+        },
+        accountConfigs: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                syncConfigs: {
+                  buckets: {
+                    custom: accountServiceCustomConfig
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When customConfigForSync is called
+    const result = customConfigForSync('s3', 'buckets', '123456789012', 'us-east-1', configs)
+
+    // Then it should return the account service level custom config
+    expect(result).toEqual(accountServiceCustomConfig)
+  })
+
+  it('should return account service region level custom config with highest precedence', () => {
+    // Given configs with all levels of custom config
+    const serviceCustomConfig = { batchSize: 100 }
+    const regionCustomConfig = { batchSize: 200 }
+    const accountServiceCustomConfig = { batchSize: 150 }
+    const accountRegionCustomConfig = { batchSize: 250, maxRetries: 5 }
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {
+                custom: serviceCustomConfig
+              }
+            },
+            regionConfigs: {
+              'us-east-1': {
+                syncConfigs: {
+                  buckets: {
+                    custom: regionCustomConfig
+                  }
+                }
+              }
+            }
+          }
+        },
+        accountConfigs: {
+          '123456789012': {
+            serviceConfigs: {
+              s3: {
+                syncConfigs: {
+                  buckets: {
+                    custom: accountServiceCustomConfig
+                  }
+                },
+                regionConfigs: {
+                  'us-east-1': {
+                    syncConfigs: {
+                      buckets: {
+                        custom: accountRegionCustomConfig
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When customConfigForSync is called
+    const result = customConfigForSync('s3', 'buckets', '123456789012', 'us-east-1', configs)
+
+    // Then it should return the account region level custom config (highest precedence)
+    expect(result).toEqual(accountRegionCustomConfig)
+  })
+
+  it('should return the last config when multiple configs exist', () => {
+    // Given multiple configs with custom sync config
+    const firstCustomConfig = { batchSize: 100 }
+    const secondCustomConfig = { batchSize: 200, timeout: 5000 }
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {
+                custom: firstCustomConfig
+              }
+            }
+          }
+        }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        serviceConfigs: {
+          s3: {
+            syncConfigs: {
+              buckets: {
+                custom: secondCustomConfig
+              }
+            }
+          }
+        }
+      }
+    ]
+
+    // When customConfigForSync is called
+    const result = customConfigForSync('s3', 'buckets', '123456789012', 'us-east-1', configs)
+
+    // Then it should return the last custom config
+    expect(result).toEqual(secondCustomConfig)
   })
 })
