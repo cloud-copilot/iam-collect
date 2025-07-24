@@ -1,3 +1,10 @@
+## [0.1.96](https://github.com/cloud-copilot/iam-collect/compare/v0.1.95...v0.1.96) (2025-07-24)
+
+
+### Bug Fixes
+
+* Incorrect extension on export ([60bd605](https://github.com/cloud-copilot/iam-collect/commit/60bd60578ecadc86dbf0e9bc1df477f8b5987376))
+
 ## [0.1.95](https://github.com/cloud-copilot/iam-collect/compare/v0.1.94...v0.1.95) (2025-07-24)
 
 
