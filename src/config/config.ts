@@ -131,7 +131,7 @@ export interface TopLevelConfig extends BaseConfig {
 
 type ServicesForAccount = AwsService[]
 type RegionsForAccountService = string[]
-type RegionsForAccount = string[]
+type AccountRegionList = string[]
 interface AccountServiceRegionConfig {
   auth?: AuthConfig
   endpoint?: string
@@ -236,6 +236,30 @@ export function customConfigForSync(
   }
 
   return undefined
+}
+
+/**
+ * Look up the region list from the provided configs, if any.
+ *
+ * @param configs the configs to search
+ * @param accountId the account id to look up the region list for
+ * @returns the configured region list for the account, or undefined if none found
+ */
+export function configuredRegionListForAccount(
+  configs: TopLevelConfig[],
+  accountId: string
+): AccountRegionList | undefined {
+  let accountRegionList: string[] | undefined = undefined
+  let masterRegionList: string[] | undefined = undefined
+  for (const config of configs) {
+    if (config.accountConfigs?.[accountId]?.regions?.included) {
+      accountRegionList = config.accountConfigs[accountId].regions.included
+    }
+    if (config.regions?.included) {
+      masterRegionList = config.regions.included
+    }
+  }
+  return accountRegionList || masterRegionList
 }
 
 /**
