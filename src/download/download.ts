@@ -220,11 +220,11 @@ async function getAccountRegions(
 
   const configuredRegions = configuredRegionListForAccount(configs, accountId)
   if (configuredRegions) {
-    log.debug('Using configured regions', { regions: configuredRegions, accountId: accountId })
+    log.debug('Using configured regions', { regions: configuredRegions, accountId })
     return configuredRegions
   } else {
     log.debug('No configured regions found, discovering regions for account', {
-      accountId: accountId
+      accountId
     })
     return getEnabledRegions(accountCredentials)
   }
