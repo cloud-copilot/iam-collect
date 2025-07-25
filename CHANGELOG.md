@@ -1,3 +1,10 @@
+## [0.1.97](https://github.com/cloud-copilot/iam-collect/compare/v0.1.96...v0.1.97) (2025-07-25)
+
+
+### Features
+
+* Skip calling ListRegions for an account if there is an included regions list configured ([d7ec1e4](https://github.com/cloud-copilot/iam-collect/commit/d7ec1e4b5ebf6edc4f7531d81d1ed41d7f41c238))
+
 ## [0.1.96](https://github.com/cloud-copilot/iam-collect/compare/v0.1.95...v0.1.96) (2025-07-24)
 
 
