@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   accountServiceRegionConfig,
   AuthConfig,
+  configuredRegionListForAccount,
   customConfigForSync,
   getAccountAuthConfig,
   getConfiguredAccounts,
@@ -1471,5 +1472,135 @@ describe('customConfigForSync', () => {
 
     // Then it should return the last custom config
     expect(result).toEqual(secondCustomConfig)
+  })
+})
+
+describe('configuredRegionListForAccount', () => {
+  it('should return undefined if nothing is configured', () => {
+    // Given configs with no region configuration
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage
+      }
+    ]
+
+    // When configuredRegionListForAccount is called
+    const result = configuredRegionListForAccount(configs, '123456789012')
+
+    // Then it should return undefined
+    expect(result).toBeUndefined()
+  })
+
+  it('should return the last configured region list if multiple configs exist', () => {
+    // Given multiple configs with master region lists
+    const firstRegions = ['us-east-1', 'us-west-2']
+    const secondRegions = ['eu-west-1', 'ap-southeast-1']
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: firstRegions
+        }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: secondRegions
+        }
+      }
+    ]
+
+    // When configuredRegionListForAccount is called
+    const result = configuredRegionListForAccount(configs, '123456789012')
+
+    // Then it should return the last configured master region list
+    expect(result).toEqual(secondRegions)
+  })
+
+  it('should return the account specific region list if configured', () => {
+    // Given configs with both master and account-specific region lists
+    const masterRegions = ['us-east-1', 'us-west-1', 'eu-west-1']
+    const accountRegions = ['us-east-1', 'us-west-2']
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: masterRegions
+        },
+        accountConfigs: {
+          '123456789012': {
+            regions: {
+              included: accountRegions
+            }
+          }
+        }
+      }
+    ]
+
+    // When configuredRegionListForAccount is called
+    const result = configuredRegionListForAccount(configs, '123456789012')
+
+    // Then it should return the account-specific region list
+    expect(result).toEqual(accountRegions)
+  })
+
+  it('should return the account region list if master and account region lists exist', () => {
+    // Given configs with master regions and account-specific regions in separate configs
+    const masterRegions = ['us-east-1', 'us-west-1', 'eu-west-1']
+    const accountRegions = ['us-east-1', 'us-west-2']
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        accountConfigs: {
+          '123456789012': {
+            regions: {
+              included: accountRegions
+            }
+          }
+        }
+      },
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: masterRegions
+        }
+      }
+    ]
+
+    // When configuredRegionListForAccount is called
+    const result = configuredRegionListForAccount(configs, '123456789012')
+
+    // Then it should return the account region list (takes precedence)
+    expect(result).toEqual(accountRegions)
+  })
+
+  it('should return master region list when no account-specific regions exist', () => {
+    // Given configs with only master region list
+    const masterRegions = ['us-east-1', 'us-west-1', 'eu-west-1']
+    const configs: TopLevelConfig[] = [
+      {
+        iamCollectVersion: defaultVersion,
+        storage: defaultStorage,
+        regions: {
+          included: masterRegions
+        }
+      }
+    ]
+
+    // When configuredRegionListForAccount is called
+    const result = configuredRegionListForAccount(configs, '123456789012')
+
+    // Then it should return the master region list
+    expect(result).toEqual(masterRegions)
   })
 })

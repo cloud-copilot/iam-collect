@@ -76,7 +76,11 @@ This setting only affects that account; global `services` and CLI flags still ap
 
 ## Selecting Regions
 
-If no regions are specified on the CLI, iam-collect calls the [ListRegions](https://docs.aws.amazon.com/accounts/latest/reference/API_ListRegions.html) API to get a list of all enabled regions for each account scanned.
+iam-collect calls the [ListRegions](https://docs.aws.amazon.com/accounts/latest/reference/API_ListRegions.html) API to get a list of all enabled regions for each account scanned unless:
+
+1. Regions are specified on the CLI via `--regions` or
+2. A `regions.included` array is configured at the top level of the config file or
+3. A `accountConfigs.<account_id>.regions.included` array is configured for the account
 
 You can use your config file to specify which regions are scanned for all accounts and services via the top‑level `regions` block:
 

@@ -1,8 +1,9 @@
 import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { getCredentials } from '../aws/auth.js'
-import { getNewInitialCredentials } from '../aws/coreAuth.js'
+import { AwsCredentialIdentityWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
 import {
   accountServiceRegionConfig,
+  configuredRegionListForAccount,
   customConfigForSync,
   getAccountAuthConfig,
   getConfiguredAccounts,
@@ -67,10 +68,7 @@ export async function downloadData(
     const partition = credentials.partition
     const partitionConfig = getPartitionDefaults(partition)
     const accountConfigs = [partitionConfig, ...configs]
-
-    if (regions.length === 0) {
-      regions = await getEnabledRegions(credentials)
-    }
+    const accountRegions = await getAccountRegions(regions, accountId, configs, credentials)
 
     const storage = createStorageClient(storageConfig, partition)
     if (services.length === 0) {
@@ -83,7 +81,7 @@ export async function downloadData(
     const enabledServices = servicesForAccount(accountId, accountConfigs, services)
     for (const service of enabledServices) {
       log.info('Queuing downloads', { service, accountId })
-      const serviceRegions = regionsForService(service, accountId, accountConfigs, regions)
+      const serviceRegions = regionsForService(service, accountId, accountConfigs, accountRegions)
 
       //Global syncs for the service
       const globalSyncs = getGlobalSyncsForService(service)
@@ -208,4 +206,26 @@ export async function downloadData(
   }
 
   await runIndexJobs(indexJobs, storageConfig, concurrency)
+}
+
+async function getAccountRegions(
+  allRegions: string[],
+  accountId: string,
+  configs: TopLevelConfig[],
+  accountCredentials: AwsCredentialIdentityWithMetaData
+): Promise<string[]> {
+  if (allRegions.length > 0) {
+    return allRegions
+  }
+
+  const configuredRegions = configuredRegionListForAccount(configs, accountId)
+  if (configuredRegions) {
+    log.debug('Using configured regions', { regions: configuredRegions, accountId: accountId })
+    return configuredRegions
+  } else {
+    log.debug('No configured regions found, discovering regions for account', {
+      accountId: accountId
+    })
+    return getEnabledRegions(accountCredentials)
+  }
 }
