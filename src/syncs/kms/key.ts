@@ -35,7 +35,7 @@ export const KeySync = createTypedSyncOperation(
         })
       },
       policy: async (client, key) => {
-        runAndCatchAccessDenied(
+        return runAndCatchAccessDenied(
           async () => {
             return runAndCatch404(async () => {
               const policyResult = await client.send(
