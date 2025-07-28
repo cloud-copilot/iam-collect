@@ -1,3 +1,10 @@
+## [0.1.99](https://github.com/cloud-copilot/iam-collect/compare/v0.1.98...v0.1.99) (2025-07-28)
+
+
+### Bug Fixes
+
+* Await download of key policies ([d9a1981](https://github.com/cloud-copilot/iam-collect/commit/d9a19819d68f5e4b23aca3782007d7eecbfd1a9c))
+
 ## [0.1.98](https://github.com/cloud-copilot/iam-collect/compare/v0.1.97...v0.1.98) (2025-07-26)
 
 ## [0.1.97](https://github.com/cloud-copilot/iam-collect/compare/v0.1.96...v0.1.97) (2025-07-25)
