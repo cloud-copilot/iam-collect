@@ -1,3 +1,10 @@
+## [0.1.101](https://github.com/cloud-copilot/iam-collect/compare/v0.1.100...v0.1.101) (2025-08-02)
+
+
+### Features
+
+* Patch SDK Behavior to leverage AWS_DEFAULT_REGION ([e61a04c](https://github.com/cloud-copilot/iam-collect/commit/e61a04ce2c2d34f7f0a78c0dd5bbea73d729a520))
+
 ## [0.1.100](https://github.com/cloud-copilot/iam-collect/compare/v0.1.99...v0.1.100) (2025-08-02)
 
 ## [0.1.99](https://github.com/cloud-copilot/iam-collect/compare/v0.1.98...v0.1.99) (2025-07-28)
