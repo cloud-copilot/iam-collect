@@ -20,7 +20,7 @@ Get every possible policy in any set of AWS accounts. This is built to run out o
 
 ## iam-collect Tenets
 
-1. _Centralized_ Store [all your data](#supported-services-and-data-downloaded) across all partitions, organizations, accounts, and regions in one place. This is a single source of truth for all your IAM data.
+1. _Centralized_ Store [all your data](#supported-services-and-data) across all partitions, organizations, accounts, and regions in one place. This is a single source of truth for all your IAM data.
 2. _Easy_ A few commands and you can get started and everything should just work. If resources no longer exist, data is cleaned up automatically.
 3. _Configurable_ Store your data on [disk or in S3](docs/Storage.md). You can configure exactly what [accounts, regions, and services](docs/Filtering.md) you want to collect data for; and [customize auth](docs/Authentication.md) for each.
 

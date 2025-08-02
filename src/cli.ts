@@ -11,6 +11,15 @@ import { index } from './index/index.js'
 import { AwsService } from './services.js'
 import { LogLevels, setLogLevel } from './utils/log.js'
 
+/**
+ * For some reason the AWS SDK v3 looks for AWS_REGION and not AWS_DEFAULT_REGION
+ * even though other SDKs and the CLI use AWS_DEFAULT_REGION. To make things easier
+ * for users, if AWS_DEFAULT_REGION is set and AWS_REGION is not, copy it over.
+ */
+if (process.env.AWS_DEFAULT_REGION && !process.env.AWS_REGION) {
+  process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION
+}
+
 const main = async () => {
   const version = await iamCollectVersion()
   const cli = parseCliArguments(
