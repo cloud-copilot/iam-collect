@@ -1,4 +1,7 @@
 export type { StorageConfig, TopLevelConfig } from './config/config.js'
 export { loadConfigFiles } from './config/configFile.js'
+export { downloadData } from './download/download.js'
+export { index } from './index/index.js'
 export type { AwsIamStore } from './persistence/AwsIamStore.js'
 export { createInMemoryStorageClient, createStorageClient } from './persistence/util.js'
+export type { allServices, AwsService } from './services.js'
