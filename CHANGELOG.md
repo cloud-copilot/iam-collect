@@ -1,3 +1,10 @@
+## [0.1.102](https://github.com/cloud-copilot/iam-collect/compare/v0.1.101...v0.1.102) (2025-08-06)
+
+
+### Features
+
+* Export downloadData and index functions ([cbba38d](https://github.com/cloud-copilot/iam-collect/commit/cbba38d4860561ab944e72139083e283a74ef996))
+
 ## [0.1.101](https://github.com/cloud-copilot/iam-collect/compare/v0.1.100...v0.1.101) (2025-08-02)
 
 
