@@ -62,6 +62,12 @@ const main = async () => {
             type: 'boolean',
             description: 'Skip refreshing the indexes after downloading',
             character: 'n'
+          },
+          writeOnly: {
+            type: 'boolean',
+            description:
+              'Only write data for discovered resources and ignore any existing data. May improve performance if you know you have no existing data',
+            character: 'w'
           }
         }
       },
@@ -149,7 +155,8 @@ const main = async () => {
       cli.args.regions,
       cli.args.services,
       cli.args.concurrency,
-      cli.args.noIndex
+      cli.args.noIndex,
+      cli.args.writeOnly
     )
   } else if (cli.subcommand === 'index') {
     const defaultConfig = './iam-collect.jsonc'

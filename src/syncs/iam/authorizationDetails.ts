@@ -59,11 +59,17 @@ export const AuthorizationDetailsSync: Sync = {
       }
     })
 
-    await syncData(roleData, storage, accountId, {
-      service: 'iam',
-      resourceType: 'role',
-      account: accountId
-    })
+    await syncData(
+      roleData,
+      storage,
+      accountId,
+      {
+        service: 'iam',
+        resourceType: 'role',
+        account: accountId
+      },
+      syncOptions.writeOnly
+    )
 
     const groupArns: Record<string, string> = {}
 
@@ -84,11 +90,17 @@ export const AuthorizationDetailsSync: Sync = {
       }
     })
 
-    await syncData(groupData, storage, accountId, {
-      service: 'iam',
-      resourceType: 'group',
-      account: accountId
-    })
+    await syncData(
+      groupData,
+      storage,
+      accountId,
+      {
+        service: 'iam',
+        resourceType: 'group',
+        account: accountId
+      },
+      syncOptions.writeOnly
+    )
 
     const customerPolicyData = authDetails.policies.map((policy) => {
       return {
@@ -113,11 +125,17 @@ export const AuthorizationDetailsSync: Sync = {
       }
     })
 
-    await syncData(customerPolicyData, storage, accountId, {
-      service: 'iam',
-      resourceType: 'policy',
-      account: accountId
-    })
+    await syncData(
+      customerPolicyData,
+      storage,
+      accountId,
+      {
+        service: 'iam',
+        resourceType: 'policy',
+        account: accountId
+      },
+      syncOptions.writeOnly
+    )
 
     const awsManagedPolicyData = authDetails.awsManagedPolicies.map((policy) => {
       return {
@@ -141,11 +159,17 @@ export const AuthorizationDetailsSync: Sync = {
       }
     })
 
-    await syncData(awsManagedPolicyData, storage, accountId, {
-      service: 'iam',
-      resourceType: 'policy',
-      account: 'aws'
-    })
+    await syncData(
+      awsManagedPolicyData,
+      storage,
+      accountId,
+      {
+        service: 'iam',
+        resourceType: 'policy',
+        account: 'aws'
+      },
+      syncOptions.writeOnly
+    )
 
     const userData = authDetails.users.map((user) => {
       return {
@@ -165,11 +189,17 @@ export const AuthorizationDetailsSync: Sync = {
       }
     })
 
-    syncData(userData, storage, accountId, {
-      service: 'iam',
-      resourceType: 'user',
-      account: accountId
-    })
+    syncData(
+      userData,
+      storage,
+      accountId,
+      {
+        service: 'iam',
+        resourceType: 'user',
+        account: accountId
+      },
+      syncOptions.writeOnly
+    )
   }
 }
 

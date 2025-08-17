@@ -107,7 +107,7 @@ async function runIndexers(
   let saved: boolean = false
   let saveAttempts: number = 0
   const indexer = indexerJobs[0].indexer
-  const storage = createStorageClient(storageConfig, partition)
+  const storage = createStorageClient(storageConfig, partition, false)
 
   while (!saved && saveAttempts < 3) {
     const cache = await indexer.getCache(storage)

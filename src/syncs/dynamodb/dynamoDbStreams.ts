@@ -50,16 +50,22 @@ export const DynamoDbStreamsSync: Sync = {
       })
     }
 
-    await syncData(streams, storage, accountId, {
-      // Stream ARNS start with the table ARN, so we use table as the resource type
-      // and then set the metadata to indicate that this is a stream resource
-      service: 'dynamodb',
-      resourceType: 'table',
-      account: accountId,
-      region: region,
-      metadata: {
-        stream: 'true'
-      }
-    })
+    await syncData(
+      streams,
+      storage,
+      accountId,
+      {
+        // Stream ARNS start with the table ARN, so we use table as the resource type
+        // and then set the metadata to indicate that this is a stream resource
+        service: 'dynamodb',
+        resourceType: 'table',
+        account: accountId,
+        region: region,
+        metadata: {
+          stream: 'true'
+        }
+      },
+      syncOptions.writeOnly
+    )
   }
 }

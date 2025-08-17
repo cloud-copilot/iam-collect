@@ -112,11 +112,17 @@ export const LambdaLayerVersionsSync: Sync = {
       }
     }
 
-    await syncData(allLayerVersions, storage, accountId, {
-      service: 'lambda',
-      resourceType: 'layer',
-      account: accountId,
-      region: region
-    })
+    await syncData(
+      allLayerVersions,
+      storage,
+      accountId,
+      {
+        service: 'lambda',
+        resourceType: 'layer',
+        account: accountId,
+        region: region
+      },
+      syncOptions.writeOnly
+    )
   }
 }
