@@ -1,3 +1,10 @@
+## [0.1.104](https://github.com/cloud-copilot/iam-collect/compare/v0.1.103...v0.1.104) (2025-08-18)
+
+
+### Features
+
+* Add a new write only mode that will not clean up existing data. ([3798b0e](https://github.com/cloud-copilot/iam-collect/commit/3798b0e0fb4f3c6ebaa54e62af02356417032934))
+
 ## [0.1.103](https://github.com/cloud-copilot/iam-collect/compare/v0.1.102...v0.1.103) (2025-08-09)
 
 ## [0.1.102](https://github.com/cloud-copilot/iam-collect/compare/v0.1.101...v0.1.102) (2025-08-06)
