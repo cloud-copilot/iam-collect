@@ -33,9 +33,8 @@ import { log } from '../utils/log.js'
  * @param regions the regions to download data from
  * @param services the services to download data from
  * @param concurrency the maximum number of concurrent downloads
- * @param writeOnly whether to only write data and sync any existing data
  * @param skipIndex whether to skip indexing the downloaded data
- * @returns
+ * @param writeOnly only write the data returned from AWS, do not delete any existing data
  */
 export async function downloadData(
   configs: TopLevelConfig[],
