@@ -5,6 +5,7 @@ import { AwsService } from '../services.js'
 
 export interface SyncOptions {
   workerPool: ConcurrentWorkerPool
+  writeOnly: boolean
   customConfig?: Record<string, any>
 }
 
@@ -45,19 +46,23 @@ export type DataRecord = Record<string, any> & { arn: string }
  * 1. Delete any resources that meet the `resourceTypeParts` and are not in the `records` list.
  * 2. Save all resources that are in the `records`.
  *
- * @param records
- * @param storage
- * @param accountId
- * @param resourceTypeParts
+ * @param records the records to synchronize, must include the ARN
+ * @param storage the storage client to use for updating metadata
+ * @param accountId the account ID to synchronize data for
+ * @param resourceTypeParts the resource type parts to synchronize
+ * @param writeOnly if true, will only write data and not delete any existing data
  */
 export async function syncData(
   records: DataRecord[],
   storage: AwsIamStore,
   accountId: string,
-  resourceTypeParts: ResourceTypeParts
+  resourceTypeParts: ResourceTypeParts,
+  writeOnly: boolean
 ) {
-  const allArns = records.map((r) => r.arn)
-  await storage.syncResourceList(accountId, resourceTypeParts, allArns)
+  if (!writeOnly) {
+    const allArns = records.map((r) => r.arn)
+    await storage.syncResourceList(accountId, resourceTypeParts, allArns)
+  }
 
   for (const record of records) {
     for (const [key, value] of Object.entries(record)) {

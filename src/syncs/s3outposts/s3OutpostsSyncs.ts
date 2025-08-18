@@ -75,15 +75,21 @@ export const S3OutpostsBucketsSync: Sync = {
       }
     }
 
-    await syncData(regionalBuckets, storage, accountId, {
-      service: 's3outposts',
-      resourceType: 'outpost',
-      account: accountId,
-      region: region,
-      metadata: {
-        bucket: 'true'
-      }
-    })
+    await syncData(
+      regionalBuckets,
+      storage,
+      accountId,
+      {
+        service: 's3outposts',
+        resourceType: 'outpost',
+        account: accountId,
+        region: region,
+        metadata: {
+          bucket: 'true'
+        }
+      },
+      syncOptions.writeOnly
+    )
   }
 }
 
@@ -142,15 +148,21 @@ export const S3OutpostsAccessPointsSync: Sync = {
       }
     }
 
-    await syncData(accessPoints, storage, accountId, {
-      service: 's3outposts',
-      resourceType: 'outpost',
-      account: accountId,
-      region: region,
-      metadata: {
-        accesspoint: 'true'
-      }
-    })
+    await syncData(
+      accessPoints,
+      storage,
+      accountId,
+      {
+        service: 's3outposts',
+        resourceType: 'outpost',
+        account: accountId,
+        region: region,
+        metadata: {
+          accesspoint: 'true'
+        }
+      },
+      syncOptions.writeOnly
+    )
   }
 }
 

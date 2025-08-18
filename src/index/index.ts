@@ -18,7 +18,7 @@ export async function index(
   if (!storageConfig) {
     throw new Error('No storage configuration found. Cannot index data.')
   }
-  const storage = createStorageClient(storageConfig, partition)
+  const storage = createStorageClient(storageConfig, partition, false)
 
   if (accountIds.length === 0) {
     accountIds = await storage.listAccountIds()

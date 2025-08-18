@@ -88,7 +88,6 @@
         "sqs:ListQueueTags",
         "sqs:GetQueueAttributes",
         "sso:DescribePermissionSet",
-        "sso:DescribePermissionsPolicies",
         "sso:GetInlinePolicyForPermissionSet",
         "sso:GetPermissionsBoundaryForPermissionSet",
         "sso:ListAccountsForProvisionedPermissionSet",

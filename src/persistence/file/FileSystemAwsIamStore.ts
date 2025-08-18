@@ -1,20 +1,20 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { join } from 'path'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
+import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
-import { FileSystemAdapter } from './FileSystemAdapter.js'
 
 export class FileSystemAwsIamStore implements AwsIamStore {
-  private fsAdapter: FileSystemAdapter
+  private fsAdapter: PathBasedPersistenceAdapter
 
   constructor(
     private readonly baseFolder: string,
     private readonly partition: string,
     private readonly separator: string,
-    fsAdapter?: FileSystemAdapter
+    fsAdapter: PathBasedPersistenceAdapter
   ) {
     this.baseFolder = join(baseFolder, 'aws', partition)
-    this.fsAdapter = fsAdapter || new FileSystemAdapter()
+    this.fsAdapter = fsAdapter
   }
 
   private organizationPath(organizationId: string): string {

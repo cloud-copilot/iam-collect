@@ -4,6 +4,8 @@ import { dirname, join } from 'path'
 import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 
 export class FileSystemAdapter implements PathBasedPersistenceAdapter {
+  constructor(private readonly deleteData: boolean) {}
+
   async writeFile(filePath: string, data: string | Buffer): Promise<void> {
     // Ensure the directory exists
     const dir = dirname(filePath)
@@ -69,6 +71,9 @@ export class FileSystemAdapter implements PathBasedPersistenceAdapter {
   }
 
   async deleteFile(filePath: string): Promise<void> {
+    if (!this.deleteData) {
+      return
+    }
     try {
       await unlink(filePath)
     } catch (err: any) {
@@ -79,6 +84,9 @@ export class FileSystemAdapter implements PathBasedPersistenceAdapter {
   }
 
   async deleteDirectory(dirPath: string): Promise<void> {
+    if (!this.deleteData) {
+      return
+    }
     try {
       await rm(dirPath, { recursive: true, force: true })
     } catch (err: any) {

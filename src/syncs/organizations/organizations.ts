@@ -212,12 +212,15 @@ export const OrganizationSync: Sync = {
     storage.saveOrganizationMetadata(organizationId, 'ous', allOus)
 
     // Sync OUs
-    const persistedOus = await storage.listOrganizationalUnits(organizationId)
-    const newOus = new Set(Object.keys(ouDetails))
-    const deletedOus = persistedOus.filter((ou) => !newOus.has(ou))
-    for (const ouToDelete of deletedOus) {
-      await storage.deleteOrganizationalUnit(organizationId, ouToDelete)
+    if (!syncOptions.writeOnly) {
+      const persistedOus = await storage.listOrganizationalUnits(organizationId)
+      const newOus = new Set(Object.keys(ouDetails))
+      const deletedOus = persistedOus.filter((ou) => !newOus.has(ou))
+      for (const ouToDelete of deletedOus) {
+        await storage.deleteOrganizationalUnit(organizationId, ouToDelete)
+      }
     }
+
     for (const ouId of Object.keys(ouDetails)) {
       const ou = ouDetails[ouId]
       await storage.saveOrganizationalUnitMetadata(organizationId, ouId, 'metadata', ou.metadata)
@@ -231,7 +234,8 @@ export const OrganizationSync: Sync = {
       storage,
       PolicyType.SERVICE_CONTROL_POLICY,
       'scps',
-      scpsEnabled
+      scpsEnabled,
+      syncOptions.writeOnly
     )
 
     await syncPolicies(
@@ -240,7 +244,8 @@ export const OrganizationSync: Sync = {
       storage,
       PolicyType.RESOURCE_CONTROL_POLICY,
       'rcps',
-      rcpsEnabled
+      rcpsEnabled,
+      syncOptions.writeOnly
     )
 
     // Sync organization resource policy
@@ -455,10 +460,11 @@ async function syncPolicies(
   storage: AwsIamStore,
   policyType: PolicyType,
   fileType: OrganizationPolicyType,
-  enabled: boolean
+  enabled: boolean,
+  writeOnly: boolean
 ): Promise<void> {
-  const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
-  if (!enabled) {
+  if (!enabled && !writeOnly) {
+    const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
     for (const policyId of existingPolicies) {
       await storage.deleteOrganizationPolicy(organizationId, fileType, policyId)
     }
@@ -475,11 +481,14 @@ async function syncPolicies(
     }
   )
 
-  const newPolicyIds = new Set(policies.map((p) => p.Id!.toLowerCase()))
-  const policiesToDelete = existingPolicies.filter((id) => !newPolicyIds.has(id))
-  // Delete policies that are no longer present in the organization
-  for (const policyToDelete of policiesToDelete) {
-    await storage.deleteOrganizationPolicy(organizationId, fileType, policyToDelete)
+  if (!writeOnly) {
+    // Delete policies that are no longer present in the organization
+    const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
+    const newPolicyIds = new Set(policies.map((p) => p.Id!.toLowerCase()))
+    const policiesToDelete = existingPolicies.filter((id) => !newPolicyIds.has(id))
+    for (const policyToDelete of policiesToDelete) {
+      await storage.deleteOrganizationPolicy(organizationId, fileType, policyToDelete)
+    }
   }
 
   for (const policy of policies) {

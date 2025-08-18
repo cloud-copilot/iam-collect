@@ -108,13 +108,19 @@ export const S3GeneralPurposeBucketSync: Sync = {
       })
     )
 
-    syncData(augmentedBuckets, storage, accountId, {
-      service: 's3',
-      account: accountId,
-      metadata: {
-        region
-      }
-    })
+    syncData(
+      augmentedBuckets,
+      storage,
+      accountId,
+      {
+        service: 's3',
+        account: accountId,
+        metadata: {
+          region
+        }
+      },
+      syncOptions.writeOnly
+    )
   }
 }
 

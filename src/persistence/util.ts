@@ -2,6 +2,7 @@ import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { sep } from 'path'
 import { getStorageConfig, StorageConfig, TopLevelConfig } from '../config/config.js'
 import { AwsIamStore } from './AwsIamStore.js'
+import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { InMemoryPathBasedPersistenceAdapter } from './InMemoryPathBasedPersistenceAdapter.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
@@ -13,7 +14,11 @@ import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapte
  * @param partition - The partition to use for the storage client.
  * @returns The storage client instance to use
  */
-export function createStorageClient(configs: TopLevelConfig[], partition: string): AwsIamStore
+export function createStorageClient(
+  configs: TopLevelConfig[],
+  partition: string,
+  deleteData: boolean
+): AwsIamStore
 /**
  * Create a storage client based on the provided storage configuration and partition.
  *
@@ -21,10 +26,15 @@ export function createStorageClient(configs: TopLevelConfig[], partition: string
  * @param partition - The partition to use for the storage client.
  * @returns The storage client instance to use
  */
-export function createStorageClient(storageConfig: StorageConfig, partition: string): AwsIamStore
+export function createStorageClient(
+  storageConfig: StorageConfig,
+  partition: string,
+  deleteData: boolean
+): AwsIamStore
 export function createStorageClient(
   storageConfig: StorageConfig | TopLevelConfig[],
-  partition: string
+  partition: string,
+  deleteData: boolean
 ): AwsIamStore {
   if (Array.isArray(storageConfig)) {
     const foundConfig = getStorageConfig(storageConfig)
@@ -35,9 +45,14 @@ export function createStorageClient(
   }
 
   if (storageConfig.type === 'file') {
-    return new FileSystemAwsIamStore(storageConfig.path, partition, sep)
+    return new FileSystemAwsIamStore(
+      storageConfig.path,
+      partition,
+      sep,
+      new FileSystemAdapter(deleteData)
+    )
   } else if (storageConfig.type === 's3') {
-    const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig)
+    const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig, deleteData)
     return new FileSystemAwsIamStore(storageConfig.prefix || '', partition, '/', persistenceAdapter)
   }
 

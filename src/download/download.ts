@@ -25,17 +25,31 @@ import { allServices } from '../services.js'
 import { getGlobalSyncsForService, getRegionalSyncsForService } from '../syncs/syncMap.js'
 import { log } from '../utils/log.js'
 
+/**
+ * Download data from AWS services.
+ *
+ * @param configs the configurations to use for the download
+ * @param accountIds the account IDs to download data for
+ * @param regions the regions to download data from
+ * @param services the services to download data from
+ * @param concurrency the maximum number of concurrent downloads
+ * @param writeOnly whether to only write data and sync any existing data
+ * @param skipIndex whether to skip indexing the downloaded data
+ * @returns
+ */
 export async function downloadData(
   configs: TopLevelConfig[],
   accountIds: string[],
   regions: string[],
   services: string[],
   concurrency: number | undefined,
-  skipIndex: boolean
+  skipIndex: boolean,
+  writeOnly: boolean
 ): Promise<void> {
   if (concurrency === undefined || concurrency <= 0) {
     concurrency = defaultConcurrency()
   }
+  const deleteData = !writeOnly
 
   if (accountIds.length === 0) {
     const configuredAccounts = getConfiguredAccounts(configs)
@@ -70,12 +84,13 @@ export async function downloadData(
     const accountConfigs = [partitionConfig, ...configs]
     const accountRegions = await getAccountRegions(regions, accountId, configs, credentials)
 
-    const storage = createStorageClient(storageConfig, partition)
+    const storage = createStorageClient(storageConfig, partition, deleteData)
     if (services.length === 0) {
       services = allServices as unknown as string[]
     }
     const syncOptions = {
-      workerPool
+      workerPool,
+      writeOnly
     }
 
     const enabledServices = servicesForAccount(accountId, accountConfigs, services)
@@ -127,10 +142,10 @@ export async function downloadData(
       const regionalSyncs = getRegionalSyncsForService(service)
       //Regional syncs for the service
       for (const region of serviceRegions) {
-        log.debug({ service, accountId, region }, 'Queuing regional syncs')
         if (regionalSyncs.length === 0) {
           continue
         }
+        log.debug({ service, accountId, region }, 'Queuing regional syncs')
         const asrConfig = accountServiceRegionConfig(service, accountId, region, accountConfigs)
 
         for (const sync of regionalSyncs) {

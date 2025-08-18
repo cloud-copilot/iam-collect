@@ -51,7 +51,9 @@ export const RamResourcesSync: Sync = {
 
     // Sync and save per region
     for (const [arnRegion, regionArns] of regionMap) {
-      await storage.syncRamResources(accountId, arnRegion, regionArns)
+      if (!syncOptions.writeOnly) {
+        await storage.syncRamResources(accountId, arnRegion, regionArns)
+      }
 
       for (const arn of regionArns) {
         const policies = await paginateResource(

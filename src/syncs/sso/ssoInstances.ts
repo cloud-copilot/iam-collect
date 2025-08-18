@@ -77,7 +77,7 @@ export const SsoDataSync: Sync = {
       })
     }
 
-    await syncData(data, storage, accountId, resourceTypeParts)
+    await syncData(data, storage, accountId, resourceTypeParts, syncOptions.writeOnly)
 
     for (const instance of accountInstances) {
       const dataSyncs = createSsoInstanceResourceSyncs(instance, region)

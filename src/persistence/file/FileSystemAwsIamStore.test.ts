@@ -10,7 +10,7 @@ describe('FileSystemAwsIamStore', () => {
   let mockFsAdapter: FileSystemAdapter
 
   beforeEach(() => {
-    mockFsAdapter = new FileSystemAdapter() as unknown as FileSystemAdapter
+    mockFsAdapter = new FileSystemAdapter(true) as unknown as FileSystemAdapter
     store = new FileSystemAwsIamStore('/base/folder', 'aws', '/', mockFsAdapter)
   })
 

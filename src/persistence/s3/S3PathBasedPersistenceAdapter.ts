@@ -19,7 +19,10 @@ import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 
 export class S3PathBasedPersistenceAdapter implements PathBasedPersistenceAdapter {
   private storageAuthAccountId: string | undefined
-  public constructor(private readonly storageConfig: S3StorageConfig) {}
+  public constructor(
+    private readonly storageConfig: S3StorageConfig,
+    private readonly deleteData: boolean
+  ) {}
 
   private async getClient() {
     /*
@@ -132,6 +135,9 @@ export class S3PathBasedPersistenceAdapter implements PathBasedPersistenceAdapte
   }
 
   async deleteFile(filePath: string): Promise<void> {
+    if (!this.deleteData) {
+      return
+    }
     const client = await this.getClient()
     await client.send(
       new DeleteObjectCommand({
@@ -142,6 +148,9 @@ export class S3PathBasedPersistenceAdapter implements PathBasedPersistenceAdapte
   }
 
   async deleteDirectory(dirPath: string): Promise<void> {
+    if (!this.deleteData) {
+      return
+    }
     const client = await this.getClient()
     if (!dirPath.endsWith('/')) {
       dirPath += '/'

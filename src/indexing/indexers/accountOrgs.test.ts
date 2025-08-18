@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { FileSystemAwsIamStore } from '../../persistence/file/FileSystemAwsIamStore.js'
+import { InMemoryPathBasedPersistenceAdapter } from '../../persistence/InMemoryPathBasedPersistenceAdapter.js'
 import { AccountOrganizationIndexer } from './accountOrgs.js'
 
 vi.mock('../../persistence/file/FileSystemAwsIamStore.js')
@@ -15,7 +16,12 @@ describe('AccountOrganizationIndexer', () => {
       }
 
       //And an account that is not an organization management account
-      const mockStore = new FileSystemAwsIamStore('mockStore', 'aws', '/')
+      const mockStore = new FileSystemAwsIamStore(
+        'mockStore',
+        'aws',
+        '/',
+        new InMemoryPathBasedPersistenceAdapter()
+      )
       vi.spyOn(mockStore, 'getAccountMetadata').mockResolvedValue(undefined)
 
       // When updateCache is called
@@ -36,7 +42,12 @@ describe('AccountOrganizationIndexer', () => {
       }
 
       // And an account that is an organization management account
-      const mockStore = new FileSystemAwsIamStore('mockStore', 'aws', '/')
+      const mockStore = new FileSystemAwsIamStore(
+        'mockStore',
+        'aws',
+        '/',
+        new InMemoryPathBasedPersistenceAdapter()
+      )
       vi.spyOn(mockStore, 'getAccountMetadata').mockResolvedValue({ organizationId: 'org1' })
       vi.spyOn(mockStore, 'getOrganizationMetadata').mockResolvedValue(undefined)
 
@@ -57,7 +68,12 @@ describe('AccountOrganizationIndexer', () => {
       }
 
       // And an account that is an organization management account
-      const mockStore = new FileSystemAwsIamStore('mockStore', 'aws', '/')
+      const mockStore = new FileSystemAwsIamStore(
+        'mockStore',
+        'aws',
+        '/',
+        new InMemoryPathBasedPersistenceAdapter()
+      )
       vi.spyOn(mockStore, 'getAccountMetadata').mockResolvedValue({ organizationId: 'org1' })
       vi.spyOn(mockStore, 'getOrganizationMetadata').mockResolvedValue({
         account3: {},
@@ -83,7 +99,12 @@ describe('AccountOrganizationIndexer', () => {
       }
 
       // And an account that is an organization management account
-      const mockStore = new FileSystemAwsIamStore('mockStore', 'aws', '/')
+      const mockStore = new FileSystemAwsIamStore(
+        'mockStore',
+        'aws',
+        '/',
+        new InMemoryPathBasedPersistenceAdapter()
+      )
       vi.spyOn(mockStore, 'getAccountMetadata').mockResolvedValue({ organizationId: 'org1' })
       vi.spyOn(mockStore, 'getOrganizationMetadata').mockResolvedValue({
         account3: {}

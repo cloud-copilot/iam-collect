@@ -35,15 +35,16 @@ If any resources in your storage no longer exist, they will be deleted from your
 
 **Arguments:**
 
-| Argument                 | Description                            | Default                        |
-| ------------------------ | -------------------------------------- | ------------------------------ |
-| `--configFiles <files>`  | One or more configuration files        | `iam-collect.jsonc`            |
-| `--accounts <ids>`       | AWS account IDs to download from       | all included in config         |
-| `--regions <regions>`    | AWS regions to scan                    | all included in config         |
-| `--services <services>`  | AWS services to scan                   | all included in config         |
-| `-n, --no-index`         | Skip refreshing indexes after download | false                          |
-| `--concurrency <number>` | See [Concurrency](#concurrency)        | calculated from number of CPUs |
-| `--log <level>`          | See [Logging](#logging)                | `warn`                         |
+| Argument                 | Description                                                                                                                        | Default                        |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `--configFiles <files>`  | One or more configuration files                                                                                                    | `iam-collect.jsonc`            |
+| `--accounts <ids>`       | AWS account IDs to download from                                                                                                   | all included in config         |
+| `--regions <regions>`    | AWS regions to scan                                                                                                                | all included in config         |
+| `--services <services>`  | AWS services to scan                                                                                                               | all included in config         |
+| `-n, --no-index`         | Skip refreshing indexes after download                                                                                             | false                          |
+| `-w, --write-only`       | Only write data for discovered resources and ignore any existing data. Improves performance if you know you have no existing data. | false                          |
+| `--concurrency <number>` | See [Concurrency](#concurrency)                                                                                                    | calculated from number of CPUs |
+| `--log <level>`          | See [Logging](#logging)                                                                                                            | `warn`                         |
 
 **Examples:**
 

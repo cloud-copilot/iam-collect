@@ -409,7 +409,13 @@ export function createTypedSyncOperation<
         return result as DataRecord
       })
 
-      await syncData(records, storage, accountId, resourceTypeSync.resourceTypeParts(awsId, region))
+      await syncData(
+        records,
+        storage,
+        accountId,
+        resourceTypeSync.resourceTypeParts(awsId, region),
+        syncOptions.writeOnly
+      )
     }
   }
 }
