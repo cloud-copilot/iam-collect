@@ -82,7 +82,12 @@ export interface S3StorageConfig {
   auth?: AuthConfig
 }
 
-export type StorageConfig = FileSystemStorageConfig | S3StorageConfig
+export interface SqliteStorageConfig {
+  type: 'sqlite'
+  path: string
+}
+
+export type StorageConfig = FileSystemStorageConfig | S3StorageConfig | SqliteStorageConfig
 
 interface BaseConfig {
   regions?: {

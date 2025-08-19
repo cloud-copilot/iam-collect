@@ -6,6 +6,7 @@ import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { InMemoryPathBasedPersistenceAdapter } from './InMemoryPathBasedPersistenceAdapter.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
+import { SqliteAwsIamStore } from './sqlite/SqliteAwsIamStore.js'
 
 /**
  * Create a storage client based on the provided configurations and partition.
@@ -54,10 +55,12 @@ export function createStorageClient(
   } else if (storageConfig.type === 's3') {
     const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig, deleteData)
     return new FileSystemAwsIamStore(storageConfig.prefix || '', partition, '/', persistenceAdapter)
+  } else if (storageConfig.type === 'sqlite') {
+    return new SqliteAwsIamStore(storageConfig.path, partition)
   }
 
   throw new Error(
-    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file and s3.`
+    `Unsupported storage type: ${(storageConfig as any).type}. Supported types are: file, s3 and sqlite.`
   )
 }
 
