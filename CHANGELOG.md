@@ -1,3 +1,10 @@
+## [0.1.107](https://github.com/cloud-copilot/iam-collect/compare/v0.1.106...v0.1.107) (2025-08-19)
+
+
+### Features
+
+* Sync S3 Object Lambda Access Points ([6b7e636](https://github.com/cloud-copilot/iam-collect/commit/6b7e636a74ce2c0431ef786eca168f5525ea80b9))
+
 ## [0.1.106](https://github.com/cloud-copilot/iam-collect/compare/v0.1.105...v0.1.106) (2025-08-19)
 
 
