@@ -15,8 +15,8 @@
     "noFallthroughCasesInSwitch": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "esModuleInterop": false,
-    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": ["tests", "test", "dist", "bin", "**/bin", "**/dist", "node_modules", "cdk.out"]
 }

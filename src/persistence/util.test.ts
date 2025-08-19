@@ -3,6 +3,7 @@ import { StorageConfig, TopLevelConfig } from '../config/config.js'
 import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
+import { SqliteAwsIamStore } from './sqlite/SqliteAwsIamStore.js'
 import { createStorageClient } from './util.js'
 
 describe('createStorageClient', () => {
@@ -35,6 +36,20 @@ describe('createStorageClient', () => {
     //Then it should return a FileSystemAwsIamStore instance
     expect(storageClient).toBeInstanceOf(FileSystemAwsIamStore)
     expect((storageClient as any).fsAdapter).toBeInstanceOf(S3PathBasedPersistenceAdapter)
+  })
+
+  it('should create a SqliteAwsIamStore when type is sqlite', () => {
+    // Given a sqlite storage config
+    const storageConfig: StorageConfig = {
+      type: 'sqlite',
+      path: ':memory:'
+    }
+
+    // When createStorageClient is called
+    const storageClient = createStorageClient(storageConfig, 'aws')
+
+    // Then it should return a SqliteAwsIamStore instance
+    expect(storageClient).toBeInstanceOf(SqliteAwsIamStore)
   })
 
   it('should use the configs if they are passed in as an array', () => {
