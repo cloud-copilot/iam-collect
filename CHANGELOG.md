@@ -1,3 +1,10 @@
+## [0.1.106](https://github.com/cloud-copilot/iam-collect/compare/v0.1.105...v0.1.106) (2025-08-19)
+
+
+### Features
+
+* Experimental sqlite support ([7ff9f18](https://github.com/cloud-copilot/iam-collect/commit/7ff9f184a2abe3b278ae4c1aaf37757a33372b9f))
+
 ## [0.1.105](https://github.com/cloud-copilot/iam-collect/compare/v0.1.104...v0.1.105) (2025-08-18)
 
 ## [0.1.104](https://github.com/cloud-copilot/iam-collect/compare/v0.1.103...v0.1.104) (2025-08-18)
