@@ -1,3 +1,10 @@
+## [0.1.109](https://github.com/cloud-copilot/iam-collect/compare/v0.1.108...v0.1.109) (2025-08-19)
+
+
+### Bug Fixes
+
+* Normalize logging errors in error key ([1061c56](https://github.com/cloud-copilot/iam-collect/commit/1061c56acaf4fed5d96bc1d368e57f2b98846c76))
+
 ## [0.1.108](https://github.com/cloud-copilot/iam-collect/compare/v0.1.107...v0.1.108) (2025-08-19)
 
 ## [0.1.107](https://github.com/cloud-copilot/iam-collect/compare/v0.1.106...v0.1.107) (2025-08-19)
