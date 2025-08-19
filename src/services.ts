@@ -16,6 +16,7 @@ export const allServices = [
   'organizations',
   'ram',
   's3',
+  's3-object-lambda',
   's3express',
   's3outposts',
   's3tables',

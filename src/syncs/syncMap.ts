@@ -18,6 +18,7 @@ import { S3AccessPointsSync } from './s3/accessPoints.js'
 import { AccountS3BpaSync } from './s3/accountBpa.js'
 import { S3GeneralPurposeBucketSync } from './s3/buckets.js'
 import { S3MultiRegionAccessPointsSync } from './s3/multiRegionAccessPoints.js'
+import { S3ObjectLambdaAccessPointsSync } from './s3/objectLambdaAccessPoints.js'
 import { GlacierVaultsSync } from './s3/vaults.js'
 import { S3DirectoryBucketsSync } from './s3express/s3DirectoryBucketsSync.js'
 import { S3OutpostsAccessPointsSync, S3OutpostsBucketsSync } from './s3outposts/s3OutpostsSyncs.js'
@@ -50,6 +51,7 @@ const allSyncs = [
   S3DirectoryBucketsSync,
   S3GeneralPurposeBucketSync,
   S3MultiRegionAccessPointsSync,
+  S3ObjectLambdaAccessPointsSync,
   S3OutpostsAccessPointsSync,
   S3OutpostsBucketsSync,
   S3TableBucketsSync,
