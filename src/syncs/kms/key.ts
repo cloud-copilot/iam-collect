@@ -4,8 +4,7 @@ import {
   ListKeysCommand,
   ListResourceTagsCommand
 } from '@aws-sdk/client-kms'
-import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
-import { log } from '../../utils/log.js'
+import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const KeySync = createTypedSyncOperation(
@@ -27,7 +26,7 @@ export const KeySync = createTypedSyncOperation(
     }),
     extraFields: {
       tags: async (client, key) => {
-        return runAndCatchAccessDenied(async () => {
+        return runAndCatchAccessDeniedWithLog(key.KeyArn!, 'key', 'tags', async () => {
           return runAndCatch404(async () => {
             const tagResult = await client.send(new ListResourceTagsCommand({ KeyId: key.KeyId }))
             return tagResult.Tags
@@ -35,26 +34,17 @@ export const KeySync = createTypedSyncOperation(
         })
       },
       policy: async (client, key) => {
-        return runAndCatchAccessDenied(
-          async () => {
-            return runAndCatch404(async () => {
-              const policyResult = await client.send(
-                new GetKeyPolicyCommand({ KeyId: key.KeyId, PolicyName: 'default' })
-              )
-              if (policyResult.Policy) {
-                return JSON.parse(policyResult.Policy)
-              }
-              return undefined
-            })
-          },
-          async (error) => {
-            log.warn('Access Denied fetching KMS Key Policy', {
-              keyPolicyAccessDenied: true,
-              key: key.KeyArn!
-            })
+        return runAndCatchAccessDeniedWithLog(key.KeyArn!, 'key', 'policy', async () => {
+          return runAndCatch404(async () => {
+            const policyResult = await client.send(
+              new GetKeyPolicyCommand({ KeyId: key.KeyId, PolicyName: 'default' })
+            )
+            if (policyResult.Policy) {
+              return JSON.parse(policyResult.Policy)
+            }
             return undefined
-          }
-        )
+          })
+        })
       }
     },
     tags: (func) => func.extraFields.tags,

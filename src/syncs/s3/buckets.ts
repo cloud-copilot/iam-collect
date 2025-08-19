@@ -12,7 +12,7 @@ import {
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
-import { runAndCatch404 } from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
@@ -136,16 +136,24 @@ async function getTagsForBucket(
   bucket: Bucket
 ): Promise<Record<string, string> | undefined> {
   const tagCommand = new GetBucketTaggingCommand({ Bucket: bucket.Name! })
-  const tags = await runAndCatch404<Record<string, string>>(async () => {
-    const response = await client.send(tagCommand)
-    return response.TagSet?.reduce(
-      (acc, tag) => {
-        acc[tag.Key!] = tag.Value!
-        return acc
-      },
-      {} as Record<string, string>
-    )
-  })
+  const tags = await runAndCatchAccessDeniedWithLog(
+    bucket.BucketArn!,
+    'bucket',
+    'tags',
+    async () => {
+      return runAndCatch404<Record<string, string>>(async () => {
+        const response = await client.send(tagCommand)
+        return response.TagSet?.reduce(
+          (acc, tag) => {
+            acc[tag.Key!] = tag.Value!
+            return acc
+          },
+          {} as Record<string, string>
+        )
+      })
+    }
+  )
+
   return tags
 }
 
@@ -159,20 +167,25 @@ async function getTagsForBucket(
  */
 async function getBucketPolicy(
   client: S3Client,
-  bucket: Bucket | string,
+  bucket: Bucket,
   accountId: string
 ): Promise<any | undefined> {
-  if (typeof bucket !== 'string') {
-    bucket = bucket.Name!
-  }
   const policyCommand = new GetBucketPolicyCommand({
-    Bucket: bucket,
+    Bucket: bucket.Name!,
     ExpectedBucketOwner: accountId
   })
-  const policy = await runAndCatch404<any>(async () => {
-    const response = await client.send(policyCommand)
-    return response.Policy ? JSON.parse(response.Policy) : undefined
-  })
+  const policy = await runAndCatchAccessDeniedWithLog(
+    bucket.BucketArn!,
+    'bucket',
+    'policy',
+    async () => {
+      return runAndCatch404<any>(async () => {
+        const response = await client.send(policyCommand)
+        return response.Policy ? JSON.parse(response.Policy) : undefined
+      })
+    }
+  )
+
   return policy
 }
 
@@ -188,9 +201,17 @@ async function getBucketPublicAccessSettings(
   bucket: Bucket
 ): Promise<PublicAccessBlockConfiguration | undefined> {
   const command = new GetPublicAccessBlockCommand({ Bucket: bucket.Name! })
-  const response = await runAndCatch404(async () => {
-    return await client.send(command)
-  })
+  const response = await runAndCatchAccessDeniedWithLog(
+    bucket.BucketArn!,
+    'bucket',
+    'blockPublicAccess',
+    async () => {
+      return runAndCatch404(async () => {
+        return await client.send(command)
+      })
+    }
+  )
+
   return response?.PublicAccessBlockConfiguration
 }
 
@@ -206,8 +227,16 @@ async function getBucketEncryptionSettings(
   bucket: Bucket
 ): Promise<ServerSideEncryptionConfiguration | undefined> {
   const command = new GetBucketEncryptionCommand({ Bucket: bucket.Name! })
-  const response = await runAndCatch404(async () => {
-    return await client.send(command)
-  })
+  const response = await runAndCatchAccessDeniedWithLog(
+    bucket.BucketArn!,
+    'bucket',
+    'encryption',
+    async () => {
+      return runAndCatch404(async () => {
+        return await client.send(command)
+      })
+    }
+  )
+
   return response?.ServerSideEncryptionConfiguration
 }
