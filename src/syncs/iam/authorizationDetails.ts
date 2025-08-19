@@ -4,11 +4,9 @@ import {
   GroupDetail,
   IAMClient,
   ListPolicyTagsCommand,
-  ListUsersCommand,
   ManagedPolicyDetail,
   RoleDetail,
   Tag,
-  User,
   UserDetail
 } from '@aws-sdk/client-iam'
 
@@ -201,30 +199,6 @@ export const AuthorizationDetailsSync: Sync = {
       syncOptions.writeOnly
     )
   }
-}
-
-/**
- * Get all IAM users in an account.
- *
- * @param region The region to use for the API call
- * @param credentials The credentials to use for the API call
- * @returns Returns a list of all IAM users in the account
- */
-export async function getAllUsers(client: IAMClient): Promise<User[]> {
-  const userList: User[] = []
-  let isTruncated = true
-  let marker: string | undefined = undefined
-
-  let listUsersCommand: ListUsersCommand
-  while (isTruncated) {
-    listUsersCommand = new ListUsersCommand({ Marker: marker, MaxItems: 1000 })
-    const usersResult = await client.send(listUsersCommand)
-    userList.push(...(usersResult.Users || []))
-    isTruncated = usersResult.IsTruncated || false
-    marker = usersResult.Marker
-  }
-
-  return userList
 }
 
 interface ManagedPolicyDetailWithExtraData extends ManagedPolicyDetail {
