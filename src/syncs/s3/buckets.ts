@@ -84,12 +84,12 @@ export const S3GeneralPurposeBucketSync: Sync = {
           }
         }
 
-        const [tags, blockPublicAccessConfig, bucketPolicy, encryption] = await Promise.all([
+        const [tags, blockPublicAccessConfig, bucketPolicy, encryption] = [
           (tagsJob as SuccessfulJob).value,
           (blockPublicAccessConfigJob as SuccessfulJob).value,
           (bucketPolicyJob as SuccessfulJob).value,
           (encryptionJob as SuccessfulJob).value
-        ])
+        ]
 
         const arn = `arn:${credentials.partition}:s3:::${bucket.Name}`
 

@@ -334,7 +334,8 @@ export async function paginateResourceConfig<
         for (const result of extraFieldValues) {
           if (result.status === 'rejected') {
             log.error(
-              { error: result.reason, field: result.properties.field },
+              result.reason,
+              { field: result.properties.field },
               'Failed to get extra field value'
             )
             anyFailure = true
