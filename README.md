@@ -130,6 +130,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | s3                | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints                      |
 | s3                | Buckets                           | name, region, tags, policy, block public access configuration, default encryption                                                   |
 | s3                | Multi Region Access Points        | name, alias, regions, policy, block public access configuration                                                                     |
+| s3-object-lambda  | Object Lambda Access Points       | name, alias, policy, block public access configuration                                                                              |
 | s3express         | Directory Buckets                 | name, encryption settings, policy                                                                                                   |
 | s3outposts        | Outpost Buckets                   | name, region, tags, policy                                                                                                          |
 | s3outposts        | Outpost Access Points             | name, bucket, bucket account, policy, network origin, vpc                                                                           |
