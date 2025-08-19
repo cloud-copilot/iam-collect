@@ -37,6 +37,17 @@ function isError(obj: unknown): obj is Error {
   )
 }
 
+function mapError(e: any) {
+  // Normalize anything Error-like to a consistent shape
+  const { name, message, stack, code } = e as any
+  return {
+    name: typeof name === 'string' ? name : 'Error',
+    message: typeof message === 'string' ? message : String(message ?? ''),
+    stack: typeof stack === 'string' ? stack : undefined,
+    ...(code !== undefined ? { code } : {})
+  }
+}
+
 // core log function: level check → prefix → JSON output
 function logAt(level: LogLevel, args: unknown[]) {
   if (LEVELS[level] > CURRENT_LEVEL) return
@@ -62,11 +73,11 @@ function logAt(level: LogLevel, args: unknown[]) {
     entry.message = msg
   }
   if (errorArgs.length > 0) {
-    entry.errors = errorArgs.map((e) => ({
-      name: e.name,
-      message: e.message,
-      stack: e.stack
-    }))
+    entry.error = mapError(errorArgs[0])
+    entry.error_count = errorArgs.length
+    if (errorArgs.length > 1) {
+      entry.errors = errorArgs.map(mapError)
+    }
   }
 
   const line = JSON.stringify(entry)
