@@ -1,3 +1,10 @@
+## [0.1.111](https://github.com/cloud-copilot/iam-collect/compare/v0.1.110...v0.1.111) (2025-08-20)
+
+
+### Bug Fixes
+
+* Remove hard coded delete data setting ([455a2c7](https://github.com/cloud-copilot/iam-collect/commit/455a2c7bed92dd1a350947e8e7732eb469db8337))
+
 ## [0.1.110](https://github.com/cloud-copilot/iam-collect/compare/v0.1.109...v0.1.110) (2025-08-20)
 
 
