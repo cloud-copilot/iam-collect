@@ -69,7 +69,7 @@ export async function downloadData(
   if (!storageConfig) {
     throw new Error('No storage configuration found. Cannot download data.')
   }
-  const storage = await getIamStoreForAccount(storageConfig, accountIds.at(0)!, configs)
+  const storage = await getIamStoreForAccount(storageConfig, accountIds.at(0)!, configs, deleteData)
 
   const indexJobs: IndexJob[] = []
 
@@ -266,11 +266,12 @@ async function getAccountRegions(
 async function getIamStoreForAccount(
   storageConfig: StorageConfig,
   accountId: string,
-  configs: TopLevelConfig[]
+  configs: TopLevelConfig[],
+  deleteData: boolean
 ): Promise<AwsIamStore> {
   const authForAccount = getAccountAuthConfig(accountId, configs)
   const credentials = await getCredentials(accountId, authForAccount)
   const partition = credentials.partition
 
-  return createStorageClient(storageConfig, partition, false)
+  return createStorageClient(storageConfig, partition, deleteData)
 }
