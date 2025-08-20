@@ -4,7 +4,7 @@ import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
-import { runAndCatchAccessDeniedWithLog } from '../utils/client-tools.js'
+import { runAndCatchAccessDeniedWithLog, withDnsRetry } from '../utils/client-tools.js'
 import { log } from '../utils/log.js'
 import { convertTagsToRecord, Tags } from '../utils/tags.js'
 import { DataRecord, Sync, syncData, SyncOptions } from './sync.js'
@@ -320,15 +320,23 @@ export async function paginateResourceConfig<
           extraFields.map(([key, callback]) => ({
             properties: { field: key },
             execute: async (context): Promise<[string, any]> => {
-              const value = await runAndCatchAccessDeniedWithLog(
-                resourceArn,
-                awsService,
-                resourceType,
-                key,
-                async () => {
-                  return callback(client as any, resource, credentials.accountId, region, partition)
-                }
-              )
+              const value = await withDnsRetry(() => {
+                return runAndCatchAccessDeniedWithLog(
+                  resourceArn,
+                  awsService,
+                  resourceType,
+                  key,
+                  async () => {
+                    return callback(
+                      client as any,
+                      resource,
+                      credentials.accountId,
+                      region,
+                      partition
+                    )
+                  }
+                )
+              })
               return [key, value] as [string, any]
             }
           })) as Job<[string, any], Record<string, unknown>>[]
