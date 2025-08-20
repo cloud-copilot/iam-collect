@@ -1,3 +1,11 @@
+## [0.1.110](https://github.com/cloud-copilot/iam-collect/compare/v0.1.109...v0.1.110) (2025-08-20)
+
+
+### Features
+
+* Add access denied guards for Dynamo Tables, KMS Keys, S3 Buckets, and SQS Queues. ([48a3a44](https://github.com/cloud-copilot/iam-collect/commit/48a3a44c1cb4ca61f55e7c86ddc5b852db73f173))
+* Catch access denied errors for all extra fields ([c8b114d](https://github.com/cloud-copilot/iam-collect/commit/c8b114dba740847f3f803da87796edfd0039dcdf))
+
 ## [0.1.109](https://github.com/cloud-copilot/iam-collect/compare/v0.1.108...v0.1.109) (2025-08-19)
 
 
