@@ -1,3 +1,4 @@
+import { AwsService } from '../services.js'
 import { log } from './log.js'
 
 /**
@@ -48,6 +49,7 @@ export async function runAndCatchAccessDenied<T>(
 
 export async function runAndCatchAccessDeniedWithLog<T>(
   arn: string,
+  awsService: AwsService,
   resourceType: string,
   field: string,
   operation: () => Promise<T | undefined>
@@ -63,7 +65,8 @@ export async function runAndCatchAccessDeniedWithLog<T>(
         accessDenied: true,
         arn,
         field,
-        resourceType
+        resourceType,
+        awsService
       })
       return undefined
     }

@@ -4,7 +4,7 @@ import {
   ListKeysCommand,
   ListResourceTagsCommand
 } from '@aws-sdk/client-kms'
-import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
+import { runAndCatch404 } from '../../utils/client-tools.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const KeySync = createTypedSyncOperation(
@@ -26,24 +26,20 @@ export const KeySync = createTypedSyncOperation(
     }),
     extraFields: {
       tags: async (client, key) => {
-        return runAndCatchAccessDeniedWithLog(key.KeyArn!, 'key', 'tags', async () => {
-          return runAndCatch404(async () => {
-            const tagResult = await client.send(new ListResourceTagsCommand({ KeyId: key.KeyId }))
-            return tagResult.Tags
-          })
+        return runAndCatch404(async () => {
+          const tagResult = await client.send(new ListResourceTagsCommand({ KeyId: key.KeyId }))
+          return tagResult.Tags
         })
       },
       policy: async (client, key) => {
-        return runAndCatchAccessDeniedWithLog(key.KeyArn!, 'key', 'policy', async () => {
-          return runAndCatch404(async () => {
-            const policyResult = await client.send(
-              new GetKeyPolicyCommand({ KeyId: key.KeyId, PolicyName: 'default' })
-            )
-            if (policyResult.Policy) {
-              return JSON.parse(policyResult.Policy)
-            }
-            return undefined
-          })
+        return runAndCatch404(async () => {
+          const policyResult = await client.send(
+            new GetKeyPolicyCommand({ KeyId: key.KeyId, PolicyName: 'default' })
+          )
+          if (policyResult.Policy) {
+            return JSON.parse(policyResult.Policy)
+          }
+          return undefined
         })
       }
     },

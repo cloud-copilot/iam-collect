@@ -4,11 +4,7 @@ import {
   ListTablesCommand,
   ListTagsOfResourceCommand
 } from '@aws-sdk/client-dynamodb'
-import {
-  runAndCatch404,
-  runAndCatchAccessDeniedWithLog,
-  runAndCatchError
-} from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchError } from '../../utils/client-tools.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
 import { createResourceSyncType, createTypedSyncOperation, paginateResource } from '../typedSync.js'
 
@@ -41,39 +37,35 @@ export const DynamoDBTableSync = createTypedSyncOperation(
     extraFields: {
       policy: async (client, table, accountId, region, partition) => {
         const arn = tableArn(partition, region, accountId, table.name)
-        return runAndCatchAccessDeniedWithLog(arn, 'table', 'policy', async () => {
-          return runAndCatchError('PolicyNotFoundException', async () => {
-            const response = await client.send(
-              new GetResourcePolicyCommand({
-                ResourceArn: arn
-              })
-            )
-            if (response.Policy) {
-              return JSON.parse(response.Policy)
-            }
-            return undefined
-          })
+        return runAndCatchError('PolicyNotFoundException', async () => {
+          const response = await client.send(
+            new GetResourcePolicyCommand({
+              ResourceArn: arn
+            })
+          )
+          if (response.Policy) {
+            return JSON.parse(response.Policy)
+          }
+          return undefined
         })
       },
       tags: async (client, table, accountId, region, partition) => {
         const arn = tableArn(partition, region, accountId, table.name)
-        return runAndCatchAccessDeniedWithLog(arn, 'table', 'tags', async () => {
-          return runAndCatch404(async () => {
-            const response = await paginateResource(
-              client,
-              ListTagsOfResourceCommand,
-              'Tags',
-              {
-                inputKey: 'NextToken',
-                outputKey: 'NextToken'
-              },
-              {
-                ResourceArn: arn
-              }
-            )
+        return runAndCatch404(async () => {
+          const response = await paginateResource(
+            client,
+            ListTagsOfResourceCommand,
+            'Tags',
+            {
+              inputKey: 'NextToken',
+              outputKey: 'NextToken'
+            },
+            {
+              ResourceArn: arn
+            }
+          )
 
-            return convertTagsToRecord(response)
-          })
+          return convertTagsToRecord(response)
         })
       }
     },
