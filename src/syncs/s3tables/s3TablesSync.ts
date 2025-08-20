@@ -30,10 +30,12 @@ export const S3TableBucketsSync = createTypedSyncOperation(
         })
       },
       encryption: async (client, bucket) => {
-        const encryption = await client.send(
-          new GetTableBucketEncryptionCommand({ tableBucketARN: bucket.arn })
-        )
-        return encryption.encryptionConfiguration
+        return runAndCatch404(async () => {
+          const encryption = await client.send(
+            new GetTableBucketEncryptionCommand({ tableBucketARN: bucket.arn })
+          )
+          return encryption.encryptionConfiguration
+        })
       }
     },
     tags: (bucket) => undefined,
