@@ -12,7 +12,7 @@ import {
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
-import { runAndCatch404 } from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
@@ -22,9 +22,11 @@ interface SuccessfulJob {
   properties: any
 }
 
+const gpBuckets = 'generalPurposeBuckets'
+
 export const S3GeneralPurposeBucketSync: Sync = {
   awsService: 's3',
-  name: 'generalPurposeBuckets',
+  name: gpBuckets,
   execute: async (
     accountId: string,
     region: string,
@@ -48,30 +50,32 @@ export const S3GeneralPurposeBucketSync: Sync = {
 
     const augmentedBuckets = await Promise.all(
       allBuckets.map(async (bucket) => {
+        const arn = `arn:${credentials.partition}:s3:::${bucket.Name}`
+
         const [tagsJob, blockPublicAccessConfigJob, bucketPolicyJob, encryptionJob] =
           await Promise.all(
             syncOptions.workerPool.enqueueAll([
               {
                 execute: () => {
-                  return getTagsForBucket(s3Client, bucket)
+                  return getTagsForBucket(s3Client, bucket, arn)
                 },
                 properties: {}
               },
               {
                 execute: () => {
-                  return getBucketPublicAccessSettings(s3Client, bucket)
+                  return getBucketPublicAccessSettings(s3Client, bucket, arn)
                 },
                 properties: {}
               },
               {
                 execute: () => {
-                  return getBucketPolicy(s3Client, bucket, credentials.accountId)
+                  return getBucketPolicy(s3Client, bucket, credentials.accountId, arn)
                 },
                 properties: {}
               },
               {
                 execute: () => {
-                  return getBucketEncryptionSettings(s3Client, bucket)
+                  return getBucketEncryptionSettings(s3Client, bucket, arn)
                 },
                 properties: {}
               }
@@ -90,8 +94,6 @@ export const S3GeneralPurposeBucketSync: Sync = {
           (bucketPolicyJob as SuccessfulJob).value,
           (encryptionJob as SuccessfulJob).value
         ]
-
-        const arn = `arn:${credentials.partition}:s3:::${bucket.Name}`
 
         return {
           arn,
@@ -133,19 +135,23 @@ export const S3GeneralPurposeBucketSync: Sync = {
  */
 async function getTagsForBucket(
   client: S3Client,
-  bucket: Bucket
+  bucket: Bucket,
+  arn: string
 ): Promise<Record<string, string> | undefined> {
   const tagCommand = new GetBucketTaggingCommand({ Bucket: bucket.Name! })
-  const tags = await runAndCatch404<Record<string, string>>(async () => {
-    const response = await client.send(tagCommand)
-    return response.TagSet?.reduce(
-      (acc, tag) => {
-        acc[tag.Key!] = tag.Value!
-        return acc
-      },
-      {} as Record<string, string>
-    )
+  const tags = await runAndCatchAccessDeniedWithLog(arn, 's3', gpBuckets, 'tags', async () => {
+    return runAndCatch404<Record<string, string>>(async () => {
+      const response = await client.send(tagCommand)
+      return response.TagSet?.reduce(
+        (acc, tag) => {
+          acc[tag.Key!] = tag.Value!
+          return acc
+        },
+        {} as Record<string, string>
+      )
+    })
   })
+
   return tags
 }
 
@@ -159,20 +165,21 @@ async function getTagsForBucket(
  */
 async function getBucketPolicy(
   client: S3Client,
-  bucket: Bucket | string,
-  accountId: string
+  bucket: Bucket,
+  accountId: string,
+  arn: string
 ): Promise<any | undefined> {
-  if (typeof bucket !== 'string') {
-    bucket = bucket.Name!
-  }
   const policyCommand = new GetBucketPolicyCommand({
-    Bucket: bucket,
+    Bucket: bucket.Name!,
     ExpectedBucketOwner: accountId
   })
-  const policy = await runAndCatch404<any>(async () => {
-    const response = await client.send(policyCommand)
-    return response.Policy ? JSON.parse(response.Policy) : undefined
+  const policy = await runAndCatchAccessDeniedWithLog(arn, 's3', gpBuckets, 'policy', async () => {
+    return runAndCatch404<any>(async () => {
+      const response = await client.send(policyCommand)
+      return response.Policy ? JSON.parse(response.Policy) : undefined
+    })
   })
+
   return policy
 }
 
@@ -185,12 +192,22 @@ async function getBucketPolicy(
  */
 async function getBucketPublicAccessSettings(
   client: S3Client,
-  bucket: Bucket
+  bucket: Bucket,
+  arn: string
 ): Promise<PublicAccessBlockConfiguration | undefined> {
   const command = new GetPublicAccessBlockCommand({ Bucket: bucket.Name! })
-  const response = await runAndCatch404(async () => {
-    return await client.send(command)
-  })
+  const response = await runAndCatchAccessDeniedWithLog(
+    arn,
+    's3',
+    gpBuckets,
+    'blockPublicAccess',
+    async () => {
+      return runAndCatch404(async () => {
+        return await client.send(command)
+      })
+    }
+  )
+
   return response?.PublicAccessBlockConfiguration
 }
 
@@ -203,11 +220,21 @@ async function getBucketPublicAccessSettings(
  */
 async function getBucketEncryptionSettings(
   client: S3Client,
-  bucket: Bucket
+  bucket: Bucket,
+  arn: string
 ): Promise<ServerSideEncryptionConfiguration | undefined> {
   const command = new GetBucketEncryptionCommand({ Bucket: bucket.Name! })
-  const response = await runAndCatch404(async () => {
-    return await client.send(command)
-  })
+  const response = await runAndCatchAccessDeniedWithLog(
+    arn,
+    's3',
+    gpBuckets,
+    'encryption',
+    async () => {
+      return runAndCatch404(async () => {
+        return await client.send(command)
+      })
+    }
+  )
+
   return response?.ServerSideEncryptionConfiguration
 }

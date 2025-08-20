@@ -35,12 +35,12 @@ export const IdentityProviderSyncs: Sync[] = [
           return result
         }
       },
-      tags: (provider) => provider.extraFields.details.Tags,
+      tags: (provider) => provider.extraFields.details?.Tags,
       results: (provider) => ({
         metadata: {
-          audiences: provider.extraFields.details.ClientIDList,
-          thumbprints: provider.extraFields.details.ThumbprintList,
-          url: provider.extraFields.details.Url
+          audiences: provider.extraFields.details?.ClientIDList,
+          thumbprints: provider.extraFields.details?.ThumbprintList,
+          url: provider.extraFields.details?.Url
         }
       })
     })
@@ -71,14 +71,14 @@ export const IdentityProviderSyncs: Sync[] = [
           return result
         }
       },
-      tags: (provider) => provider.extraFields.details.Tags,
+      tags: (provider) => provider.extraFields.details?.Tags,
       results: (provider) => ({
         metadata: {
-          assertEncryption: provider.extraFields.details.AssertionEncryptionMode,
-          'metadata-document': provider.extraFields.details.SAMLMetadataDocument,
-          privateKeys: provider.extraFields.details.PrivateKeyList,
-          uuid: provider.extraFields.details.SAMLProviderUUID,
-          validUntil: provider.extraFields.details.ValidUntil
+          assertEncryption: provider.extraFields.details?.AssertionEncryptionMode,
+          'metadata-document': provider.extraFields.details?.SAMLMetadataDocument,
+          privateKeys: provider.extraFields.details?.PrivateKeyList,
+          uuid: provider.extraFields.details?.SAMLProviderUUID,
+          validUntil: provider.extraFields.details?.ValidUntil
         }
       })
     })

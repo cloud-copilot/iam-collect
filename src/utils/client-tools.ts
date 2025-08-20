@@ -1,3 +1,6 @@
+import { AwsService } from '../services.js'
+import { log } from './log.js'
+
 /**
  *
  * @param operation The operation to run.
@@ -38,6 +41,33 @@ export async function runAndCatchAccessDenied<T>(
       if (onError) {
         return onError(e)
       }
+      return undefined
+    }
+    throw e
+  }
+}
+
+export async function runAndCatchAccessDeniedWithLog<T>(
+  arn: string,
+  awsService: AwsService,
+  resourceType: string,
+  field: string,
+  operation: () => Promise<T | undefined>
+): Promise<T | undefined> {
+  try {
+    const result = await operation()
+    return result
+  } catch (e: any) {
+    const errorName = e.name
+
+    if (errorName == 'AccessDeniedException' || errorName == 'AccessDenied') {
+      log.warn(`Access denied for ${field} in ${arn}`, e, {
+        accessDenied: true,
+        arn,
+        field,
+        resourceType,
+        awsService
+      })
       return undefined
     }
     throw e

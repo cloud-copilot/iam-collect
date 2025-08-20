@@ -36,10 +36,11 @@ export const DynamoDBTableSync = createTypedSyncOperation(
     }),
     extraFields: {
       policy: async (client, table, accountId, region, partition) => {
+        const arn = tableArn(partition, region, accountId, table.name)
         return runAndCatchError('PolicyNotFoundException', async () => {
           const response = await client.send(
             new GetResourcePolicyCommand({
-              ResourceArn: tableArn(partition, region, accountId, table.name)
+              ResourceArn: arn
             })
           )
           if (response.Policy) {
@@ -49,6 +50,7 @@ export const DynamoDBTableSync = createTypedSyncOperation(
         })
       },
       tags: async (client, table, accountId, region, partition) => {
+        const arn = tableArn(partition, region, accountId, table.name)
         return runAndCatch404(async () => {
           const response = await paginateResource(
             client,
@@ -59,7 +61,7 @@ export const DynamoDBTableSync = createTypedSyncOperation(
               outputKey: 'NextToken'
             },
             {
-              ResourceArn: tableArn(partition, region, accountId, table.name)
+              ResourceArn: arn
             }
           )
 

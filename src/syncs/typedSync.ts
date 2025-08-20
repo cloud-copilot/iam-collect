@@ -4,6 +4,7 @@ import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
+import { runAndCatchAccessDeniedWithLog } from '../utils/client-tools.js'
 import { log } from '../utils/log.js'
 import { convertTagsToRecord, Tags } from '../utils/tags.js'
 import { DataRecord, Sync, syncData, SyncOptions } from './sync.js'
@@ -140,7 +141,7 @@ type ExtraFieldsReturnType<
   K extends keyof ExtractOutputType<Cmd>,
   T extends ExtraFieldsDefinition<any, Cmd, K>
 > = {
-  [K in keyof T]: PromiseType<ReturnType<T[K]>>
+  [K in keyof T]: PromiseType<ReturnType<T[K]>> | undefined
 }
 
 export type ExtendedResourceElementType<
@@ -273,7 +274,9 @@ export async function paginateResourceConfig<
   credentials: AwsCredentialIdentityWithMetaData,
   region: string,
   endpoint: string | undefined,
-  workerPool: ConcurrentWorkerPool<any, any>
+  workerPool: ConcurrentWorkerPool<any, any>,
+  awsService: AwsService,
+  resourceType: string
 ): Promise<ExtendedResourceElementType<C, Cmd, K, ExtraFieldsFunc>[]> {
   const accountId = credentials.accountId
   const partition = credentials.partition
@@ -300,6 +303,7 @@ export async function paginateResourceConfig<
   if (resourceTypeSync.extraFields) {
     await Promise.all(
       resources.map(async (resource: any) => {
+        const resourceArn = resourceTypeSync.arn(resource, region, accountId, partition)
         const fields = resourceTypeSync.extraFields || {}
         const extraFields =
           Object.entries<
@@ -316,12 +320,14 @@ export async function paginateResourceConfig<
           extraFields.map(([key, callback]) => ({
             properties: { field: key },
             execute: async (context): Promise<[string, any]> => {
-              const value = await callback(
-                client as any,
-                resource,
-                credentials.accountId,
-                region,
-                partition
+              const value = await runAndCatchAccessDeniedWithLog(
+                resourceArn,
+                awsService,
+                resourceType,
+                key,
+                async () => {
+                  return callback(client as any, resource, credentials.accountId, region, partition)
+                }
               )
               return [key, value] as [string, any]
             }
@@ -396,7 +402,9 @@ export function createTypedSyncOperation<
         credentials,
         region,
         endpoint,
-        syncOptions.workerPool
+        syncOptions.workerPool,
+        awsService,
+        name
       )
       log.trace('received resources', { region: region, accountId, service: awsService, name })
 

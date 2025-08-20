@@ -57,14 +57,14 @@ export const S3AccessPointsSync: Sync = createTypedSyncOperation(
     results: (accessPoint) => ({
       metadata: {
         name: accessPoint.Name!,
-        alias: accessPoint.extraFields.details.Alias,
+        alias: accessPoint.extraFields.details?.Alias,
         networkOrigin: accessPoint.NetworkOrigin,
         vpc: accessPoint.VpcConfiguration?.VpcId,
         bucket: accessPoint.Bucket,
         bucketAccount: accessPoint.BucketAccountId,
-        endpoints: accessPoint.extraFields.details.Endpoints
+        endpoints: accessPoint.extraFields.details?.Endpoints
       },
-      bpa: accessPoint.extraFields.details.PublicAccessBlockConfiguration,
+      bpa: accessPoint.extraFields.details?.PublicAccessBlockConfiguration,
       policy: accessPoint.extraFields.policy
     })
   })
