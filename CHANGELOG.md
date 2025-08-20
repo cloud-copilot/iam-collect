@@ -1,3 +1,16 @@
+## [0.1.112](https://github.com/cloud-copilot/iam-collect/compare/v0.1.111...v0.1.112) (2025-08-20)
+
+
+### Bug Fixes
+
+* Catch 404 for S3 Tables bucket encryption ([8402dc9](https://github.com/cloud-copilot/iam-collect/commit/8402dc99f034d152d390df074ec5cad4a4afb85f))
+* Detect DNS lookup errors, backup and retry ([6f82a7e](https://github.com/cloud-copilot/iam-collect/commit/6f82a7ebc417dde6560264a1a38b43a99f789c1c))
+
+
+### Features
+
+* Slower ramp up and faster backoff for AWS SDK requests ([25ebb6c](https://github.com/cloud-copilot/iam-collect/commit/25ebb6c5a3d5828034290ad7cbe5de5d8b70fd5c))
+
 ## [0.1.111](https://github.com/cloud-copilot/iam-collect/compare/v0.1.110...v0.1.111) (2025-08-20)
 
 
