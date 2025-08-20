@@ -37,7 +37,11 @@ export async function runAndCatchAccessDenied<T>(
   } catch (e: any) {
     const errorName = e.name
 
-    if (errorName == 'AccessDeniedException' || errorName == 'AccessDenied') {
+    if (
+      errorName == 'AccessDeniedException' ||
+      errorName == 'AccessDenied' ||
+      errorName == 'AuthorizationErrorException'
+    ) {
       if (onError) {
         return onError(e)
       }
@@ -54,24 +58,16 @@ export async function runAndCatchAccessDeniedWithLog<T>(
   field: string,
   operation: () => Promise<T | undefined>
 ): Promise<T | undefined> {
-  try {
-    const result = await operation()
-    return result
-  } catch (e: any) {
-    const errorName = e.name
-
-    if (errorName == 'AccessDeniedException' || errorName == 'AccessDenied') {
-      log.warn(`Access denied for ${field} in ${arn}`, e, {
-        accessDenied: true,
-        arn,
-        field,
-        resourceType,
-        awsService
-      })
-      return undefined
-    }
-    throw e
-  }
+  return runAndCatchAccessDenied(operation, async (error: any) => {
+    log.warn(`Access denied for ${field} in ${arn}`, error, {
+      accessDenied: true,
+      arn,
+      field,
+      resourceType,
+      awsService
+    })
+    return undefined
+  })
 }
 
 /**
