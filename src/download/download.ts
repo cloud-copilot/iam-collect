@@ -11,6 +11,7 @@ import {
   getStorageConfig,
   regionsForService,
   servicesForAccount,
+  StorageConfig,
   syncEnabledForRegion,
   TopLevelConfig
 } from '../config/config.js'
@@ -19,6 +20,7 @@ import { getIndexersForService } from '../indexing/indexMap.js'
 import { IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
 import { JobRunner } from '../jobs/jobRunner.js'
 import { defaultConcurrency } from '../jobs/util.js'
+import { AwsIamStore } from '../persistence/AwsIamStore.js'
 import { createStorageClient } from '../persistence/util.js'
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
@@ -67,6 +69,7 @@ export async function downloadData(
   if (!storageConfig) {
     throw new Error('No storage configuration found. Cannot download data.')
   }
+  const storage = await getIamStoreForAccount(storageConfig, accountIds.at(0)!, configs)
 
   const indexJobs: IndexJob[] = []
 
@@ -83,7 +86,6 @@ export async function downloadData(
     const accountConfigs = [partitionConfig, ...configs]
     const accountRegions = await getAccountRegions(regions, accountId, configs, credentials)
 
-    const storage = createStorageClient(storageConfig, partition, deleteData)
     if (services.length === 0) {
       services = allServices as unknown as string[]
     }
@@ -222,6 +224,15 @@ export async function downloadData(
   await runIndexJobs(indexJobs, storageConfig, concurrency)
 }
 
+/**
+ * Get the regions to use for an account
+ *
+ * @param allRegions the list of all available regions
+ * @param accountId the ID of the account
+ * @param configs the iam-collect configs
+ * @param accountCredentials the credentials for the account
+ * @returns a list of regions to use for the account
+ */
 async function getAccountRegions(
   allRegions: string[],
   accountId: string,
@@ -242,4 +253,24 @@ async function getAccountRegions(
     })
     return getEnabledRegions(accountCredentials)
   }
+}
+
+/**
+ * Create the AwsIamStore for a given account
+ *
+ * @param storageConfig the storage configuration to use
+ * @param accountId the account ID to get the partition from
+ * @param configs the iam-collect configs
+ * @returns a Promise that resolves to the AwsIamStore for the account
+ */
+async function getIamStoreForAccount(
+  storageConfig: StorageConfig,
+  accountId: string,
+  configs: TopLevelConfig[]
+): Promise<AwsIamStore> {
+  const authForAccount = getAccountAuthConfig(accountId, configs)
+  const credentials = await getCredentials(accountId, authForAccount)
+  const partition = credentials.partition
+
+  return createStorageClient(storageConfig, partition, false)
 }
