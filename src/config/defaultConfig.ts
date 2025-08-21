@@ -109,8 +109,8 @@ const defaultConfig = `
           "endpoint": "https://s3.us-west-2.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
           "auth": {
             //Override auth for a specific service
-          }
-          regionConfigs: {
+          },
+          "regionConfigs": {
             "us-west-1": {
               //Optional configuration for the region
               endpoint: "https://s3.us-west-1.amazonaws.com", // Optional endpoint if using a specific VPC endpoint
