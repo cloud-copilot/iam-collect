@@ -92,7 +92,7 @@ export class AwsClientPool {
     this.clientCache.clear()
   }
 
-  private retryStrategyForClient(client: ClientConstructor<any>): RetryStrategyV2 | undefined {
+  private retryStrategyForClient(client: ClientConstructor<any>): RetryStrategyV2 {
     const settings = retrySettings[client.name]
     if (settings) {
       return this.makeRetryStrategy(settings)
