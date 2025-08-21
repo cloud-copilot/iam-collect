@@ -1,3 +1,11 @@
+## [0.1.113](https://github.com/cloud-copilot/iam-collect/compare/v0.1.112...v0.1.113) (2025-08-21)
+
+
+### Features
+
+* Add access denied check and reduce retry rate for Lambda APIs ([5365822](https://github.com/cloud-copilot/iam-collect/commit/53658226777e970312862999a4ebdb4760ecbb82))
+* Adding DNS retries and increasing DNS retry timeout ([c140fd4](https://github.com/cloud-copilot/iam-collect/commit/c140fd48689c0f18c7d19892b8cfbfe5778504c1))
+
 ## [0.1.112](https://github.com/cloud-copilot/iam-collect/compare/v0.1.111...v0.1.112) (2025-08-20)
 
 
