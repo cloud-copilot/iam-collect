@@ -12,7 +12,11 @@ import {
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
-import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
+import {
+  runAndCatch404,
+  runAndCatchAccessDeniedWithLog,
+  withDnsRetry
+} from '../../utils/client-tools.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
@@ -37,16 +41,18 @@ export const S3GeneralPurposeBucketSync: Sync = {
   ): Promise<void> => {
     const s3Client = AwsClientPool.defaultInstance.client(S3Client, credentials, region, endpoint)
 
-    const allBuckets = await paginateResource(
-      s3Client,
-      ListBucketsCommand,
-      'Buckets',
-      {
-        inputKey: 'ContinuationToken',
-        outputKey: 'ContinuationToken'
-      },
-      { MaxBuckets: 1000, BucketRegion: region }
-    )
+    const allBuckets = await withDnsRetry(async () => {
+      return paginateResource(
+        s3Client,
+        ListBucketsCommand,
+        'Buckets',
+        {
+          inputKey: 'ContinuationToken',
+          outputKey: 'ContinuationToken'
+        },
+        { MaxBuckets: 1000, BucketRegion: region }
+      )
+    })
 
     const augmentedBuckets = await Promise.all(
       allBuckets.map(async (bucket) => {
@@ -57,25 +63,33 @@ export const S3GeneralPurposeBucketSync: Sync = {
             syncOptions.workerPool.enqueueAll([
               {
                 execute: () => {
-                  return getTagsForBucket(s3Client, bucket, arn)
+                  return withDnsRetry(async () => {
+                    return getTagsForBucket(s3Client, bucket, arn)
+                  })
                 },
                 properties: {}
               },
               {
                 execute: () => {
-                  return getBucketPublicAccessSettings(s3Client, bucket, arn)
+                  return withDnsRetry(async () => {
+                    return getBucketPublicAccessSettings(s3Client, bucket, arn)
+                  })
                 },
                 properties: {}
               },
               {
                 execute: () => {
-                  return getBucketPolicy(s3Client, bucket, credentials.accountId, arn)
+                  return withDnsRetry(async () => {
+                    return getBucketPolicy(s3Client, bucket, credentials.accountId, arn)
+                  })
                 },
                 properties: {}
               },
               {
                 execute: () => {
-                  return getBucketEncryptionSettings(s3Client, bucket, arn)
+                  return withDnsRetry(async () => {
+                    return getBucketEncryptionSettings(s3Client, bucket, arn)
+                  })
                 },
                 properties: {}
               }
