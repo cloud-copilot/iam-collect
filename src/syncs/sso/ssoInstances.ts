@@ -12,7 +12,7 @@ import {
   SSOAdminClient
 } from '@aws-sdk/client-sso-admin'
 import { AwsClientPool } from '../../aws/ClientPool.js'
-import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchAccessDenied, withDnsRetry } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
 import { DataRecord, Sync, syncData } from '../sync.js'
@@ -29,9 +29,11 @@ export const SsoDataSync: Sync = {
       endpoint
     )
 
-    const instances = await paginateResource(client, ListInstancesCommand, 'Instances', {
-      inputKey: 'NextToken',
-      outputKey: 'NextToken'
+    const instances = await withDnsRetry(async () => {
+      return paginateResource(client, ListInstancesCommand, 'Instances', {
+        inputKey: 'NextToken',
+        outputKey: 'NextToken'
+      })
     })
 
     const accountInstances = instances.filter(

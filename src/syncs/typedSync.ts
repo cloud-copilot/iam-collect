@@ -287,13 +287,15 @@ export async function paginateResourceConfig<
     endpoint
   )
 
-  let resources = await paginateResource(
-    client,
-    resourceTypeSync.command,
-    resourceTypeSync.key,
-    resourceTypeSync.paginationConfig,
-    resourceTypeSync.arguments ? resourceTypeSync.arguments(accountId, region) : undefined
-  )
+  let resources = await withDnsRetry(() => {
+    return paginateResource(
+      client,
+      resourceTypeSync.command,
+      resourceTypeSync.key,
+      resourceTypeSync.paginationConfig,
+      resourceTypeSync.arguments ? resourceTypeSync.arguments(accountId, region) : undefined
+    )
+  })
 
   //If the resource is a string, convert it to an object with the name field set
   if (resources.length > 0 && typeof resources[0] === 'string') {

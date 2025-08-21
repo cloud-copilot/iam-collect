@@ -98,6 +98,8 @@ export async function runAndCatchError<T>(
   }
 }
 
+const DNS_RETRY_DELAY = 1_500
+
 /**
  * Retry a function that may fail due to DNS resolution issues.
  *
@@ -105,7 +107,7 @@ export async function runAndCatchError<T>(
  * @param tries the number of times to retry the function
  * @returns the result of the function if successful, otherwise throws the last error encountered
  */
-export async function withDnsRetry<T>(fn: () => Promise<T>, tries = 3): Promise<T> {
+export async function withDnsRetry<T>(fn: () => Promise<T>, tries = 5): Promise<T> {
   let last
   for (let i = 0; i < tries; i++) {
     try {
@@ -113,7 +115,7 @@ export async function withDnsRetry<T>(fn: () => Promise<T>, tries = 3): Promise<
     } catch (e: any) {
       const m = e?.message || ''
       if (m.startsWith('getaddrinfo')) {
-        await new Promise((r) => setTimeout(r, 1000 + Math.random() * 1000))
+        await new Promise((r) => setTimeout(r, DNS_RETRY_DELAY + Math.random() * DNS_RETRY_DELAY))
         last = e
         continue
       }
