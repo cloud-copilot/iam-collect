@@ -1,19 +1,38 @@
+import { LambdaClient } from '@aws-sdk/client-lambda'
 import { RetryStrategyV2 } from '@aws-sdk/types'
 import { NodeHttpHandler } from '@smithy/node-http-handler'
 import type { Client } from '@smithy/smithy-client'
-import { AdaptiveRetryStrategy, DefaultRateLimiter, RETRY_MODES } from '@smithy/util-retry'
+import {
+  AdaptiveRetryStrategy,
+  DefaultRateLimiter,
+  DefaultRateLimiterOptions
+} from '@smithy/util-retry'
 import { AwsCredentialIdentityWithMetaData } from './coreAuth.js'
 
 type ClientConstructor<T> = new (args: any) => T
 type AnyClient = Client<any, any, any, any>
 
+const retrySettings: Record<string, DefaultRateLimiterOptions> = {
+  [LambdaClient.name]: {
+    beta: 0.4, // cut harder on throttle (default 0.7)
+    minFillRate: 0.2, // lower baseline QPS (default 0.5)
+    scaleConstant: 0.1, // slower cubic ramp (default 0.4)
+    smooth: 0.5 // dampen measured rate (default 0.8)
+  }
+}
+
 export class AwsClientPool {
   public static defaultInstance = new AwsClientPool()
 
   private clientCache = new Map<string, AnyClient>()
-  private retryStrategy: RetryStrategyV2 | undefined
+  private defaultRetryStrategy: RetryStrategyV2
   constructor() {
-    this.slowDownRetries()
+    this.defaultRetryStrategy = this.makeRetryStrategy({
+      beta: 0.5, // cut harder on throttle (default 0.7)
+      minFillRate: 0.25, // lower baseline QPS (default 0.5)
+      scaleConstant: 0.2, // slower cubic ramp (default 0.4)
+      smooth: 0.6 // dampen measured rate (default 0.8)
+    })
   }
 
   /**
@@ -33,13 +52,6 @@ export class AwsClientPool {
   ): T {
     const cacheKey = this.getCacheKey(ClientType, credentials, region, endpoint)
 
-    const supplementalArgs: any = {}
-    if (this.retryStrategy) {
-      supplementalArgs.retryStrategy = this.retryStrategy
-    } else {
-      supplementalArgs.retryMode = RETRY_MODES.ADAPTIVE
-    }
-
     if (!this.clientCache.has(cacheKey)) {
       const client = new ClientType({
         credentials,
@@ -49,7 +61,7 @@ export class AwsClientPool {
           connectionTimeout: 5_000,
           socketTimeout: 15_000
         }),
-        ...supplementalArgs
+        retryStrategy: this.retryStrategyForClient(ClientType)
       })
       this.clientCache.set(cacheKey, client)
     }
@@ -80,14 +92,17 @@ export class AwsClientPool {
     this.clientCache.clear()
   }
 
-  public slowDownRetries(): void {
-    this.retryStrategy = new AdaptiveRetryStrategy(async () => 20, {
-      rateLimiter: new DefaultRateLimiter({
-        beta: 0.5, // cut harder on throttle (default 0.7)
-        minFillRate: 0.25, // lower baseline QPS (default 0.5)
-        scaleConstant: 0.2, // slower cubic ramp (default 0.4)
-        smooth: 0.6 // dampen measured rate (default 0.8)
-      })
+  private retryStrategyForClient(client: ClientConstructor<any>): RetryStrategyV2 | undefined {
+    const settings = retrySettings[client.name]
+    if (settings) {
+      return this.makeRetryStrategy(settings)
+    }
+    return this.defaultRetryStrategy
+  }
+
+  private makeRetryStrategy(rateLimiterOptions: DefaultRateLimiterOptions): RetryStrategyV2 {
+    return new AdaptiveRetryStrategy(async () => 20, {
+      rateLimiter: new DefaultRateLimiter(rateLimiterOptions)
     })
   }
 }

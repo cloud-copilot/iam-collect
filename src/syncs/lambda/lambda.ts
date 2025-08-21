@@ -8,7 +8,7 @@ import {
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
 import { AwsClientPool } from '../../aws/ClientPool.js'
-import { runAndCatch404 } from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { DataRecord, Sync, syncData } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation, paginateResource } from '../typedSync.js'
@@ -91,15 +91,23 @@ export const LambdaLayerVersionsSync: Sync = {
       )
 
       for (const version of layerVersions) {
-        const policy = await runAndCatch404(async () => {
-          const policyResult = await lambdaClient.send(
-            new GetLayerVersionPolicyCommand({
-              LayerName: layer.LayerName!,
-              VersionNumber: version.Version
+        const policy = await runAndCatchAccessDeniedWithLog(
+          layer.LayerArn!,
+          'lambda',
+          'lambdaLayerVersion',
+          'policy',
+          async () => {
+            return runAndCatch404(async () => {
+              const policyResult = await lambdaClient.send(
+                new GetLayerVersionPolicyCommand({
+                  LayerName: layer.LayerName!,
+                  VersionNumber: version.Version
+                })
+              )
+              return parseIfPresent(policyResult.Policy)
             })
-          )
-          return parseIfPresent(policyResult.Policy)
-        })
+          }
+        )
 
         allLayerVersions.push({
           arn: version.LayerVersionArn!,
