@@ -1,3 +1,10 @@
+## [0.1.115](https://github.com/cloud-copilot/iam-collect/compare/v0.1.114...v0.1.115) (2025-08-22)
+
+
+### Features
+
+* Add utility to merge SQLite iam-collect databases ([cd19750](https://github.com/cloud-copilot/iam-collect/commit/cd197504a69cff18132f6ed2b085039e79ddf780))
+
 ## [0.1.114](https://github.com/cloud-copilot/iam-collect/compare/v0.1.113...v0.1.114) (2025-08-21)
 
 ## [0.1.113](https://github.com/cloud-copilot/iam-collect/compare/v0.1.112...v0.1.113) (2025-08-21)
