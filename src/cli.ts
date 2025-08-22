@@ -129,7 +129,6 @@ const main = async () => {
     setLogLevel(cli.args.log)
   }
 
-
   if (cli.subcommand === 'init') {
     if (defaultConfigExists()) {
       console.error('Configuration file already exists')
