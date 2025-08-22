@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
-import { parseCliArguments } from '@cloud-copilot/cli'
+import {
+  booleanArgument,
+  enumArgument,
+  numberArgument,
+  parseCliArguments,
+  stringArgument,
+  stringArrayArgument
+} from '@cloud-copilot/cli'
 import { conductLogAnalysis } from './analysis/analyze.js'
 import { loadConfigFiles } from './config/configFile.js'
 import { createDefaultConfiguration } from './config/createConfigFile.js'
@@ -21,122 +28,108 @@ if (process.env.AWS_DEFAULT_REGION && !process.env.AWS_REGION) {
 }
 
 const main = async () => {
-  const version = await iamCollectVersion()
-  const cli = parseCliArguments(
+  const cli = await parseCliArguments(
     'iam-collect',
     {
       init: {
         description: 'Initialize the iam-collect configuration file',
-        options: {}
+        arguments: {}
       },
       download: {
         description: 'Download IAM data and update indexes',
-        options: {
-          configFiles: {
-            type: 'string',
+        arguments: {
+          configFiles: stringArrayArgument({
             description: 'The configuration files to use',
-            values: 'multiple'
-          },
-          accounts: {
-            type: 'string',
+            defaultValue: []
+          }),
+          accounts: stringArrayArgument({
             description: 'The account IDs to download from',
-            values: 'multiple'
-          },
-          regions: {
-            type: 'string',
+            defaultValue: []
+          }),
+          regions: stringArrayArgument({
             description: 'The regions to download from',
-            values: 'multiple'
-          },
-          services: {
-            type: 'string',
+            defaultValue: []
+          }),
+          services: stringArrayArgument({
             description: 'The services to download',
-            values: 'multiple'
-          },
-          concurrency: {
-            type: 'number',
+            defaultValue: []
+          }),
+          concurrency: numberArgument({
             description:
-              'The maximum number of concurrent downloads to allow. Defaults based on your system CPUs',
-            values: 'single'
-          },
-          noIndex: {
-            type: 'boolean',
+              'The maximum number of concurrent downloads to allow. Defaults based on your system CPUs'
+          }),
+          noIndex: booleanArgument({
             description: 'Skip refreshing the indexes after downloading',
             character: 'n'
-          },
-          writeOnly: {
-            type: 'boolean',
+          }),
+          writeOnly: booleanArgument({
             description:
               'Only write data for discovered resources and ignore any existing data. May improve performance if you know you have no existing data',
             character: 'w'
-          }
+          })
         }
       },
       index: {
         description: 'Refresh the IAM data indexes',
-        options: {
-          configFiles: {
-            type: 'string',
+        arguments: {
+          configFiles: stringArrayArgument({
             description: 'The configuration files to use',
-            values: 'multiple'
-          },
-          partition: {
-            type: 'string',
+            defaultValue: []
+          }),
+          partition: stringArgument({
             description: 'The partition to refresh index data for. Defaults to aws',
-            values: 'single'
-          },
-          accounts: {
-            type: 'string',
+            defaultValue: 'aws'
+          }),
+          accounts: stringArrayArgument({
             description: 'The account IDs to refresh index data for',
-            values: 'multiple'
-          },
-          regions: {
-            type: 'string',
+            defaultValue: []
+          }),
+          regions: stringArrayArgument({
             description: 'The regions to refresh index data for',
-            values: 'multiple'
-          },
-          services: {
-            type: 'string',
+            defaultValue: []
+          }),
+          services: stringArrayArgument({
             description: 'The services to refresh index data for',
-            values: 'multiple'
-          },
-          concurrency: {
-            type: 'number',
+            defaultValue: []
+          }),
+          concurrency: numberArgument({
             description:
-              'The maximum number of concurrent indexers to run. Defaults based on your system CPUs',
-            values: 'single'
-          }
+              'The maximum number of concurrent indexers to run. Defaults based on your system CPUs'
+          })
         }
       },
       'analyze-logs': {
         description: 'Analyze iam-collect trace logs and summarize job execution times',
-        options: {
-          logFile: {
-            type: 'string',
-            description: 'The path to the log file to analyze',
-            values: 'single'
-          }
+        arguments: {
+          logFile: stringArgument({
+            description: 'The path to the log file to analyze'
+          })
         }
       }
     },
     {
-      log: {
-        type: 'enum',
+      log: enumArgument({
         description: 'The log level to use',
-        values: 'single',
-        validValues: LogLevels
-      }
+        validValues: [...LogLevels] // Convert readonly to mutable array
+      })
     },
     {
       envPrefix: 'IAM_COLLECT',
       showHelpIfNoArgs: true,
       requireSubcommand: true,
-      version: version
+      expectOperands: false,
+      version: {
+        currentVersion: iamCollectVersion,
+        checkForUpdates: '@cloud-copilot/iam-collect'
+      }
     }
   )
 
   if (cli.args.log) {
     setLogLevel(cli.args.log)
   }
+
+  console.log(cli)
 
   if (cli.subcommand === 'init') {
     if (defaultConfigExists()) {
@@ -147,7 +140,7 @@ const main = async () => {
     await createDefaultConfiguration()
   } else if (cli.subcommand === 'download') {
     const defaultConfig = './iam-collect.jsonc'
-    const configFiles = cli.args.configFiles?.length > 0 ? cli.args.configFiles : [defaultConfig]
+    const configFiles = cli.args.configFiles.length > 0 ? cli.args.configFiles : [defaultConfig]
     const configs = loadConfigFiles(configFiles)
     await downloadData(
       configs,
@@ -160,7 +153,7 @@ const main = async () => {
     )
   } else if (cli.subcommand === 'index') {
     const defaultConfig = './iam-collect.jsonc'
-    const configFiles = cli.args.configFiles?.length > 0 ? cli.args.configFiles : [defaultConfig]
+    const configFiles = cli.args.configFiles.length > 0 ? cli.args.configFiles : [defaultConfig]
     const configs = loadConfigFiles(configFiles)
     await index(
       configs,
