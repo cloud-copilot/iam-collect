@@ -129,7 +129,6 @@ const main = async () => {
     setLogLevel(cli.args.log)
   }
 
-  console.log(cli)
 
   if (cli.subcommand === 'init') {
     if (defaultConfigExists()) {
