@@ -10,6 +10,9 @@ function quote(value: any): string {
   return `'${String(value).replace(/'/g, "''")}'`
 }
 
+/**
+ * A SQLite-based implementation of the AwsIamStore interface.
+ */
 export class SqliteAwsIamStore implements AwsIamStore {
   private readonly db: Database
 
@@ -25,8 +28,13 @@ export class SqliteAwsIamStore implements AwsIamStore {
     this.db.close()
   }
 
-  private init() {
-    const schema = `
+  /**
+   * Returns the SQL DDL for a SQLite database.
+   *
+   * @returns The DDL to create the schema in a SQLite database.
+   */
+  public static schemaSql() {
+    return `
     CREATE TABLE IF NOT EXISTS resource_metadata (
       partition TEXT NOT NULL,
       account_id TEXT NOT NULL,
@@ -84,8 +92,10 @@ export class SqliteAwsIamStore implements AwsIamStore {
       hash TEXT NOT NULL,
       PRIMARY KEY (partition, index_name)
     );`
+  }
 
-    this.db.exec(schema)
+  private init() {
+    this.db.exec(SqliteAwsIamStore.schemaSql())
   }
 
   private run(sql: string) {
