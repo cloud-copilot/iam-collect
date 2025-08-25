@@ -79,7 +79,6 @@ export const KinesisDataStreamsSync = createTypedSyncOperation(
  * @param accountId - The AWS account ID that owns the stream.
  * @param partition - The AWS partition (e.g., "aws", "aws-cn", "aws-us-gov").
  * @returns The ARN of the Kinesis data stream.
- * @returns the ARN of the Kinesis data stream.
  */
 const streamArn = (
   streamName: string,
