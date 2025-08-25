@@ -1,3 +1,10 @@
+## [0.1.121](https://github.com/cloud-copilot/iam-collect/compare/v0.1.120...v0.1.121) (2025-08-25)
+
+
+### Features
+
+* Sync Event Bridge Event Buses ([acf6b3d](https://github.com/cloud-copilot/iam-collect/commit/acf6b3d5e83e35eedd21933863072743347eee97))
+
 ## [0.1.120](https://github.com/cloud-copilot/iam-collect/compare/v0.1.119...v0.1.120) (2025-08-25)
 
 
