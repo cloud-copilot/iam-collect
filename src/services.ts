@@ -2,6 +2,7 @@
  * All Valid AWS Services
  */
 export const allServices = [
+  'acm-pca',
   'apigateway',
   'backup',
   'dynamodb',

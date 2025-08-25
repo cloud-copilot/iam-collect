@@ -111,6 +111,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-account": "^3.758.0",
+    "@aws-sdk/client-acm-pca": "^3.873.0",
     "@aws-sdk/client-api-gateway": "^3.799.0",
     "@aws-sdk/client-backup": "^3.812.0",
     "@aws-sdk/client-dynamodb": "^3.788.0",
