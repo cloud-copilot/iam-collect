@@ -1,3 +1,10 @@
+## [0.1.119](https://github.com/cloud-copilot/iam-collect/compare/v0.1.118...v0.1.119) (2025-08-25)
+
+
+### Features
+
+* Sync ACM Private CAs ([7a3a692](https://github.com/cloud-copilot/iam-collect/commit/7a3a692bb2875a7366c43c813ab107d5a1800b2f))
+
 ## [0.1.118](https://github.com/cloud-copilot/iam-collect/compare/v0.1.117...v0.1.118) (2025-08-25)
 
 
