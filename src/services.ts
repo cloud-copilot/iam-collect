@@ -9,6 +9,7 @@ export const allServices = [
   'ec2',
   'ecr',
   'elasticfilesystem',
+  'events',
   'glacier',
   'glue',
   'iam',
