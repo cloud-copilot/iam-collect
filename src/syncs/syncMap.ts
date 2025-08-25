@@ -7,6 +7,7 @@ import { DynamoDBTableSync } from './dynamodb/tables.js'
 import { VpcEndpointsSync } from './ec2/vpcEndpoints.js'
 import { EcrSyncs } from './ecr/ecrSyncs.js'
 import { ElasticFileSystemsSync } from './efs/fileSystems.js'
+import { EventBridgeEventBusesSync } from './events/eventBuses.js'
 import { GlueCatalogSync } from './glue/catalogs.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { IdentityProviderSyncs } from './iam/identityProviders.js'
@@ -41,6 +42,7 @@ const allSyncs = [
   DynamoDBTableSync,
   ...EcrSyncs,
   ElasticFileSystemsSync,
+  EventBridgeEventBusesSync,
   InstanceProfilesSync,
   ...IdentityProviderSyncs,
   GlacierVaultsSync,
