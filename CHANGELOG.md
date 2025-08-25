@@ -1,3 +1,10 @@
+## [0.1.118](https://github.com/cloud-copilot/iam-collect/compare/v0.1.117...v0.1.118) (2025-08-25)
+
+
+### Features
+
+* Sync S3 Express Directory Buckets Access Points ([cdece09](https://github.com/cloud-copilot/iam-collect/commit/cdece09a0170086a2b8a11cb159ed78c0f1c7f9e))
+
 ## [0.1.117](https://github.com/cloud-copilot/iam-collect/compare/v0.1.116...v0.1.117) (2025-08-23)
 
 ## [0.1.116](https://github.com/cloud-copilot/iam-collect/compare/v0.1.115...v0.1.116) (2025-08-22)
