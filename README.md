@@ -124,6 +124,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | elasticfilesystem | File Systems                      | name, id, key, encryption, tags, policy                                                                                             |
 | glacier           | Vaults                            | name, arn, region, tags, policy                                                                                                     |
 | glue              | Root Catalogs                     | policy                                                                                                                              |
+| kinesis           | Data Streams                      | name, encryption type, key id, policy, tags                                                                                         |
 | kms               | Keys                              | id, policy, tags                                                                                                                    |
 | lambda            | Functions                         | name, role, tags, policy                                                                                                            |
 | lambda            | Layer Versions                    | name, arn, version, policy                                                                                                          |
