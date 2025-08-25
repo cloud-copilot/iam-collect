@@ -1,3 +1,10 @@
+## [0.1.120](https://github.com/cloud-copilot/iam-collect/compare/v0.1.119...v0.1.120) (2025-08-25)
+
+
+### Features
+
+* Sync Kinesis data streams ([9672354](https://github.com/cloud-copilot/iam-collect/commit/9672354bf4cdb71282fee1c27b32bc25c3dd2682))
+
 ## [0.1.119](https://github.com/cloud-copilot/iam-collect/compare/v0.1.118...v0.1.119) (2025-08-25)
 
 
