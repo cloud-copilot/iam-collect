@@ -4,7 +4,7 @@ import { createHash } from 'crypto'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
 
 function quote(value: any): string {
-  if (value === undefined || value === null) {
+  if (value === undefined || value === null || value === '') {
     return 'NULL'
   }
   return `'${String(value).replace(/'/g, "''")}'`
@@ -44,6 +44,7 @@ export class SqliteAwsIamStore implements AwsIamStore {
       service TEXT NOT NULL,
       region TEXT,
       resource_type TEXT,
+      arn_account TEXT,
       PRIMARY KEY (partition, account_id, arn, metadata_type)
     );
     CREATE TABLE IF NOT EXISTS account_metadata (
@@ -140,8 +141,9 @@ export class SqliteAwsIamStore implements AwsIamStore {
     const region = parts.region ? parts.region.toLowerCase() : null
     const resourceType = parts.resourceType ? parts.resourceType.toLowerCase() : null
     const content = this.serialize(data)
-    const sql = `INSERT OR REPLACE INTO resource_metadata(partition, account_id, arn, metadata_type, data, service, region, resource_type)
-      VALUES(${quote(this.partition)}, ${quote(accountId)}, ${quote(arn)}, ${quote(metadataType)}, ${quote(content)}, ${quote(service)}, ${quote(region)}, ${quote(resourceType)})`
+    const arnAccount = parts.accountId
+    const sql = `INSERT OR REPLACE INTO resource_metadata(partition, account_id, arn, metadata_type, data, service, region, resource_type, arn_account)
+      VALUES(${quote(this.partition)}, ${quote(accountId)}, ${quote(arn)}, ${quote(metadataType)}, ${quote(content)}, ${quote(service)}, ${quote(region)}, ${quote(resourceType)}, ${quote(arnAccount)})`
     this.run(sql)
   }
 
@@ -196,9 +198,18 @@ export class SqliteAwsIamStore implements AwsIamStore {
     let sql = `SELECT DISTINCT arn FROM resource_metadata WHERE partition=${quote(this.partition)} AND account_id=${quote(accountId)} AND service=${quote(options.service.toLowerCase())}`
     if (options.region) {
       sql += ` AND region=${quote(options.region.toLowerCase())}`
+    } else {
+      sql += ` AND region IS NULL`
     }
     if (options.resourceType) {
       sql += ` AND resource_type=${quote(options.resourceType.toLowerCase())}`
+    } else {
+      sql += ` AND resource_type IS NULL`
+    }
+    if (options.account) {
+      sql += ` AND arn_account=${quote(options.account.toLowerCase())}`
+    } else {
+      sql += ` AND arn_account IS NULL`
     }
     const rows = this.query(sql)
     return rows.map((r) => r.arn)
@@ -212,6 +223,9 @@ export class SqliteAwsIamStore implements AwsIamStore {
     }
     if (options.resourceType) {
       sql += ` AND resource_type=${quote(options.resourceType.toLowerCase())}`
+    }
+    if (options.account) {
+      sql += ` AND arn_account=${quote(options.account.toLowerCase())}`
     }
 
     // Add JSON-based filtering for metadata if provided
@@ -239,6 +253,10 @@ export class SqliteAwsIamStore implements AwsIamStore {
     if (options.resourceType) {
       sql += ` AND resource_type=${quote(options.resourceType.toLowerCase())}`
     }
+    if (options.account) {
+      sql += ` AND arn_account=${quote(options.account.toLowerCase())}`
+    }
+
     const rows = this.query(sql)
     let existing = rows.map((r) => ({ arn: r.arn, data: JSON.parse(r.data) }))
     if (options.metadata) {
