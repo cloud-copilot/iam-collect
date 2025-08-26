@@ -1,3 +1,10 @@
+## [0.1.122](https://github.com/cloud-copilot/iam-collect/compare/v0.1.121...v0.1.122) (2025-08-26)
+
+
+### Features
+
+* Sync delegate administrators for an organization ([c128413](https://github.com/cloud-copilot/iam-collect/commit/c1284133bba3da5d1edb0660bc47a3487fd96b19))
+
 ## [0.1.121](https://github.com/cloud-copilot/iam-collect/compare/v0.1.120...v0.1.121) (2025-08-25)
 
 
