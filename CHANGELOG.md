@@ -1,3 +1,10 @@
+## [0.1.123](https://github.com/cloud-copilot/iam-collect/compare/v0.1.122...v0.1.123) (2025-08-26)
+
+
+### Bug Fixes
+
+* Fix syncing and listing resource data in sqlite data store ([a0333a8](https://github.com/cloud-copilot/iam-collect/commit/a0333a846c001dd6b3da76648552447cef1af0c2))
+
 ## [0.1.122](https://github.com/cloud-copilot/iam-collect/compare/v0.1.121...v0.1.122) (2025-08-26)
 
 
