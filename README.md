@@ -139,7 +139,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | s3outposts        | Outpost Buckets                   | name, region, tags, policy                                                                                                          |
 | s3outposts        | Outpost Access Points             | name, bucket, bucket account, policy, network origin, vpc                                                                           |
 | s3tables          | Table Buckets                     | name, region, bucket policy, encryption                                                                                             |
-| organizations     | Organizations                     | id, root account id, enabled policy types, org structure                                                                            |
+| organizations     | Organizations                     | id, root account id, enabled policy types, org structure, delegated administrators                                                  |
 | organizations     | Organizational Units              | id, parent ou, enabled SCPs, enabled RCPs, tags                                                                                     |
 | organizations     | Accounts                          | id, parent ou, enabled SCPs, enabled RCPs, tags                                                                                     |
 | organizations     | SCPs, RCPs                        | id, name, description, tags, policy                                                                                                 |

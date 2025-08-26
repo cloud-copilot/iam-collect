@@ -4,6 +4,8 @@ import {
   DescribePolicyCommand,
   DescribeResourcePolicyCommand,
   ListAccountsForParentCommand,
+  ListDelegatedAdministratorsCommand,
+  ListDelegatedServicesForAccountCommand,
   ListOrganizationalUnitsForParentCommand,
   ListPoliciesCommand,
   ListPoliciesForTargetCommand,
@@ -19,7 +21,11 @@ import {
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore, OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
-import { runAndCatch404, runAndCatchAccessDenied } from '../../utils/client-tools.js'
+import {
+  runAndCatch404,
+  runAndCatchAccessDenied,
+  runAndCatchAccessDeniedWithLog
+} from '../../utils/client-tools.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
 import { Sync, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
@@ -199,6 +205,12 @@ export const OrganizationSync: Sync = {
       parent = parents.pop()
     }
 
+    // Get delegated administrators
+    const delegatedAdministrators = await getDelegatedAdministrators(
+      organizationClient,
+      organization.Arn!
+    )
+
     storage.saveOrganizationMetadata(organizationId, 'structure', structure)
     storage.saveOrganizationMetadata(organizationId, 'metadata', {
       id: organizationId,
@@ -210,6 +222,7 @@ export const OrganizationSync: Sync = {
     })
     storage.saveOrganizationMetadata(organizationId, 'accounts', allAccounts)
     storage.saveOrganizationMetadata(organizationId, 'ous', allOus)
+    storage.saveOrganizationMetadata(organizationId, 'delegated-admins', delegatedAdministrators)
 
     // Sync OUs
     if (!syncOptions.writeOnly) {
@@ -299,6 +312,77 @@ export async function getOrganizationRoot(client: OrganizationsClient): Promise<
     )
     return roots.at(0)
   })
+}
+
+/**
+ * Get the delegated administrators for an organization
+ *
+ * @param client The OrganizationsClient to use
+ * @param organizationArn The ARN of the organization
+ * @returns a map of service principals to account IDs that are delegated administrators for those services
+ */
+export async function getDelegatedAdministrators(
+  client: OrganizationsClient,
+  organizationArn: string
+): Promise<Record<string, string[]>> {
+  const result = await runAndCatchAccessDeniedWithLog(
+    organizationArn,
+    'organizations',
+    'organization',
+    'delegatedAdministrators',
+    async () => {
+      const delegatedAdmins = await paginateResource(
+        client,
+        ListDelegatedAdministratorsCommand,
+        'DelegatedAdministrators',
+        {
+          inputKey: 'NextToken',
+          outputKey: 'NextToken'
+        }
+      )
+
+      // Create a map of service principals to account IDs
+      const servicePrincipalMap: Record<string, string[]> = {}
+
+      // For each delegated administrator, get the services they manage sequentially
+      for (const admin of delegatedAdmins) {
+        const delegatedServices = await runAndCatchAccessDeniedWithLog(
+          admin.Arn!,
+          'organizations',
+          'delegatedAdministrator',
+          'delegatedServices',
+          async () => {
+            const services = await paginateResource(
+              client,
+              ListDelegatedServicesForAccountCommand,
+              'DelegatedServices',
+              {
+                inputKey: 'NextToken',
+                outputKey: 'NextToken'
+              },
+              { AccountId: admin.Id! }
+            )
+            return services
+          }
+        )
+
+        // Add this account to each service principal it manages
+        if (delegatedServices) {
+          for (const service of delegatedServices) {
+            const servicePrincipal = service.ServicePrincipal!
+            if (!servicePrincipalMap[servicePrincipal]) {
+              servicePrincipalMap[servicePrincipal] = []
+            }
+            servicePrincipalMap[servicePrincipal].push(admin.Id!)
+          }
+        }
+      }
+
+      return servicePrincipalMap
+    }
+  )
+
+  return result || {}
 }
 
 /**

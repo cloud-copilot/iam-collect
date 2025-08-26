@@ -59,6 +59,8 @@
         "organizations:DescribePolicy",
         "organizations:DescribeResourcePolicy",
         "organizations:ListAccountsForParent",
+        "organizations:ListDelegatedAdministrators",
+        "organizations:ListDelegatedServicesForAccount",
         "organizations:ListOrganizationalUnitsForParent",
         "organizations:ListPolicies",
         "organizations:ListPoliciesForTarget",
