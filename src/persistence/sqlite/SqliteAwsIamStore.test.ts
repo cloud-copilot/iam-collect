@@ -110,6 +110,99 @@ describe('SqliteAwsIamStore', () => {
     })
   })
 
+  describe('managed policies', () => {
+    it('should sync data for AWS and customer managed policies', async () => {
+      const arn = 'arn:aws:iam::123456789012:policy/TestPolicy'
+      await store.saveResourceMetadata('123456789012', arn, 'metadata', { a: 1 })
+      await store.saveResourceMetadata('123456789012', arn, 'policy', { b: 2 })
+
+      const arn2 = 'arn:aws:iam::123456789012:policy/TestPolicy2'
+      await store.saveResourceMetadata('123456789012', arn2, 'metadata', { a: 1 })
+      await store.saveResourceMetadata('123456789012', arn2, 'policy', { b: 2 })
+
+      const managedArn1 = 'arn:aws:iam::aws:policy/AdministratorAccess'
+      await store.saveResourceMetadata('123456789012', managedArn1, 'metadata', { a: 1 })
+      await store.saveResourceMetadata('123456789012', managedArn1, 'policy', { b: 2 })
+
+      const managedArn2 = 'arn:aws:iam::aws:policy/ReadOnlyAccess'
+      await store.saveResourceMetadata('123456789012', managedArn2, 'metadata', { a: 1 })
+      await store.saveResourceMetadata('123456789012', managedArn2, 'policy', { b: 2 })
+
+      const managedArn3 = 'arn:aws:iam::aws:policy/SecurityAudit'
+
+      await store.syncResourceList(
+        '123456789012',
+        {
+          service: 'iam',
+          resourceType: 'policy',
+          account: 'aws'
+        },
+        [managedArn1, managedArn3]
+      )
+
+      const customerPolicies = await store.listResources('123456789012', {
+        service: 'iam',
+        resourceType: 'policy',
+        account: '123456789012'
+      })
+
+      expect(customerPolicies.sort()).toEqual([arn, arn2].map((arn) => arn.toLowerCase()))
+
+      const awsPolicies = await store.listResources('123456789012', {
+        service: 'iam',
+        resourceType: 'policy',
+        account: 'aws'
+      })
+
+      expect(awsPolicies.sort()).toEqual([managedArn1].map((arn) => arn.toLowerCase()))
+    })
+  })
+
+  describe('buckets', () => {
+    it('should list buckets without returning access points', async () => {
+      //Given buckets are saved along with access points
+      await store.saveResourceMetadata('123456789012', 'arn:aws:s3:::test-bucket', 'metadata', {
+        name: 'test-bucket'
+      })
+
+      //save another bucket to ensure only buckets are returned
+      await store.saveResourceMetadata('123456789012', 'arn:aws:s3:::test-bucket-2', 'metadata', {
+        name: 'test-bucket-2'
+      })
+
+      //save an S3 access point in the same account
+      await store.saveResourceMetadata(
+        '123456789012',
+        'arn:aws:s3:us-east-1:123456789012:accesspoint:test-access-point',
+        'metadata',
+        {
+          name: 'test-access-point'
+        }
+      )
+
+      //When buckets are listed
+      const buckets = await store.listResources('123456789012', {
+        service: 's3'
+      })
+
+      //Then the results should only include buckets
+      expect(buckets.sort()).toEqual(['arn:aws:s3:::test-bucket', 'arn:aws:s3:::test-bucket-2'])
+
+      //When access points are listed
+      const accessPoints = await store.listResources('123456789012', {
+        service: 's3',
+        resourceType: 'accesspoint',
+        region: 'us-east-1',
+        account: '123456789012'
+      })
+
+      //Then the results should only include access points
+      expect(accessPoints.sort()).toEqual([
+        'arn:aws:s3:us-east-1:123456789012:accesspoint:test-access-point'
+      ])
+    })
+  })
+
   describe('Resource Listing and Finding', () => {
     beforeEach(async () => {
       // Set up test data
@@ -142,21 +235,23 @@ describe('SqliteAwsIamStore', () => {
       )
     })
 
-    it('lists resources for a service', async () => {
+    it('lists resources for a service and resource type', async () => {
       const result = await store.listResources('123456789012', {
-        service: 'iam'
+        service: 'iam',
+        account: '123456789012',
+        resourceType: 'role'
       })
       expect(result.sort()).toEqual([
         'arn:aws:iam::123456789012:role/testrole1',
-        'arn:aws:iam::123456789012:role/testrole2',
-        'arn:aws:iam::123456789012:user/testuser1'
+        'arn:aws:iam::123456789012:role/testrole2'
       ])
     })
 
     it('lists resources for a service and resource type', async () => {
       const result = await store.listResources('123456789012', {
         service: 'iam',
-        resourceType: 'role'
+        resourceType: 'role',
+        account: '123456789012'
       })
       expect(result.sort()).toEqual([
         'arn:aws:iam::123456789012:role/testrole1',
@@ -167,7 +262,9 @@ describe('SqliteAwsIamStore', () => {
     it('lists resources for a service and region', async () => {
       const result = await store.listResources('123456789012', {
         service: 'lambda',
-        region: 'us-east-1'
+        region: 'us-east-1',
+        account: '123456789012',
+        resourceType: 'function'
       })
       expect(result).toEqual(['arn:aws:lambda:us-east-1:123456789012:function:test'])
     })
@@ -255,7 +352,8 @@ describe('SqliteAwsIamStore', () => {
 
       const remaining = await store.listResources('123456789012', {
         service: 'iam',
-        resourceType: 'role'
+        resourceType: 'role',
+        account: '123456789012'
       })
       expect(remaining).toEqual(['arn:aws:iam::123456789012:role/role1'])
     })
@@ -273,7 +371,8 @@ describe('SqliteAwsIamStore', () => {
 
       const all = await store.listResources('123456789012', {
         service: 'iam',
-        resourceType: 'role'
+        resourceType: 'role',
+        account: '123456789012'
       })
       expect(all.sort()).toEqual([
         'arn:aws:iam::123456789012:role/role1',
