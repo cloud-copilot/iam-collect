@@ -15,6 +15,7 @@ import { defaultConfigExists } from './config/defaultConfig.js'
 import { iamCollectVersion } from './config/packageVersion.js'
 import { downloadData } from './download/download.js'
 import { index } from './index/index.js'
+import { mergeSqliteDatabases } from './mergeSqlite/mergeSqlite.js'
 import { AwsService } from './services.js'
 import { LogLevels, setLogLevel } from './utils/log.js'
 
@@ -98,6 +99,18 @@ const main = async () => {
           })
         }
       },
+      'merge-databases': {
+        description: 'Merge multiple iam-collect SQLite databases into one',
+        arguments: {
+          targetDatabase: stringArgument({
+            description:
+              'The target database to merge into. If it does not exist, it will be created. If it does exist, new data will be added to existing data'
+          }),
+          sourceDatabases: stringArrayArgument({
+            description: 'The source databases to merge from'
+          })
+        }
+      },
       'analyze-logs': {
         description: 'Analyze iam-collect trace logs and summarize job execution times',
         arguments: {
@@ -161,6 +174,16 @@ const main = async () => {
       cli.args.services as AwsService[],
       cli.args.concurrency
     )
+  } else if (cli.subcommand === 'merge-databases') {
+    if (!cli.args.targetDatabase) {
+      console.error('You must specify a target database using --target-database')
+      process.exit(1)
+    }
+    if (!cli.args.sourceDatabases) {
+      console.error('You must specify at least one source database using --source-databases')
+      process.exit(1)
+    }
+    mergeSqliteDatabases(cli.args.targetDatabase, cli.args.sourceDatabases)
   } else if (cli.subcommand === 'analyze-logs') {
     if (!cli.args.logFile) {
       console.error('You must specify a log file to analyze using --log-file')
