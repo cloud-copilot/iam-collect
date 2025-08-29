@@ -12,6 +12,7 @@ import { GlueCatalogSync } from './glue/catalogs.js'
 import { AuthorizationDetailsSync } from './iam/authorizationDetails.js'
 import { IdentityProviderSyncs } from './iam/identityProviders.js'
 import { InstanceProfilesSync } from './iam/instanceProfiles.js'
+import { KafkaClustersSync } from './kafka/clusters.js'
 import { KinesisDataStreamsSync } from './kinesis/dataStreams.js'
 import { KeySync } from './kms/key.js'
 import { LambdaLayerVersionsSync, LambdaSync } from './lambda/lambda.js'
@@ -47,6 +48,7 @@ const allSyncs = [
   ...IdentityProviderSyncs,
   GlacierVaultsSync,
   GlueCatalogSync,
+  KafkaClustersSync,
   KinesisDataStreamsSync,
   KeySync,
   LambdaSync,

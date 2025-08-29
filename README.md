@@ -125,6 +125,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | events            | Event Buses                       | name, key id, policy, tags                                                                                                          |
 | glacier           | Vaults                            | name, region, tags, policy                                                                                                          |
 | glue              | Root Catalogs                     | policy                                                                                                                              |
+| kafka             | MSK Clusters                      | name, policy, kms key, tags                                                                                                         |
 | kinesis           | Data Streams                      | name, encryption type, key id, policy, tags                                                                                         |
 | kms               | Keys                              | id, policy, tags                                                                                                                    |
 | lambda            | Functions                         | name, role, tags, policy                                                                                                            |
