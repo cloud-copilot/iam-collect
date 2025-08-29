@@ -1,3 +1,10 @@
+## [0.1.124](https://github.com/cloud-copilot/iam-collect/compare/v0.1.123...v0.1.124) (2025-08-29)
+
+
+### Features
+
+* Add CLI command to merge SQLite databases ([bfba3a7](https://github.com/cloud-copilot/iam-collect/commit/bfba3a7b4a2df3548a4dc39a504905f3a0de3b1f))
+
 ## [0.1.123](https://github.com/cloud-copilot/iam-collect/compare/v0.1.122...v0.1.123) (2025-08-26)
 
 
