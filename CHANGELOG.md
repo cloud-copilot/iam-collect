@@ -1,3 +1,10 @@
+## [0.1.125](https://github.com/cloud-copilot/iam-collect/compare/v0.1.124...v0.1.125) (2025-08-29)
+
+
+### Features
+
+* Sync MSK Clusters ([5071014](https://github.com/cloud-copilot/iam-collect/commit/50710149ed93a06799c7c8f34832170dfa55412d))
+
 ## [0.1.124](https://github.com/cloud-copilot/iam-collect/compare/v0.1.123...v0.1.124) (2025-08-29)
 
 
