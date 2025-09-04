@@ -320,7 +320,7 @@ export async function paginateResourceConfig<
         //Get the extra field values
         const extraFieldPromises = workerPool.enqueueAll(
           extraFields.map(([key, callback]) => ({
-            properties: { field: key },
+            properties: { field: key, arn: resourceArn },
             execute: async (context): Promise<[string, any]> => {
               const value = await withDnsRetry(() => {
                 return runAndCatchAccessDeniedWithLog(
@@ -351,7 +351,12 @@ export async function paginateResourceConfig<
           if (result.status === 'rejected') {
             log.error(
               result.reason,
-              { field: result.properties.field },
+              {
+                field: result.properties.field,
+                arn: result.properties.arn,
+                awsService,
+                resourceType
+              },
               'Failed to get extra field value'
             )
             anyFailure = true

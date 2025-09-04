@@ -5,7 +5,7 @@ import {
   ListCertificateAuthoritiesCommand,
   ListTagsCommand
 } from '@aws-sdk/client-acm-pca'
-import { runAndCatch404 } from '../../utils/client-tools.js'
+import { runAndCatch404, runAndCatchError } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
@@ -37,7 +37,7 @@ export const AcmPcaCertificateAuthoritiesSync = createTypedSyncOperation(
         return result.CertificateAuthority
       },
       policy: async (client, ca) => {
-        return runAndCatch404(async () => {
+        return runAndCatchError('ResourceNotFoundException', async () => {
           const result = await client.send(
             new GetPolicyCommand({
               ResourceArn: ca.Arn!
