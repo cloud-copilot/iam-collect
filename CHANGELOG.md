@@ -1,3 +1,15 @@
+## [0.1.127](https://github.com/cloud-copilot/iam-collect/compare/v0.1.126...v0.1.127) (2025-09-04)
+
+
+### Bug Fixes
+
+* Catch non-standard error from ACM ([2233442](https://github.com/cloud-copilot/iam-collect/commit/22334423334659a60edd87ff21a6b47c7b3ab30e))
+
+
+### Features
+
+* Improve logging for extra field failures ([561a062](https://github.com/cloud-copilot/iam-collect/commit/561a06250d2f43d2ae091ad339d7db70d7538b24))
+
 ## [0.1.126](https://github.com/cloud-copilot/iam-collect/compare/v0.1.125...v0.1.126) (2025-09-01)
 
 ## [0.1.125](https://github.com/cloud-copilot/iam-collect/compare/v0.1.124...v0.1.125) (2025-08-29)
