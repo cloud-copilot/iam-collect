@@ -6,10 +6,6 @@
       "Effect": "Allow",
       "Action": [
         "account:ListRegions",
-        "acm-pca:DescribeCertificateAuthority",
-        "acm-pca:GetPolicy",
-        "acm-pca:ListCertificateAuthorities",
-        "acm-pca:ListTags",
         "apigateway:GET",
         "backup:GetBackupVaultAccessPolicy",
         "backup:ListBackupVaults",

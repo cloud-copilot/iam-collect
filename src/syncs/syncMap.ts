@@ -1,5 +1,4 @@
 import { AwsService, lowerCaseService } from '../services.js'
-import { AcmPcaCertificateAuthoritiesSync } from './acm-pca/certificateAuthorities.js'
 import { RestApisSync } from './apigateway/gateways.js'
 import { BackupVaultsSync } from './backup/backupVaults.js'
 import { DynamoDbStreamsSync } from './dynamodb/dynamoDbStreams.js'
@@ -36,7 +35,6 @@ import { Sync } from './sync.js'
 
 const allSyncs = [
   AccountS3BpaSync,
-  AcmPcaCertificateAuthoritiesSync,
   AuthorizationDetailsSync,
   BackupVaultsSync,
   DynamoDbStreamsSync,
