@@ -113,7 +113,6 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | iam               | OIDC Providers                    | audiences, thumbprints, url, tags                                                                                                   |
 | iam               | SAML Providers                    | metadata document, uuid, private keys, valid until, tags                                                                            |
 | iam               | Instance Profiles                 | name, roles, id, path, tags                                                                                                         |
-| acm-pca           | Certificate Authorities           | type, status, subject, policy, tags                                                                                                 |
 | apigateway        | Rest APIs                         | id, name, policy, tags                                                                                                              |
 | backup            | Backup Vaults                     | name, key, tags, policy                                                                                                             |
 | dynamodb          | Streams                           | name, region, resource policy                                                                                                       |
