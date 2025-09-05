@@ -1,3 +1,10 @@
+## [0.1.128](https://github.com/cloud-copilot/iam-collect/compare/v0.1.127...v0.1.128) (2025-09-05)
+
+
+### Features
+
+* Remove ACM PCA sync. They are managed in RAM. ([2cdc30d](https://github.com/cloud-copilot/iam-collect/commit/2cdc30d619682911eab065356ead7d31af5bfc5f))
+
 ## [0.1.127](https://github.com/cloud-copilot/iam-collect/compare/v0.1.126...v0.1.127) (2025-09-04)
 
 
