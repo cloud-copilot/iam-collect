@@ -121,6 +121,7 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 | ecr               | Registries                        | policy                                                                                                                              |
 | ec2               | VPC Endpoints                     | id, name, type, vpc, policy                                                                                                         |
 | elasticfilesystem | File Systems                      | name, id, key, encryption, tags, policy                                                                                             |
+| es                | OpenSearch Domains                | name, policy, tags, KMS key id                                                                                                      |
 | events            | Event Buses                       | name, key id, policy, tags                                                                                                          |
 | glacier           | Vaults                            | name, region, tags, policy                                                                                                          |
 | glue              | Root Catalogs                     | policy                                                                                                                              |

@@ -15,6 +15,7 @@ import { KafkaClustersSync } from './kafka/clusters.js'
 import { KinesisDataStreamsSync } from './kinesis/dataStreams.js'
 import { KeySync } from './kms/key.js'
 import { LambdaLayerVersionsSync, LambdaSync } from './lambda/lambda.js'
+import { OpenSearchDomainsSync } from './opensearch/domains.js'
 import { OrganizationSync } from './organizations/organizations.js'
 import { RamResourcesSync } from './ram/ramShares.js'
 import { S3AccessPointsSync } from './s3/accessPoints.js'
@@ -51,6 +52,7 @@ const allSyncs = [
   KeySync,
   LambdaSync,
   LambdaLayerVersionsSync,
+  OpenSearchDomainsSync,
   OrganizationSync,
   RamResourcesSync,
   RestApisSync,
