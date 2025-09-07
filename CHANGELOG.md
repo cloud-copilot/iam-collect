@@ -1,3 +1,10 @@
+## [0.1.130](https://github.com/cloud-copilot/iam-collect/compare/v0.1.129...v0.1.130) (2025-09-07)
+
+
+### Features
+
+* Add download of OpenSearch domain policies ([eea5caa](https://github.com/cloud-copilot/iam-collect/commit/eea5caaa73525b453f579b407c05b572624f7cff))
+
 ## [0.1.129](https://github.com/cloud-copilot/iam-collect/compare/v0.1.128...v0.1.129) (2025-09-07)
 
 ## [0.1.128](https://github.com/cloud-copilot/iam-collect/compare/v0.1.127...v0.1.128) (2025-09-05)
