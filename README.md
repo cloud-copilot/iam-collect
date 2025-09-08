@@ -113,7 +113,7 @@ To explore effective access in your environment check out [iam-lens](https://git
 Use [AgentInstructions.md](docs/AgentInstructions.md) to help your AI understand the data and how to interrogate it.
 
 ```bash
-curl -o https://raw.githubusercontent.com/cloud-copilot/iam-collect/main/docs/AgentInstructions.md
+curl -O https://raw.githubusercontent.com/cloud-copilot/iam-collect/main/docs/AgentInstructions.md
 ```
 
 Then you can start asking questions like "Using AgentInstructions.md as context...":
