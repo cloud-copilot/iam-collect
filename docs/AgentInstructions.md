@@ -1147,12 +1147,12 @@ has_wildcard_resource() {
 
 ## Troubleshooting Common Issues
 
+```python
 def find_all_accounts(base_path):
 """Get list of all account IDs."""
 account_dirs = glob(f"{base_path}/accounts/\*/")
 return [os.path.basename(path.rstrip('/')) for path in account_dirs]
-
-````
+```
 
 ## Example Queries
 
@@ -1177,7 +1177,7 @@ def find_publicly_assumable_roles(base_path):
                         public_roles.append(metadata)
 
     return public_roles
-````
+```
 
 ### Query 2: Find all S3 buckets with public read access
 
