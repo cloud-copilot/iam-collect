@@ -1,3 +1,16 @@
+## [0.1.131](https://github.com/cloud-copilot/iam-collect/compare/v0.1.130...v0.1.131) (2025-09-08)
+
+
+### Bug Fixes
+
+* Fix curl statement in docs ([6961290](https://github.com/cloud-copilot/iam-collect/commit/6961290da14284f871f97e4106bc6e0f0e8ce915))
+* Fix formatting in AgentInstructions.md ([d2620bc](https://github.com/cloud-copilot/iam-collect/commit/d2620bc2d1de4aaf13bb7aa04ba0375d9bc38ea2))
+
+
+### Features
+
+* Add agent instructions ([338364b](https://github.com/cloud-copilot/iam-collect/commit/338364b1400d43d947ef63554d697066e491e6cd))
+
 ## [0.1.130](https://github.com/cloud-copilot/iam-collect/compare/v0.1.129...v0.1.130) (2025-09-07)
 
 
