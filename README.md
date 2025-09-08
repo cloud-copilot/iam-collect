@@ -102,6 +102,29 @@ This will show you your data that was downloaded. See the [storage docs](docs/St
 - [CLI](docs/CLI.md) - Details on the CLI commands and options.
 - [History](docs/History.md) - How to track history of changes.
 
+## Using Your Data
+
+### iam-lens
+
+To explore effective access in your environment check out [iam-lens](https://github.com/cloud-copilot/iam-lens). iam-lens reads your iam-collect data to answer questions like: "Who can access this resource?", "Who can assume this role?", and "Does this principal have access to this bucket?"
+
+### Leveraging Your AI
+
+Use [AgentInstructions.md](docs/AgentInstructions.md) to help your AI understand the data and how to interrogate it.
+
+```bash
+curl -O https://raw.githubusercontent.com/cloud-copilot/iam-collect/main/docs/AgentInstructions.md
+```
+
+Then you can start asking questions like "Using AgentInstructions.md as context...":
+
+- Do I have any roles that have "\*" in the trust policy?
+- Which users have the "AdministratorAccess" managed policy attached?
+- What RAM shares are sharing resources outside of my organization?
+- Are there any S3 buckets without block public access enabled?
+
+You can also ask your AI to generate scripts to predictably and scalably answer these same questions for you.
+
 ## Supported Services and Data
 
 | Service           | Resource Type                     | Data Downloaded                                                                                                                     |
