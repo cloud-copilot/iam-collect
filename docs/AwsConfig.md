@@ -6,10 +6,10 @@ It's possible to use AWS Config as a data source for IAM Collect. This can simpl
 
 To use AWS Config as a data source, you need to ensure the following:
 
-1. AWS Config must be enabled in your AWS account and regions you want to collect data from.
-2. Your Config Recorders must be configured to record the [resource types](#supported-resource-types) you are interested in.
-3. A Config Aggregator must be set up to query information from.
-4. You must have the [necessary permissions as defined below](#required-iam-permissions).
+1. AWS Config Recorders must be enabled in your AWS accounts and regions you want to collect data from.
+2. The Config Recorders must be configured to record the [resource types](#supported-resource-types) you are interested in.
+3. A Config Aggregator must be set up to query information from the Recorders.
+4. The principal you use must have the [necessary permissions as defined below](#required-iam-permissions).
 
 ## Supported Resource Types
 
@@ -47,7 +47,7 @@ If your dataSource is AWS Config, iam-collect skips resource types that are not 
 | events            | Event Buses                       | ✅               | AWS::Events::EventBus                                         |
 | glacier           | Vaults                            | ❌               |                                                               |
 | glue              | Root Catalogs                     | ❌               |                                                               |
-| kafka             | MSK Clusters                      | ❌               | AWS::MSK::Cluster, AWS::MSK::ClusterPolicy                    |
+| kafka             | MSK Clusters                      | ✅               | AWS::MSK::Cluster, AWS::MSK::ClusterPolicy                    |
 | kinesis           | Data Streams                      | ❌               |                                                               |
 | kms               | Keys                              | ✅               | AWS::KMS::Key                                                 |
 | lambda            | Functions                         | ✅               | AWS::Lambda::Function                                         |
@@ -154,7 +154,7 @@ iam-collect --concurrency 10
 
 ## Combining with Other Data Sources
 
-You can combine AWS Config with the default data source to get a more complete picture of your policies.
+You can combine AWS Config with the default data source to get additional policies you cannot get from AWS Config alone.
 
 Do this by creating three config files:
 
@@ -167,11 +167,8 @@ Do this by creating three config files:
 ```jsonc
 {
   "storage": {
-    "name": "s3",
-    "config": {
-      "bucket": "my-iam-collect-bucket",
-      "prefix": "iam-collect-data/"
-    }
+    "type": "file",
+    "path": "./iam-data"
   },
   "accounts": {
     "included": ["111111111111", "222222222222", "333333333333"]
