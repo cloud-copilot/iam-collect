@@ -1,5 +1,19 @@
 import { AwsService } from '../services.js'
 
+export type DataSourceType = 'aws-sdk' | 'aws-config'
+
+export interface DataSourceConfig {
+  /**
+   * The type of data source to use for collecting AWS resource data
+   * - 'aws-sdk': Use direct AWS SDK calls (default)
+   * - 'aws-config': Use AWS Config service for resource queries
+   */
+  name: DataSourceType
+  // Future extensibility for source-specific configuration
+
+  config: any
+}
+
 export interface AuthConfig {
   /**
    * The profile to use when authenticating with AWS. If not present, the default AWS SDK credential resolution chain will be used.
@@ -125,6 +139,7 @@ interface AccountConfig extends Omit<BaseConfig, 'auth'> {
 export interface TopLevelConfig extends BaseConfig {
   name?: string
   iamCollectVersion: string
+  dataSource?: DataSourceConfig
   storage?: StorageConfig
   auth?: AuthConfig
   accounts?: {
@@ -489,6 +504,22 @@ export function getConfiguredAccounts(configs: TopLevelConfig[]): string[] {
     }
   }
   return []
+}
+
+/**
+ * Get the data source configuration from the provided configs.
+ *
+ * @param configs the configs to search for the data source configuration
+ * @returns the data source configuration, or undefined if none found
+ */
+export function getConfiguredDataSource(configs: TopLevelConfig[]): DataSourceConfig | undefined {
+  const reverseConfigs = [...configs].reverse()
+  for (const config of reverseConfigs) {
+    if (config.dataSource) {
+      return config.dataSource
+    }
+  }
+  return undefined
 }
 
 function mergeAuthConfigs(

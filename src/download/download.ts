@@ -1,26 +1,28 @@
 import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { getCredentials } from '../aws/auth.js'
+import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
 import {
   accountServiceRegionConfig,
+  AuthConfig,
   configuredRegionListForAccount,
   customConfigForSync,
   getAccountAuthConfig,
   getConfiguredAccounts,
+  getConfiguredDataSource,
   getDefaultAuthConfig,
   getStorageConfig,
   regionsForService,
   servicesForAccount,
-  StorageConfig,
   syncEnabledForRegion,
   TopLevelConfig
 } from '../config/config.js'
+import { createClientPool } from '../config/dataSource.js'
 import { getPartitionDefaults } from '../config/partitionDefaults.js'
 import { getIndexersForService } from '../indexing/indexMap.js'
 import { IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
 import { JobRunner } from '../jobs/jobRunner.js'
 import { defaultConcurrency } from '../jobs/util.js'
-import { AwsIamStore } from '../persistence/AwsIamStore.js'
 import { createStorageClient } from '../persistence/util.js'
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
@@ -52,24 +54,38 @@ export async function downloadData(
   }
   const deleteData = !writeOnly
 
+  const defaultAuthConfig = getDefaultAuthConfig(configs)
+  const defaultCredentials = await getNewInitialCredentials(defaultAuthConfig, {
+    phase: 'initial default credentials'
+  })
+
   if (accountIds.length === 0) {
+    /*
+      If no accounts were passed in:
+      1. Check the config for any configured accounts
+      2. If no configured accounts, use the default credentials to get the current account
+     */
     const configuredAccounts = getConfiguredAccounts(configs)
     if (configuredAccounts.length > 0) {
       accountIds = configuredAccounts
     } else {
-      const defaultAuthConfig = getDefaultAuthConfig(configs)
-      const defaultCredentials = await getNewInitialCredentials(defaultAuthConfig, {
-        phase: 'discover account'
-      })
       accountIds = [defaultCredentials.accountId]
     }
   }
+
+  // Create the client pool and initialize it
+  const dataSourceConfig = getConfiguredDataSource(configs)
+  const clientPool = await createClientPool(dataSourceConfig)
+  await clientPool.init()
+
+  const defaultPartition = defaultCredentials.partition
 
   const storageConfig = getStorageConfig(configs)
   if (!storageConfig) {
     throw new Error('No storage configuration found. Cannot download data.')
   }
-  const storage = await getIamStoreForAccount(storageConfig, accountIds.at(0)!, configs, deleteData)
+
+  const storage = createStorageClient(storageConfig, defaultPartition, deleteData)
 
   const indexJobs: IndexJob[] = []
 
@@ -80,18 +96,37 @@ export async function downloadData(
   for (const accountId of accountIds) {
     log.info('Queuing downloads for account', { accountId })
     const authForAccount = getAccountAuthConfig(accountId, configs)
-    const credentials = await getCredentials(accountId, authForAccount)
-    const partition = credentials.partition
-    const partitionConfig = getPartitionDefaults(partition)
+    const credentials = await getCredentialsForSync(
+      clientPool,
+      defaultPartition,
+      accountId,
+      authForAccount
+    )
+    const accountPartition = credentials.partition
+    if (accountPartition !== defaultPartition) {
+      //TODO: Consider updating the storage client to handle multiple partitions
+      log.error(
+        `Account ${accountId} is in partition ${accountPartition}, but the default account is in partition ${defaultPartition}. This is not supported.`
+      )
+      throw new Error('Cannot download data for multiple partitions in one run.')
+    }
+    const partitionConfig = getPartitionDefaults(accountPartition)
     const accountConfigs = [partitionConfig, ...configs]
-    const accountRegions = await getAccountRegions(regions, accountId, configs, credentials)
+    const accountRegions = await getAccountRegions(
+      regions,
+      accountId,
+      configs,
+      credentials,
+      clientPool
+    )
 
     if (services.length === 0) {
       services = allServices as unknown as string[]
     }
     const syncOptions = {
       workerPool,
-      writeOnly
+      writeOnly,
+      clientPool
     }
 
     const enabledServices = servicesForAccount(accountId, accountConfigs, services)
@@ -118,6 +153,19 @@ export async function downloadData(
           accountConfigs
         )
 
+        if (!clientPool.isSyncSupported(service, globalSync.name, globalRegion)) {
+          log.info(
+            {
+              skippedSync: true,
+              service,
+              accountId,
+              sync: globalSync.name,
+              clientPool: clientPool.constructor.name
+            },
+            'Skipping global sync, not supported by data source'
+          )
+          continue
+        }
         downloadRunner.enqueue({
           properties: { service, accountId, sync: globalSync.name },
           execute: async (context) => {
@@ -125,7 +173,12 @@ export async function downloadData(
               workerId: context.workerId,
               ...context.properties
             }
-            const globalCredentials = await getCredentials(accountId, globalConfig.auth)
+            const globalCredentials = await getCredentialsForSync(
+              clientPool,
+              defaultPartition,
+              accountId,
+              globalConfig.auth
+            )
             log.debug(logDetails, 'Executing global sync')
             await globalSync.execute(
               accountId,
@@ -161,6 +214,20 @@ export async function downloadData(
             log.debug({ service, accountId, region, syncName: sync.name }, 'Skipping regional sync')
             continue
           }
+          if (!clientPool.isSyncSupported(service, sync.name, region)) {
+            log.info(
+              {
+                skippedSync: true,
+                service,
+                accountId,
+                sync: sync.name,
+                region,
+                clientPool: clientPool.constructor.name
+              },
+              'Skipping regional sync, not supported by data source'
+            )
+            continue
+          }
           const customConfig = customConfigForSync(
             service,
             sync.name,
@@ -176,7 +243,12 @@ export async function downloadData(
                 ...context.properties
               }
               log.debug(logDetails, 'Executing regional sync')
-              const regionalCredentials = await getCredentials(accountId, asrConfig.auth)
+              const regionalCredentials = await getCredentialsForSync(
+                clientPool,
+                accountPartition,
+                accountId,
+                asrConfig.auth
+              )
 
               await sync.execute(
                 accountId,
@@ -196,7 +268,7 @@ export async function downloadData(
       for (const indexer of indexers) {
         indexJobs.push({
           indexer,
-          partition,
+          partition: accountPartition,
           accountId,
           regions: serviceRegions
         })
@@ -237,7 +309,8 @@ async function getAccountRegions(
   allRegions: string[],
   accountId: string,
   configs: TopLevelConfig[],
-  accountCredentials: AwsCredentialIdentityWithMetaData
+  accountCredentials: AwsCredentialIdentityWithMetaData,
+  clientPool: AwsClientPool
 ): Promise<string[]> {
   if (allRegions.length > 0) {
     return allRegions
@@ -251,27 +324,26 @@ async function getAccountRegions(
     log.debug('No configured regions found, discovering regions for account', {
       accountId
     })
-    return getEnabledRegions(accountCredentials)
+    return getEnabledRegions(accountCredentials, clientPool)
   }
 }
 
-/**
- * Create the AwsIamStore for a given account
- *
- * @param storageConfig the storage configuration to use
- * @param accountId the account ID to get the partition from
- * @param configs the iam-collect configs
- * @returns a Promise that resolves to the AwsIamStore for the account
- */
-async function getIamStoreForAccount(
-  storageConfig: StorageConfig,
+async function getCredentialsForSync(
+  clientPool: AwsClientPool,
+  currentPartition: string,
   accountId: string,
-  configs: TopLevelConfig[],
-  deleteData: boolean
-): Promise<AwsIamStore> {
-  const authForAccount = getAccountAuthConfig(accountId, configs)
-  const credentials = await getCredentials(accountId, authForAccount)
-  const partition = credentials.partition
+  authConfig: AuthConfig | undefined
+): Promise<AwsCredentialIdentityWithMetaData> {
+  if (clientPool.requiresAwsCredentials()) {
+    return getCredentials(accountId, authConfig)
+  }
 
-  return createStorageClient(storageConfig, partition, deleteData)
+  return {
+    accountId: accountId,
+    partition: currentPartition,
+    accessKeyId: '',
+    credentialScope: '',
+    expiration: undefined,
+    secretAccessKey: ''
+  }
 }

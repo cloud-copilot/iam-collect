@@ -7,7 +7,6 @@ import {
   ListLayerVersionsCommand,
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { DataRecord, Sync, syncData } from '../sync.js'
@@ -64,12 +63,7 @@ export const LambdaLayerVersionsSync: Sync = {
   awsService: 'lambda',
   name: 'lambdaLayerVersions',
   execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-    const lambdaClient = AwsClientPool.defaultInstance.client(
-      LambdaClient,
-      credentials,
-      region,
-      endpoint
-    )
+    const lambdaClient = syncOptions.clientPool.client(LambdaClient, credentials, region, endpoint)
     const allLayers = await paginateResource(lambdaClient, ListLayersCommand, 'Layers', {
       inputKey: 'Marker',
       outputKey: 'NextMarker'
