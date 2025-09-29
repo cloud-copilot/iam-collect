@@ -5,7 +5,7 @@ import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientCont
 import { executeConfigQuery, resourceStatusWhereClause } from '../awsConfigUtils.js'
 
 /**
- * KMS client implementation using AWS Config as data source
+ * Account client implementation using AWS Config as data source
  */
 export class AwsConfigAccountClient extends AbstractClient<AwsConfigClientContext> {
   static readonly clientName = AccountClient.name
