@@ -5,7 +5,7 @@
  * @returns the parsed JSON object, or undefined if value is undefined
  */
 export function parseIfPresent(value: string | undefined): any {
-  if (value === undefined || value === null) {
+  if (value === undefined) {
     return undefined
   }
   return JSON.parse(value)
