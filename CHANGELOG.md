@@ -1,3 +1,10 @@
+## [0.1.132](https://github.com/cloud-copilot/iam-collect/compare/v0.1.131...v0.1.132) (2025-09-29)
+
+
+### Features
+
+* Add support to download data from AWS Config ([d42fe54](https://github.com/cloud-copilot/iam-collect/commit/d42fe5489abebc2cfde193aab90fc6a1fdc81ca6))
+
 ## [0.1.131](https://github.com/cloud-copilot/iam-collect/compare/v0.1.130...v0.1.131) (2025-09-08)
 
 
