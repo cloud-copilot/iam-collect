@@ -37,7 +37,7 @@ export abstract class AbstractClient<CustomClientContext = {}> {
       return undefined
     }
     delete this.detailsCache[resourceId][type]
-    // Clear cache after retrieval
+    // Clear empty cache entries
     if (Object.keys(this.detailsCache[resourceId] || {}).length === 0) {
       delete this.detailsCache[resourceId] // Remove resourceId entry if empty
     }
