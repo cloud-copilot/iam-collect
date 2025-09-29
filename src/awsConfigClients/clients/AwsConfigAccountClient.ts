@@ -21,7 +21,7 @@ export class AwsConfigAccountClient extends AbstractClient<AwsConfigClientContex
   }
 
   /**
-   * Register all KMS command implementations
+   * Register all Account command implementations
    */
   protected registerCommands(): void {
     this.registerCommand(
