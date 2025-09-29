@@ -18,7 +18,6 @@ import {
   PolicyTypeStatus,
   Root
 } from '@aws-sdk/client-organizations'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore, OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
 import {
@@ -70,7 +69,7 @@ export const OrganizationSync: Sync = {
     endpoint: string | undefined,
     syncOptions: SyncOptions
   ): Promise<void> {
-    const organizationClient = AwsClientPool.defaultInstance.client(
+    const organizationClient = syncOptions.clientPool.client(
       OrganizationsClient,
       credentials,
       region,

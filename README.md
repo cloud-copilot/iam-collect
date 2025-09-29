@@ -9,14 +9,16 @@ Get every possible policy in any set of AWS accounts. This is built to run out o
 1. [Tenets](#iam-collect-tenets)
 2. [Introduction](#introduction)
 3. [Getting Started](#getting-started)
-4. [Configuration](docs/Configuration.md)
-5. [Authentication](docs/Authentication.md)
-6. [Storage](docs/Storage.md)
-7. [Filtering](docs/Filtering.md)
-8. [Indexing](docs/Indexing.md)
-9. [CLI](docs/CLI.md)
-10. [History](docs/History.md)
-11. [Supported Services and Data](#supported-services-and-data)
+4. [Using Your Data](#using-your-data)
+5. [Configuration](docs/Configuration.md)
+6. [Authentication](docs/Authentication.md)
+7. [Storage](docs/Storage.md)
+8. [Filtering](docs/Filtering.md)
+9. [Indexing](docs/Indexing.md)
+10. [CLI](docs/CLI.md)
+11. [History](docs/History.md)
+12. [Supported Services and Data](#supported-services-and-data)
+13. [Using AWS Config as a Data Source](docs/AwsConfig.md)
 
 ## iam-collect Tenets
 
@@ -124,6 +126,12 @@ Then you can start asking questions like "Using AgentInstructions.md as context.
 - Are there any S3 buckets without block public access enabled?
 
 You can also ask your AI to generate scripts to predictably and scalably answer these same questions for you.
+
+## Additional Data Sources
+
+By default, iam-collect collects data directly from AWS service APIs.
+
+If you prefer, you can configure iam-collect to pull data from AWS Config instead. See the [AWS Config data source documentation](docs/AwsConfig.md) for details.
 
 ## Supported Services and Data
 

@@ -20,7 +20,7 @@ export type ExtractOutputType<T> = T extends CommandConstructors
     ? Output
     : never
   : never
-type ExtractInputType<T> = T extends CommandConstructors
+export type ExtractInputType<T> = T extends CommandConstructors
   ? InstanceType<T> extends Command<infer Input, any, any, any, any>
     ? Input
     : never
@@ -276,16 +276,12 @@ export async function paginateResourceConfig<
   endpoint: string | undefined,
   workerPool: ConcurrentWorkerPool<any, any>,
   awsService: AwsService,
-  resourceType: string
+  resourceType: string,
+  clientPool: AwsClientPool
 ): Promise<ExtendedResourceElementType<C, Cmd, K, ExtraFieldsFunc>[]> {
   const accountId = credentials.accountId
   const partition = credentials.partition
-  const client = AwsClientPool.defaultInstance.client(
-    resourceTypeSync.client,
-    credentials,
-    region,
-    endpoint
-  )
+  const client = clientPool.client(resourceTypeSync.client, credentials, region, endpoint)
 
   let resources = await withDnsRetry(() => {
     return paginateResource(
@@ -410,6 +406,7 @@ export function createTypedSyncOperation<
       syncOptions: SyncOptions
     ) => {
       const awsId = credentials.accountId
+      const clientPool = syncOptions.clientPool
 
       log.trace('getting resources', { region: region, accountId, service: awsService, name })
       const resources = await paginateResourceConfig(
@@ -419,7 +416,8 @@ export function createTypedSyncOperation<
         endpoint,
         syncOptions.workerPool,
         awsService,
-        name
+        name,
+        clientPool
       )
       log.trace('received resources', { region: region, accountId, service: awsService, name })
 

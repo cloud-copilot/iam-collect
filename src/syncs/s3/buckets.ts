@@ -9,7 +9,6 @@ import {
   S3Client,
   ServerSideEncryptionConfiguration
 } from '@aws-sdk/client-s3'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import {
@@ -17,6 +16,7 @@ import {
   runAndCatchAccessDeniedWithLog,
   withDnsRetry
 } from '../../utils/client-tools.js'
+import { convertTagsToRecord } from '../../utils/tags.js'
 import { Sync, syncData, SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
@@ -39,7 +39,7 @@ export const S3GeneralPurposeBucketSync: Sync = {
     endpoint: string | undefined,
     syncOptions: SyncOptions
   ): Promise<void> => {
-    const s3Client = AwsClientPool.defaultInstance.client(S3Client, credentials, region, endpoint)
+    const s3Client = syncOptions.clientPool.client(S3Client, credentials, region, endpoint)
 
     const allBuckets = await withDnsRetry(async () => {
       return paginateResource(
@@ -156,13 +156,7 @@ async function getTagsForBucket(
   const tags = await runAndCatchAccessDeniedWithLog(arn, 's3', gpBuckets, 'tags', async () => {
     return runAndCatch404<Record<string, string>>(async () => {
       const response = await client.send(tagCommand)
-      return response.TagSet?.reduce(
-        (acc, tag) => {
-          acc[tag.Key!] = tag.Value!
-          return acc
-        },
-        {} as Record<string, string>
-      )
+      return convertTagsToRecord(response.TagSet)
     })
   })
 

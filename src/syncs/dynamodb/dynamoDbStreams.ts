@@ -1,6 +1,5 @@
 import { DynamoDBClient, GetResourcePolicyCommand } from '@aws-sdk/client-dynamodb'
 import { DynamoDBStreamsClient, ListStreamsCommand } from '@aws-sdk/client-dynamodb-streams'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatchError } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { DataRecord, Sync, syncData } from '../sync.js'
@@ -10,13 +9,13 @@ export const DynamoDbStreamsSync: Sync = {
   awsService: 'dynamodb',
   name: 'dynamoDbStreams',
   execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-    const streamsClient = AwsClientPool.defaultInstance.client(
+    const streamsClient = syncOptions.clientPool.client(
       DynamoDBStreamsClient,
       credentials,
       region,
       endpoint
     )
-    const dynamoClient = AwsClientPool.defaultInstance.client(
+    const dynamoClient = syncOptions.clientPool.client(
       DynamoDBClient,
       credentials,
       region,

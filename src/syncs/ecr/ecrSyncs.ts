@@ -6,7 +6,6 @@ import {
   ListTagsForResourceCommand,
   Repository
 } from '@aws-sdk/client-ecr'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatchError } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { Sync } from '../sync.js'
@@ -68,7 +67,7 @@ export const EcrSyncs: Sync[] = [
     awsService: 'ecr',
     name: 'registry',
     execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-      const client = AwsClientPool.defaultInstance.client(ECRClient, credentials, region, endpoint)
+      const client = syncOptions.clientPool.client(ECRClient, credentials, region, endpoint)
       const policyText = await runAndCatchError('RegistryPolicyNotFoundException', async () => {
         const result = await client.send(new GetRegistryPolicyCommand({}))
         return result.policyText

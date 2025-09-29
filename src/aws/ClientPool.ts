@@ -7,10 +7,11 @@ import {
   DefaultRateLimiter,
   DefaultRateLimiterOptions
 } from '@smithy/util-retry'
+import { AwsService } from '../services.js'
 import { AwsCredentialIdentityWithMetaData } from './coreAuth.js'
 
-type ClientConstructor<T> = new (args: any) => T
-type AnyClient = Client<any, any, any, any>
+export type ClientConstructor<T> = new (args: any) => T
+export type AnyClient = Client<any, any, any, any>
 
 const retrySettings: Record<string, DefaultRateLimiterOptions> = {
   [LambdaClient.name]: {
@@ -90,6 +91,31 @@ export class AwsClientPool {
       }
     })
     this.clientCache.clear()
+  }
+
+  /**
+   * Do any async initialization required for the client pool. Should be called
+   * before the first use of the pool.
+   */
+  public async init(): Promise<void> {}
+
+  /**
+   * Whether this client pool requires valid AWS credentials for each instance.
+   */
+  public requiresAwsCredentials(): boolean {
+    return true
+  }
+
+  /**
+   * Determine if a given sync is supported by this client pool for the given service and region.
+   *
+   * @param service the AWS service
+   * @param syncName the name of the sync operation
+   * @param region the AWS region
+   * @returns true if the sync is supported, false otherwise
+   */
+  public isSyncSupported(service: AwsService, syncName: string, region: string): boolean {
+    return true
   }
 
   private retryStrategyForClient(client: ClientConstructor<any>): RetryStrategyV2 {

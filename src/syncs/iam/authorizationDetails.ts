@@ -11,7 +11,6 @@ import {
 } from '@aws-sdk/client-iam'
 
 import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
@@ -31,7 +30,7 @@ export const AuthorizationDetailsSync: Sync = {
     endpoint: string | undefined,
     syncOptions: SyncOptions
   ): Promise<void> => {
-    const client = AwsClientPool.defaultInstance.client(IAMClient, credentials, region, endpoint)
+    const client = syncOptions.clientPool.client(IAMClient, credentials, region, endpoint)
     const authDetails = await getAuthorizationDetails(
       client,
       syncOptions.workerPool,

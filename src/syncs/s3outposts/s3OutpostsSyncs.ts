@@ -7,7 +7,6 @@ import {
   S3ControlClient
 } from '@aws-sdk/client-s3-control'
 import { ListOutpostsWithS3Command, Outpost, S3OutpostsClient } from '@aws-sdk/client-s3outposts'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
@@ -20,7 +19,7 @@ export const S3OutpostsBucketsSync: Sync = {
   awsService: 's3outposts',
   name: 'buckets',
   execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-    const outpostsClient = AwsClientPool.defaultInstance.client(
+    const outpostsClient = syncOptions.clientPool.client(
       S3OutpostsClient,
       credentials,
       region,
@@ -97,7 +96,7 @@ export const S3OutpostsAccessPointsSync: Sync = {
   awsService: 's3outposts',
   name: 'accessPoints',
   execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-    const outpostsClient = AwsClientPool.defaultInstance.client(
+    const outpostsClient = syncOptions.clientPool.client(
       S3OutpostsClient,
       credentials,
       region,

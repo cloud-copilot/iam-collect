@@ -11,7 +11,6 @@ import {
   ListTagsForResourceCommand,
   SSOAdminClient
 } from '@aws-sdk/client-sso-admin'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { runAndCatch404, runAndCatchAccessDenied, withDnsRetry } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
@@ -22,12 +21,7 @@ export const SsoDataSync: Sync = {
   awsService: 'sso',
   name: 'instances',
   execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-    const client = AwsClientPool.defaultInstance.client(
-      SSOAdminClient,
-      credentials,
-      region,
-      endpoint
-    )
+    const client = syncOptions.clientPool.client(SSOAdminClient, credentials, region, endpoint)
 
     const instances = await withDnsRetry(async () => {
       return paginateResource(client, ListInstancesCommand, 'Instances', {

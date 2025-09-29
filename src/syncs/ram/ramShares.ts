@@ -1,7 +1,6 @@
 import { ResourceOwner } from '@aws-sdk/client-api-gateway'
 import { GetResourcePoliciesCommand, ListResourcesCommand, RAMClient } from '@aws-sdk/client-ram'
 import { splitArnParts } from '@cloud-copilot/iam-utils'
-import { AwsClientPool } from '../../aws/ClientPool.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { Sync } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
@@ -10,7 +9,7 @@ export const RamResourcesSync: Sync = {
   awsService: 'ram',
   name: 'resourcePolicies',
   execute: async (accountId, region, credentials, storage, endpoint, syncOptions) => {
-    const ramClient = AwsClientPool.defaultInstance.client(RAMClient, credentials, region, endpoint)
+    const ramClient = syncOptions.clientPool.client(RAMClient, credentials, region, endpoint)
 
     // List all the resources
     const resources = await paginateResource(
