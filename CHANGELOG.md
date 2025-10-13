@@ -1,3 +1,10 @@
+## [0.1.138](https://github.com/cloud-copilot/iam-collect/compare/v0.1.137...v0.1.138) (2025-10-13)
+
+
+### Bug Fixes
+
+* Don't parse policies that are empty strings ([a0da6b7](https://github.com/cloud-copilot/iam-collect/commit/a0da6b727fbb6ee0bc2adda6f60bb0c82c3e1a65))
+
 ## [0.1.137](https://github.com/cloud-copilot/iam-collect/compare/v0.1.136...v0.1.137) (2025-10-11)
 
 ## [0.1.136](https://github.com/cloud-copilot/iam-collect/compare/v0.1.135...v0.1.136) (2025-10-11)
