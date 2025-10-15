@@ -1,3 +1,10 @@
+## [0.1.139](https://github.com/cloud-copilot/iam-collect/compare/v0.1.138...v0.1.139) (2025-10-15)
+
+
+### Features
+
+* Add schema version and iam-collect version to metadata table in sqlite persistence store ([0f68b17](https://github.com/cloud-copilot/iam-collect/commit/0f68b17c3403262cf95f783121e10cdc5344811d))
+
 ## [0.1.138](https://github.com/cloud-copilot/iam-collect/compare/v0.1.137...v0.1.138) (2025-10-13)
 
 
