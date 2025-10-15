@@ -11,7 +11,7 @@ describe('SqliteAwsIamStore', () => {
   beforeEach(() => {
     const dir = mkdtempSync(join(tmpdir(), 'iam-collect-'))
     dbPath = join(dir, 'test.db')
-    store = new SqliteAwsIamStore(dbPath, 'aws')
+    store = new SqliteAwsIamStore(dbPath, 'aws', 'test-version')
   })
 
   afterEach(() => {

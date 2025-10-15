@@ -10,6 +10,8 @@ function quote(value: any): string {
   return `'${String(value).replace(/'/g, "''")}'`
 }
 
+const CURRENT_SCHEMA_VERSION = '2025-10-14'
+
 /**
  * A SQLite-based implementation of the AwsIamStore interface.
  */
@@ -18,7 +20,8 @@ export class SqliteAwsIamStore implements AwsIamStore {
 
   constructor(
     private readonly dbPath: string,
-    private readonly partition: string
+    private readonly partition: string,
+    private readonly iamCollectVersion: string
   ) {
     this.db = new DatabaseConstructor(this.dbPath)
     this.init()
@@ -33,7 +36,7 @@ export class SqliteAwsIamStore implements AwsIamStore {
    *
    * @returns The DDL to create the schema in a SQLite database.
    */
-  public static schemaSql() {
+  public static schemaSql(iamCollectVersion: string) {
     return `
     CREATE TABLE IF NOT EXISTS resource_metadata (
       partition TEXT NOT NULL,
@@ -92,11 +95,18 @@ export class SqliteAwsIamStore implements AwsIamStore {
       data TEXT NOT NULL,
       hash TEXT NOT NULL,
       PRIMARY KEY (partition, index_name)
-    );`
+    );
+    CREATE TABLE IF NOT EXISTS metadata (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+    INSERT OR IGNORE INTO metadata (key, value) VALUES ('schema_version', '${CURRENT_SCHEMA_VERSION}');
+    INSERT OR IGNORE INTO metadata (key, value) VALUES ('iam-collect_version', ${quote(iamCollectVersion)});
+    `
   }
 
   private init() {
-    this.db.exec(SqliteAwsIamStore.schemaSql())
+    this.db.exec(SqliteAwsIamStore.schemaSql(this.iamCollectVersion))
   }
 
   private run(sql: string) {

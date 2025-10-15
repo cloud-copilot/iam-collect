@@ -1,6 +1,7 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { sep } from 'path'
 import { getStorageConfig, StorageConfig, TopLevelConfig } from '../config/config.js'
+import { iamCollectVersion } from '../config/packageVersion.js'
 import { AwsIamStore } from './AwsIamStore.js'
 import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
@@ -13,30 +14,32 @@ import { SqliteAwsIamStore } from './sqlite/SqliteAwsIamStore.js'
  *
  * @param configs - The top-level configurations that define the storage settings.
  * @param partition - The partition to use for the storage client.
+ * @param deleteData - Whether to delete existing data in the storage.
  * @returns The storage client instance to use
  */
-export function createStorageClient(
+export async function createStorageClient(
   configs: TopLevelConfig[],
   partition: string,
   deleteData: boolean
-): AwsIamStore
+): Promise<AwsIamStore>
 /**
  * Create a storage client based on the provided storage configuration and partition.
  *
  * @param storageConfig - The storage configuration object that defines the type and path of the storage.
  * @param partition - The partition to use for the storage client.
+ * @param deleteData - Whether to delete existing data in the storage.
  * @returns The storage client instance to use
  */
-export function createStorageClient(
+export async function createStorageClient(
   storageConfig: StorageConfig,
   partition: string,
   deleteData: boolean
-): AwsIamStore
-export function createStorageClient(
+): Promise<AwsIamStore>
+export async function createStorageClient(
   storageConfig: StorageConfig | TopLevelConfig[],
   partition: string,
   deleteData: boolean
-): AwsIamStore {
+): Promise<AwsIamStore> {
   if (Array.isArray(storageConfig)) {
     const foundConfig = getStorageConfig(storageConfig)
     if (!foundConfig) {
@@ -56,7 +59,8 @@ export function createStorageClient(
     const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig, deleteData)
     return new FileSystemAwsIamStore(storageConfig.prefix || '', partition, '/', persistenceAdapter)
   } else if (storageConfig.type === 'sqlite') {
-    return new SqliteAwsIamStore(storageConfig.path, partition)
+    const version = await iamCollectVersion()
+    return new SqliteAwsIamStore(storageConfig.path, partition, version)
   }
 
   throw new Error(

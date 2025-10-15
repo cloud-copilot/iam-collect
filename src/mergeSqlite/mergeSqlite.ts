@@ -1,4 +1,5 @@
 import DatabaseConstructor from 'better-sqlite3'
+import { iamCollectVersion } from '../config/packageVersion.js'
 import { SqliteAwsIamStore } from '../persistence/sqlite/SqliteAwsIamStore.js'
 
 /**
@@ -14,12 +15,13 @@ import { SqliteAwsIamStore } from '../persistence/sqlite/SqliteAwsIamStore.js'
  * @param targetPath - The path to the target SQLite database file. If this does not exist it is created.
  * @param sourcePaths - An array of paths to the source SQLite database files.
  */
-export function mergeSqliteDatabases(targetPath: string, sourcePaths: string[]): void {
+export async function mergeSqliteDatabases(targetPath: string, sourcePaths: string[]) {
   const TargetDB = new DatabaseConstructor(targetPath)
 
   try {
+    const version = await iamCollectVersion()
     // Ensure the target has the required schema. This mirrors SqliteAwsIamStore.init()
-    const schema = SqliteAwsIamStore.schemaSql()
+    const schema = SqliteAwsIamStore.schemaSql(version)
 
     TargetDB.exec(schema)
 

@@ -183,7 +183,7 @@ const main = async () => {
       console.error('You must specify at least one source database using --source-databases')
       process.exit(1)
     }
-    mergeSqliteDatabases(cli.args.targetDatabase, cli.args.sourceDatabases)
+    await mergeSqliteDatabases(cli.args.targetDatabase, cli.args.sourceDatabases)
   } else if (cli.subcommand === 'analyze-logs') {
     if (!cli.args.logFile) {
       console.error('You must specify a log file to analyze using --log-file')
