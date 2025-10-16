@@ -1,3 +1,10 @@
+## [0.1.141](https://github.com/cloud-copilot/iam-collect/compare/v0.1.140...v0.1.141) (2025-10-16)
+
+
+### Bug Fixes
+
+* Fix version file generation ([e8a80dd](https://github.com/cloud-copilot/iam-collect/commit/e8a80ddafd8a177a54c3ece3beb67fd6dd92b041))
+
 ## [0.1.140](https://github.com/cloud-copilot/iam-collect/compare/v0.1.139...v0.1.140) (2025-10-16)
 
 
