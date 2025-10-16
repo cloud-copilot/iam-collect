@@ -34,5 +34,6 @@ jobs:
           npm run build
           npm run test
           npx semantic-release
+          npm run build
           AFTER_VERSION=$(jq -r '.version' package.json)
           [ "$START_VERSION" != "$AFTER_VERSION" ] && npm publish || true
