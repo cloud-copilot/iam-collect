@@ -1,3 +1,10 @@
+## [0.1.140](https://github.com/cloud-copilot/iam-collect/compare/v0.1.139...v0.1.140) (2025-10-16)
+
+
+### Features
+
+* Release process maintains a static version variable ([6677cd9](https://github.com/cloud-copilot/iam-collect/commit/6677cd9564af791023937323ec59a1d649f3a804))
+
 ## [0.1.139](https://github.com/cloud-copilot/iam-collect/compare/v0.1.138...v0.1.139) (2025-10-15)
 
 
