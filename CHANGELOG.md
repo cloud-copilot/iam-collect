@@ -1,3 +1,10 @@
+## [0.1.142](https://github.com/cloud-copilot/iam-collect/compare/v0.1.141...v0.1.142) (2025-10-16)
+
+
+### Features
+
+* Use static iam-collect version instead of reading package.json ([560bbfd](https://github.com/cloud-copilot/iam-collect/commit/560bbfd5b10d344b5f51b3c4a10724c00adedb77))
+
 ## [0.1.141](https://github.com/cloud-copilot/iam-collect/compare/v0.1.140...v0.1.141) (2025-10-16)
 
 
