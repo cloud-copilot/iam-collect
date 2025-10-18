@@ -1,3 +1,10 @@
+## [0.1.144](https://github.com/cloud-copilot/iam-collect/compare/v0.1.143...v0.1.144) (2025-10-18)
+
+
+### Features
+
+* Make createStorageClient synchronous ([c3bd00d](https://github.com/cloud-copilot/iam-collect/commit/c3bd00d25b019e83a7a4eaae91d0ccf91f5f8ef6))
+
 ## [0.1.143](https://github.com/cloud-copilot/iam-collect/compare/v0.1.142...v0.1.143) (2025-10-18)
 
 ## [0.1.142](https://github.com/cloud-copilot/iam-collect/compare/v0.1.141...v0.1.142) (2025-10-16)
