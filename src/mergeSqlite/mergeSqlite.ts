@@ -19,7 +19,7 @@ export async function mergeSqliteDatabases(targetPath: string, sourcePaths: stri
   const TargetDB = new DatabaseConstructor(targetPath)
 
   try {
-    const version = await iamCollectVersion()
+    const version = iamCollectVersion()
     // Ensure the target has the required schema. This mirrors SqliteAwsIamStore.init()
     const schema = SqliteAwsIamStore.schemaSql(version)
 
