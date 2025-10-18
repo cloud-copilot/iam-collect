@@ -15,7 +15,7 @@ describe('createStorageClient', () => {
     }
 
     //When createStorageClient is called
-    const storageClient = await createStorageClient(storageConfig, 'aws', true)
+    const storageClient = createStorageClient(storageConfig, 'aws', true)
 
     //Then it should return a FileSystemAwsIamStore instance
     expect(storageClient).toBeInstanceOf(FileSystemAwsIamStore)
@@ -31,7 +31,7 @@ describe('createStorageClient', () => {
     }
 
     //When createStorageClient is called
-    const storageClient = await createStorageClient(storageConfig, 'aws', true)
+    const storageClient = createStorageClient(storageConfig, 'aws', true)
 
     //Then it should return a FileSystemAwsIamStore instance
     expect(storageClient).toBeInstanceOf(FileSystemAwsIamStore)
@@ -46,7 +46,7 @@ describe('createStorageClient', () => {
     }
 
     // When createStorageClient is called
-    const storageClient = await createStorageClient(storageConfig, 'aws', true)
+    const storageClient = createStorageClient(storageConfig, 'aws', true)
 
     // Then it should return a SqliteAwsIamStore instance
     expect(storageClient).toBeInstanceOf(SqliteAwsIamStore)
@@ -65,7 +65,7 @@ describe('createStorageClient', () => {
     ]
 
     //When createStorageClient is called
-    const storageClient = await createStorageClient(configs, 'aws', true)
+    const storageClient = createStorageClient(configs, 'aws', true)
 
     //Then it should return a FileSystemAwsIamStore instance
     expect(storageClient).toBeInstanceOf(FileSystemAwsIamStore)
@@ -77,7 +77,7 @@ describe('createStorageClient', () => {
     const configs: TopLevelConfig[] = []
 
     //When createStorageClient is called
-    await expect(createStorageClient(configs, 'aws', true)).rejects.toThrow(
+    expect(() => createStorageClient(configs, 'aws', true)).toThrow(
       'No storage configuration found. Cannot create storage client.'
     )
   })

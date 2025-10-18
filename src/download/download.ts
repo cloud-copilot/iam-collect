@@ -85,7 +85,7 @@ export async function downloadData(
     throw new Error('No storage configuration found. Cannot download data.')
   }
 
-  const storage = await createStorageClient(storageConfig, defaultPartition, deleteData)
+  const storage = createStorageClient(storageConfig, defaultPartition, deleteData)
 
   const indexJobs: IndexJob[] = []
 

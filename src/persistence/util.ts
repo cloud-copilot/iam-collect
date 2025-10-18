@@ -17,11 +17,11 @@ import { SqliteAwsIamStore } from './sqlite/SqliteAwsIamStore.js'
  * @param deleteData - Whether to delete existing data in the storage.
  * @returns The storage client instance to use
  */
-export async function createStorageClient(
+export function createStorageClient(
   configs: TopLevelConfig[],
   partition: string,
   deleteData: boolean
-): Promise<AwsIamStore>
+): AwsIamStore
 /**
  * Create a storage client based on the provided storage configuration and partition.
  *
@@ -30,16 +30,16 @@ export async function createStorageClient(
  * @param deleteData - Whether to delete existing data in the storage.
  * @returns The storage client instance to use
  */
-export async function createStorageClient(
+export function createStorageClient(
   storageConfig: StorageConfig,
   partition: string,
   deleteData: boolean
-): Promise<AwsIamStore>
-export async function createStorageClient(
+): AwsIamStore
+export function createStorageClient(
   storageConfig: StorageConfig | TopLevelConfig[],
   partition: string,
   deleteData: boolean
-): Promise<AwsIamStore> {
+): AwsIamStore {
   if (Array.isArray(storageConfig)) {
     const foundConfig = getStorageConfig(storageConfig)
     if (!foundConfig) {
@@ -59,7 +59,7 @@ export async function createStorageClient(
     const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig, deleteData)
     return new FileSystemAwsIamStore(storageConfig.prefix || '', partition, '/', persistenceAdapter)
   } else if (storageConfig.type === 'sqlite') {
-    const version = await iamCollectVersion()
+    const version = iamCollectVersion()
     return new SqliteAwsIamStore(storageConfig.path, partition, version)
   }
 
