@@ -25,7 +25,7 @@ Authentication is configured in the `iam-collect.jsonc` file. Anytime `auth` is 
     // **Specify either `arn` or `pathAndName`, NOT both.**
     // Use ARN to jump to a role in any account
     "arn": "arn:aws:iam::123456789012:role/iam-collect-role",
-    // Use pathAndName if to go to assume a role in the same account as your profile or default credentials.
+    // Use pathAndName if to go to assume a role in the same account as your profile or default credentials. Can start with a '/' or not.
     "pathAndName": "IAMCollect",
 
     // Optional, the session name to use when assuming the role.
@@ -43,7 +43,7 @@ Authentication is configured in the `iam-collect.jsonc` file. Anytime `auth` is 
   */
 
   "role": {
-    // Required if using a role, the path and name of the role to assume.
+    // Required if using a role, the path and name of the role to assume.  Can start with a '/' or not.
     "pathAndName": "role-name",
 
     // Optional, the session name to use when assuming the role.

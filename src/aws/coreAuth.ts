@@ -54,7 +54,7 @@ export async function getNewCredentials(
 
   let credentials = baseCredentials
   if (authConfig?.role) {
-    const roleArn = `arn:${baseCredentials.partition}:iam::${accountId}:role/${authConfig.role.pathAndName}`
+    const roleArn = buildRoleArn(baseCredentials.partition, accountId, authConfig.role.pathAndName)
     log.trace(
       { accountId, roleArn, sourceAccount: baseCredentials.accountId },
       'Assuming role for account with credentials'
@@ -122,7 +122,11 @@ export async function getNewInitialCredentials(
     if ('arn' in authConfig?.initialRole) {
       roleArn = authConfig.initialRole.arn
     } else {
-      roleArn = `arn:${tokenInfo.partition}:iam::${tokenInfo.accountId}:role/${authConfig.initialRole.pathAndName}`
+      roleArn = buildRoleArn(
+        tokenInfo.partition,
+        tokenInfo.accountId,
+        authConfig.initialRole.pathAndName
+      )
     }
 
     log.trace(
@@ -147,4 +151,23 @@ export async function getNewInitialCredentials(
     accountId: tokenInfo.accountId,
     partition: tokenInfo.partition
   }
+}
+
+/**
+ * Get the ARN for an IAM role.
+ *
+ * @param partition The partition the role is in (e.g. "aws", "aws-us-gov", "aws-cn").
+ * @param accountId The ID of the account the role is in.
+ * @param rolePathAndName The path and name of the role.
+ * @returns The ARN of the role.
+ */
+export function buildRoleArn(
+  partition: string,
+  accountId: string,
+  rolePathAndName: string
+): string {
+  if (!rolePathAndName.startsWith('/')) {
+    rolePathAndName = `/${rolePathAndName}`
+  }
+  return `arn:${partition}:iam::${accountId}:role${rolePathAndName}`
 }
