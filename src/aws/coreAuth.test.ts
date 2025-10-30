@@ -4,7 +4,7 @@ import {
   fromTemporaryCredentials
 } from '@aws-sdk/credential-providers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { getNewCredentials } from './coreAuth.js'
+import { buildRoleArn, getNewCredentials } from './coreAuth.js'
 import { getTokenInfo } from './tokens.js'
 
 vi.mock('@aws-sdk/credential-providers')
@@ -284,5 +284,46 @@ describe('getNewCredentials', () => {
         RoleSessionName: 'test-session'
       }
     })
+  })
+})
+
+describe('buildRoleArn', () => {
+  it('should return the correct ARN for a role', () => {
+    // Given partition, accountId and rolePathAndName
+    const partition = 'aws'
+    const accountId = '123456789012'
+    const rolePathAndName = 'my-role'
+
+    // When roleArn is called
+    const arn = buildRoleArn(partition, accountId, rolePathAndName)
+
+    // Then it should return the correct ARN
+    expect(arn).toEqual('arn:aws:iam::123456789012:role/my-role')
+  })
+
+  it('should not duplicate the leading slash in the rolePathAndName', () => {
+    // Given partition, accountId and rolePathAndName
+    const partition = 'aws'
+    const accountId = '123456789012'
+    const rolePathAndName = '/my-role'
+
+    // When roleArn is called
+    const arn = buildRoleArn(partition, accountId, rolePathAndName)
+
+    // Then it should return the correct ARN
+    expect(arn).toEqual('arn:aws:iam::123456789012:role/my-role')
+  })
+
+  it('should add a leading slash to the rolePathAndName if not present', () => {
+    // Given partition, accountId and rolePathAndName without leading slash
+    const partition = 'aws'
+    const accountId = '123456789012'
+    const rolePathAndName = 'path/to/my-role'
+
+    // When roleArn is called
+    const arn = buildRoleArn(partition, accountId, rolePathAndName)
+
+    // Then it should return the correct ARN with leading slash
+    expect(arn).toEqual('arn:aws:iam::123456789012:role/path/to/my-role')
   })
 })
