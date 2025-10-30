@@ -1,3 +1,10 @@
+## [0.1.146](https://github.com/cloud-copilot/iam-collect/compare/v0.1.145...v0.1.146) (2025-10-30)
+
+
+### Features
+
+* Allow role pathAndName to start with a slash ([0d440bd](https://github.com/cloud-copilot/iam-collect/commit/0d440bd9d9bd713b915bc45dfed699c75a8bd5ce))
+
 ## [0.1.145](https://github.com/cloud-copilot/iam-collect/compare/v0.1.144...v0.1.145) (2025-10-25)
 
 ## [0.1.144](https://github.com/cloud-copilot/iam-collect/compare/v0.1.143...v0.1.144) (2025-10-18)
