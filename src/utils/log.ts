@@ -89,7 +89,7 @@ function logAt(level: LogLevel, args: unknown[]) {
    * Raw JSON logging is great for things like CloudWatch Logs where each log line
    * is expected to be a single JSON object for easier parsing and querying.
    *
-   * The default is pretty-printed each log line as a single line for for processing
+   * The default is pretty-printed each log line as a single line for processing
    * with bash and other command-line tools.
    */
   const line = RAW_JSON_LOGS ? entry : JSON.stringify(entry)
