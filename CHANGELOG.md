@@ -1,3 +1,10 @@
+## [0.1.148](https://github.com/cloud-copilot/iam-collect/compare/v0.1.147...v0.1.148) (2025-11-01)
+
+
+### Features
+
+* New option for raw json logs to be output if the environment variable IAM_COLLECT_RAW_JSON_LOGS is set ([4543a5f](https://github.com/cloud-copilot/iam-collect/commit/4543a5f1e1c1d1d7b410e1ce2a2b63ce152c8250))
+
 ## [0.1.147](https://github.com/cloud-copilot/iam-collect/compare/v0.1.146...v0.1.147) (2025-11-01)
 
 ## [0.1.146](https://github.com/cloud-copilot/iam-collect/compare/v0.1.145...v0.1.146) (2025-10-30)
