@@ -13,6 +13,11 @@ const LEVELS: Record<LogLevel, number> = {
 let CURRENT_LEVEL_NAME: LogLevel = 'warn'
 let CURRENT_LEVEL = LEVELS[CURRENT_LEVEL_NAME]
 
+let RAW_JSON_LOGS = false
+if (process.env.IAM_COLLECT_RAW_JSON_LOGS?.toLowerCase() === 'true') {
+  RAW_JSON_LOGS = true
+}
+
 export function setLogLevel(level: LogLevel) {
   if (LEVELS[level] === undefined) {
     throw new Error(`Invalid log level: ${level}`)
@@ -80,7 +85,14 @@ function logAt(level: LogLevel, args: unknown[]) {
     }
   }
 
-  const line = JSON.stringify(entry)
+  /**
+   * Raw JSON logging is great for things like CloudWatch Logs where each log line
+   * is expected to be a single JSON object for easier parsing and querying.
+   *
+   * The default is pretty-printed each log line as a single line for for processing
+   * with bash and other command-line tools.
+   */
+  const line = RAW_JSON_LOGS ? entry : JSON.stringify(entry)
 
   switch (level) {
     case 'error':
