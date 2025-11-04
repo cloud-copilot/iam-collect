@@ -19,7 +19,7 @@ The module requires that:
 
 ## Workflow Overview
 
-The module uses for lambda functions:
+The module uses four lambda functions:
 
 1. Date Prefix Lambda - Creates a date prefix for the S3 bucket; defaults to the current date such as `$your_prefix/2024-01-01/`
 2. List Accounts Lambda - Lists all accounts in the organization(s) using the provided role(s)

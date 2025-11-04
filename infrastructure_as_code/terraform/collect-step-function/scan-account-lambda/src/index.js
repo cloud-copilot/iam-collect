@@ -65,7 +65,7 @@ exports.handler = async (event, context) => {
     }
 
     console.log({
-      message: 'staring-data-download',
+      message: 'starting-data-download',
       function: 'scan-account-lambda',
       requestId: context.awsRequestId,
       accountId: accountId,
