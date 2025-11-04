@@ -1,0 +1,6 @@
+# Build output
+dist/
+*.zip
+
+# Dependencies
+node_modules/

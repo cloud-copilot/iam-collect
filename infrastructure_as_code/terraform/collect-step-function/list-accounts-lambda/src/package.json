@@ -1,0 +1,18 @@
+{
+  "name": "list-accounts-function",
+  "version": "1.0.0",
+  "description": "Lambda function to list AWS accounts using the organizations API",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.js --bundle --platform=node --target=node22 --outfile=../dist/index.js --format=cjs --external:@aws-sdk/*",
+    "install-and-build": "npm ci && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-organizations": "^3.917.0",
+    "@aws-sdk/client-sts": "^3.917.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "scan-account-function",
+  "version": "1.0.0",
+  "description": "Lambda function to scan AWS account resources",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.js --bundle --platform=node --target=node22 --outfile=../dist/index.js --format=cjs --conditions=node --main-fields=module,main",
+    "install-and-build": "npm ci && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@cloud-copilot/iam-collect": "^0.1.148"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  }
+}
