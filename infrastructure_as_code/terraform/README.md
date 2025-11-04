@@ -15,19 +15,19 @@ These modules are designed to be copied into your source control and customized 
 
 ## Modules
 
-### list-accounts-role
+### [list-accounts-role](./list-accounts-role/README.md)
 
 This module creates a role that allows listing all accounts in the organization. This role is assumed by the List Accounts Lambda in the step function. If you already have a role that allows listing accounts, you can skip this module. If you are using multiple organizations, you will need to create a separate role in each organization.
 
-### collect-role
+### [collect-role](./collect-role/README.md)
 
-`iam-collect` lists resources in your account such as roles, users, and policies. To do this, it needs a role in every account it scans. This module creates that role with the necessary permissions. If you already have a role in the target accounts, you can skip this module.
+`iam-collect` lists resources in your account such as roles, users, and policies. To do this, it needs a role in every account it scans. This module creates that role with the necessary permissions. You can use this module in any existing process you have to deploy to all of your accounts. If you already have a role you can leverage in the target accounts, you can skip this module.
 
-### collect-bucket
+### [collect-bucket](./collect-bucket/README.md)
 
 This module creates an S3 bucket to store the collected IAM data. This is a generic module that creates an S3 bucket with Block Public Access enabled and SSE-S3 encryption. This is where all the collected IAM data will be stored.
 
-### collect-step-function
+### [collect-step-function](./collect-step-function/README.md)
 
 This module creates a step function that will orchestrate the collection of IAM data across all accounts. It includes four lambda functions that are executed to populate the S3 bucket with IAM data.
 
