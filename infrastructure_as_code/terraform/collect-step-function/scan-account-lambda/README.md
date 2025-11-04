@@ -41,19 +41,19 @@ module "scan_account_lambda" {
 
 ## Inputs
 
-| Name                  | Description                                                                         | Type          | Default                   | Required |
-| --------------------- | ----------------------------------------------------------------------------------- | ------------- | ------------------------- | :------: |
-| function_name         | The name of the Lambda function                                                     | `string`      | `"scan-account-function"` |    no    |
-| storage_bucket_name   | The name of the S3 bucket for storage                                               | `string`      | n/a                       |   yes    |
-| storage_bucket_region | The AWS region of the S3 bucket used for storage                                    | `string`      | n/a                       |   yes    |
-| execution_role_arn    | The ARN of the IAM role for Lambda execution (if not provided, one will be created) | `string`      | `null`                    |    no    |
-| initial_role_arn      | The ARN of the initial IAM role to assume and use to assume the collect role in the target account. If set to an empty string, no initial role will be assumed | `string` | n/a | yes |
-| collect_role_name     | The name of the collect role in every account                                 | `string`      | `"iam-collect"`           |    no    |
-| collect_role_path     | The path of the collect role in every account                                 | `string`      | `"/"`                     |    no    |
-| timeout               | The timeout for the Lambda function in seconds                                      | `number`      | `900`                     |    no    |
-| memory_size           | The memory size for the Lambda function in MB                                       | `number`      | `512`                     |    no    |
-| environment_variables | Additional environment variables for the Lambda function                            | `map(string)` | `{}`                      |    no    |
-| tags                  | A map of tags to assign to the Lambda function and related resources                | `map(string)` | `{}`                      |    no    |
+| Name                  | Description                                                                                                                                                    | Type          | Default                   | Required |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------------- | :------: |
+| function_name         | The name of the Lambda function                                                                                                                                | `string`      | `"scan-account-function"` |    no    |
+| storage_bucket_name   | The name of the S3 bucket for storage                                                                                                                          | `string`      | n/a                       |   yes    |
+| storage_bucket_region | The AWS region of the S3 bucket used for storage                                                                                                               | `string`      | n/a                       |   yes    |
+| execution_role_arn    | The ARN of the IAM role for Lambda execution (if not provided, one will be created)                                                                            | `string`      | `null`                    |    no    |
+| initial_role_arn      | The ARN of the initial IAM role to assume and use to assume the collect role in the target account. If set to an empty string, no initial role will be assumed | `string`      | n/a                       |   yes    |
+| collect_role_name     | The name of the collect role in every account                                                                                                                  | `string`      | `"iam-collect"`           |    no    |
+| collect_role_path     | The path of the collect role in every account                                                                                                                  | `string`      | `"/"`                     |    no    |
+| timeout               | The timeout for the Lambda function in seconds                                                                                                                 | `number`      | `900`                     |    no    |
+| memory_size           | The memory size for the Lambda function in MB                                                                                                                  | `number`      | `512`                     |    no    |
+| environment_variables | Additional environment variables for the Lambda function                                                                                                       | `map(string)` | `{}`                      |    no    |
+| tags                  | A map of tags to assign to the Lambda function and related resources                                                                                           | `map(string)` | `{}`                      |    no    |
 
 ## Outputs
 
@@ -67,4 +67,3 @@ module "scan_account_lambda" {
 | lambda_function_version          | Latest published version of the Lambda function                  |
 | lambda_function_last_modified    | The date the Lambda function was last modified                   |
 | lambda_function_source_code_size | The size in bytes of the function .zip file                      |
-

@@ -8,8 +8,7 @@
     "install-and-build": "npm ci && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "esbuild": "^0.25.11"
   }

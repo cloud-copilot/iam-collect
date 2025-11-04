@@ -3,6 +3,7 @@
 This module creates an AWS Step Function to collect all IAM data across all your accounts in any number of organizations.
 
 It creates:
+
 1. A lambda to calculate the S3 prefix based on the current date
 2. A lambda to list all accounts in the configured organization(s)
 3. A lambda to run iam-collect in a given account and write the data to S3
@@ -11,6 +12,7 @@ It creates:
 6. An EventBridge rule to trigger the workflow daily
 
 The module requires that:
+
 1. An S3 bucket is created to store the collected data and this module is deployed in the same account as the bucket.
 2. For each organization being collected from, there is a role that can list accounts in that organization.
 3. IAM collect roles are deployed in each target account to allow iam-collect to run.
@@ -26,26 +28,26 @@ The module uses for lambda functions:
 
 ![IAM Collect Step Function Graph](./collect-stepfunction.png)
 
-
 ## IAM Role Assumption Flow
 
 Each Lambda function has different authorization requirements depending on the resources it needs to access. Below is a breakdown of how each function assumes roles to perform its operations.
 
 ### Authorization Patterns
 
-| Lambda Function | Purpose | Authorization Flow |
-|-----------------|---------|-------------------|
-| **Date Prefix Lambda** | Generate S3 prefix | *(No permissions needed)* |
-| **List Accounts Lambda** | List organization accounts | Lambda Execution Role → [Intermediate Role]* → List Accounts Role(s) → Organizations API |
-| **Scan Account Lambda** | Collect IAM data | Lambda Execution Role → [Intermediate Role]* → Account-Specific Collect Role → Service APIs |
-| **Scan Account Lambda** | Write to S3 | Lambda Execution Role → S3 Bucket *(direct access)* |
-| **Index Data Lambda** | Read/write S3 indexes | Lambda Execution Role → S3 Bucket *(direct access)* |
+| Lambda Function          | Purpose                    | Authorization Flow                                                                           |
+| ------------------------ | -------------------------- | -------------------------------------------------------------------------------------------- |
+| **Date Prefix Lambda**   | Generate S3 prefix         | _(No permissions needed)_                                                                    |
+| **List Accounts Lambda** | List organization accounts | Lambda Execution Role → [Intermediate Role]\* → List Accounts Role(s) → Organizations API    |
+| **Scan Account Lambda**  | Collect IAM data           | Lambda Execution Role → [Intermediate Role]\* → Account-Specific Collect Role → Service APIs |
+| **Scan Account Lambda**  | Write to S3                | Lambda Execution Role → S3 Bucket _(direct access)_                                          |
+| **Index Data Lambda**    | Read/write S3 indexes      | Lambda Execution Role → S3 Bucket _(direct access)_                                          |
 
 **\* Intermediate Role is optional** - You can set `scan_initial_role_arn` and `list_accounts_initial_role_arn` to specify an intermediate role to assume before the target roles. By default the collect role is used. Set either to an empty string to skip this step in the respective flow.
 
 ### Detailed Flow Diagrams
 
 #### List Accounts Lambda
+
 ```
 ┌─────────────────────┐
 │ Lambda Execution    │
@@ -72,6 +74,7 @@ Each Lambda function has different authorization requirements depending on the r
 ```
 
 #### Scan Account Lambda - IAM Collection Path
+
 ```
 ┌─────────────────────┐
 │ Lambda Execution    │
@@ -99,6 +102,7 @@ Each Lambda function has different authorization requirements depending on the r
 ```
 
 #### Scan Account Lambda - S3 Write Path
+
 ```
 ┌─────────────────────┐
 │ Lambda Execution    │
@@ -113,6 +117,7 @@ Each Lambda function has different authorization requirements depending on the r
 ```
 
 #### Index Data Lambda - S3 Access Path
+
 ```
 ┌─────────────────────┐
 │ Lambda Execution    │
@@ -128,17 +133,21 @@ Each Lambda function has different authorization requirements depending on the r
 ```
 
 ## Javascript Functions
+
 All functions are targeted to Node.js 22.x and built using esbuild targeting CommonJS.
 
 The scan account function highly leverages AWS SDK v3 libraries. Even though the lambda runtime has all AWS SDKs by default, I've observed inconsistent delays updating the AWS managed runtime, so all dependencies are bundled with esbuild to ensure the correct versions are consistently available.
 
 ## Scan Account Concurrency
-In [this article on monitoring IAM at scale](https://aws.amazon.com/blogs/security/how-to-monitor-and-query-iam-resources-at-scale-part-2/), AWS discloses that IAM api rate limits can apply to "The account from which AssumeRole was called prior to the API call for read APIs". This means that even though we assume a separate role in each target account, the rate limits still apply to the account where the Step Function and Lambdas are running.  We've found the default of 50 parallel executions to be a good balance of speed and avoiding throttling, but you can adjust this with the `max_parallel_executions` variable.
+
+In [this article on monitoring IAM at scale](https://aws.amazon.com/blogs/security/how-to-monitor-and-query-iam-resources-at-scale-part-2/), AWS discloses that IAM api rate limits can apply to "The account from which AssumeRole was called prior to the API call for read APIs". This means that even though we assume a separate role in each target account, the rate limits still apply to the account where the Step Function and Lambdas are running. We've found the default of 50 parallel executions to be a good balance of speed and avoiding throttling, but you can adjust this with the `max_parallel_executions` variable.
 
 ## Logging
+
 All functions are configured to log JSON to CloudWatch. All log statements are structured for easy parsing and analysis. `iam-collect` logs are all JSON as well, so logs are easily queried.
 
 ## Using data collected by the step function.
+
 The scan account lambda writes data to the s3 bucket. This can be used directly by `iam-lens`. Here is an example configuration that can be used assuming your prefix is `iam-data` and your date format is `YYYY-MM-DD`.
 
 ```json
@@ -178,87 +187,96 @@ module "iam_collect_workflow" {
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| function_name_prefix | Prefix for all Lambda function names | `string` | `"iam-collect"` | no |
-| state_machine_name | The name of the Step Function state machine | `string` | `"iam-collect-workflow"` | no |
-| storage_bucket_name | The name of the S3 bucket for storage | `string` | n/a | yes |
-| storage_bucket_region | The AWS region of the S3 bucket used for storage | `string` | n/a | yes |
-| collect_role_name | The name of the collect role to assume in every account | `string` | `"iam-collect"` | no |
-| collect_role_path | The path of the collect role to assume in every account | `string` | `"/"` | no |
-| list_accounts_role_arns | List of role ARNs that can list accounts in in your organizations. One per organization | `list(string)` | n/a | yes |
-| scan_initial_role_arn | The ARN of the initial role to assume and use to assume the account specific role for scanning accounts. If null, the collect role in the central account will be used. If an empty string, no initial role will be assumed. | `string` | `null` | no |
-| list_accounts_initial_role_arn | The ARN of the initial role to assume and then use to assume the ListAccounts roles. If set to an empty string, no initial role will be assumed. | `string` | `null` | no |
-| max_parallel_executions | Maximum number of parallel account processing executions in Step Function | `number` | `50` | no |
-| base_s3_prefix | Base prefix for S3 storage (will be combined with date) | `string` | `"iam-data"` | no |
-| enable_step_function_logging | Enable CloudWatch logging for the Step Function | `bool` | `true` | no |
-| log_retention_days | Number of days to retain CloudWatch logs | `number` | `14` | no |
-| environment_variables | Additional environment variables for Lambda functions | `map(string)` | `{}` | no |
-| schedule_expression | EventBridge schedule expression for automatic execution (e.g., 'rate(1 day)' or 'cron(0 9 * * ? *)'). Set to an empty string to disable scheduling. | `string` | `"cron(0 4 * * ? *)"` | no |
-| tags | A map of tags to assign to all resources | `map(string)` | `{}` | no |
+| Name                           | Description                                                                                                                                                                                                                  | Type           | Default                  | Required |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------ | :------: |
+| function_name_prefix           | Prefix for all Lambda function names                                                                                                                                                                                         | `string`       | `"iam-collect"`          |    no    |
+| state_machine_name             | The name of the Step Function state machine                                                                                                                                                                                  | `string`       | `"iam-collect-workflow"` |    no    |
+| storage_bucket_name            | The name of the S3 bucket for storage                                                                                                                                                                                        | `string`       | n/a                      |   yes    |
+| storage_bucket_region          | The AWS region of the S3 bucket used for storage                                                                                                                                                                             | `string`       | n/a                      |   yes    |
+| collect_role_name              | The name of the collect role to assume in every account                                                                                                                                                                      | `string`       | `"iam-collect"`          |    no    |
+| collect_role_path              | The path of the collect role to assume in every account                                                                                                                                                                      | `string`       | `"/"`                    |    no    |
+| list_accounts_role_arns        | List of role ARNs that can list accounts in in your organizations. One per organization                                                                                                                                      | `list(string)` | n/a                      |   yes    |
+| scan_initial_role_arn          | The ARN of the initial role to assume and use to assume the account specific role for scanning accounts. If null, the collect role in the central account will be used. If an empty string, no initial role will be assumed. | `string`       | `null`                   |    no    |
+| list_accounts_initial_role_arn | The ARN of the initial role to assume and then use to assume the ListAccounts roles. If set to an empty string, no initial role will be assumed.                                                                             | `string`       | `null`                   |    no    |
+| max_parallel_executions        | Maximum number of parallel account processing executions in Step Function                                                                                                                                                    | `number`       | `50`                     |    no    |
+| base_s3_prefix                 | Base prefix for S3 storage (will be combined with date)                                                                                                                                                                      | `string`       | `"iam-data"`             |    no    |
+| enable_step_function_logging   | Enable CloudWatch logging for the Step Function                                                                                                                                                                              | `bool`         | `true`                   |    no    |
+| log_retention_days             | Number of days to retain CloudWatch logs                                                                                                                                                                                     | `number`       | `14`                     |    no    |
+| environment_variables          | Additional environment variables for Lambda functions                                                                                                                                                                        | `map(string)`  | `{}`                     |    no    |
+| schedule_expression            | EventBridge schedule expression for automatic execution (e.g., 'rate(1 day)' or 'cron(0 9 \* _ ? _)'). Set to an empty string to disable scheduling.                                                                         | `string`       | `"cron(0 4 * * ? *)"`    |    no    |
+| tags                           | A map of tags to assign to all resources                                                                                                                                                                                     | `map(string)`  | `{}`                     |    no    |
 
 ## Outputs
 
 ### Step Function Outputs
-| Name | Description |
-|------|-------------|
-| state_machine_arn | The ARN of the Step Function state machine |
-| state_machine_name | The name of the Step Function state machine |
+
+| Name                             | Description                                 |
+| -------------------------------- | ------------------------------------------- |
+| state_machine_arn                | The ARN of the Step Function state machine  |
+| state_machine_name               | The name of the Step Function state machine |
 | step_function_execution_role_arn | The ARN of the Step Function execution role |
 
 ### Lambda Function Outputs
-| Name | Description |
-|------|-------------|
-| date_prefix_lambda_arn | The ARN of the date prefix Lambda function |
-| date_prefix_lambda_name | The name of the date prefix Lambda function |
-| list_accounts_lambda_arn | The ARN of the list accounts Lambda function |
+
+| Name                      | Description                                   |
+| ------------------------- | --------------------------------------------- |
+| date_prefix_lambda_arn    | The ARN of the date prefix Lambda function    |
+| date_prefix_lambda_name   | The name of the date prefix Lambda function   |
+| list_accounts_lambda_arn  | The ARN of the list accounts Lambda function  |
 | list_accounts_lambda_name | The name of the list accounts Lambda function |
-| scan_account_lambda_arn | The ARN of the scan account Lambda function |
-| scan_account_lambda_name | The name of the scan account Lambda function |
-| index_data_lambda_arn | The ARN of the index data Lambda function |
-| index_data_lambda_name | The name of the index data Lambda function |
+| scan_account_lambda_arn   | The ARN of the scan account Lambda function   |
+| scan_account_lambda_name  | The name of the scan account Lambda function  |
+| index_data_lambda_arn     | The ARN of the index data Lambda function     |
+| index_data_lambda_name    | The name of the index data Lambda function    |
 
 ### Execution Role Outputs
-| Name | Description |
-|------|-------------|
-| date_prefix_lambda_execution_role_arn | The ARN of the date prefix Lambda execution role |
+
+| Name                                    | Description                                        |
+| --------------------------------------- | -------------------------------------------------- |
+| date_prefix_lambda_execution_role_arn   | The ARN of the date prefix Lambda execution role   |
 | list_accounts_lambda_execution_role_arn | The ARN of the list accounts Lambda execution role |
-| scan_account_lambda_execution_role_arn | The ARN of the scan account Lambda execution role |
-| index_data_lambda_execution_role_arn | The ARN of the index data Lambda execution role |
+| scan_account_lambda_execution_role_arn  | The ARN of the scan account Lambda execution role  |
+| index_data_lambda_execution_role_arn    | The ARN of the index data Lambda execution role    |
 
 ### Logging Outputs
-| Name | Description |
-|------|-------------|
-| step_function_log_group_arn | The ARN of the Step Function CloudWatch log group |
+
+| Name                         | Description                                        |
+| ---------------------------- | -------------------------------------------------- |
+| step_function_log_group_arn  | The ARN of the Step Function CloudWatch log group  |
 | step_function_log_group_name | The name of the Step Function CloudWatch log group |
 
 ## Module Components
 
 ### 1. Date Prefix Lambda (`./storage-prefix-lambda`)
+
 - **Purpose**: Generates consistent date-based S3 prefixes
 - **Runtime**: Node.js 22.x CJS
 - **Memory**: 128 MB
 - **Timeout**: 30 seconds
 
 ### 2. List Accounts Lambda (`./list-accounts-function`)
+
 - **Purpose**: Retrieves accounts from organization(s)
 - **Runtime**: Node.js 22.x CJS
 - **Memory**: 512 MB
 - **Timeout**: Configurable (default 300s)
 
 ### 3. Scan Account Lambda (`./scan-account-function`)
+
 - **Purpose**: Collects IAM data from individual accounts
 - **Runtime**: Node.js 22.x CJS
 - **Memory**: Configurable (default 512 MB)
 - **Timeout**: Configurable (default 300s)
 
 ### 4. Index Data Lambda (`./index-data-function`)
+
 - **Purpose**: Creates indexes of collected data
 - **Runtime**: Node.js 22.x CJS
 - **Memory**: Configurable (default 1024 MB)
 - **Timeout**: Configurable (default 300s)
 
 ### 5. Step Function (`./step-function`)
+
 - **Purpose**: Orchestrates the entire workflow
 - **Parallel Processing**: Up to 50 accounts simultaneously
 - **Error Handling**: Comprehensive retry and fault tolerance

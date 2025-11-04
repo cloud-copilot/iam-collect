@@ -24,7 +24,7 @@
     "clean": "rm -rf dist",
     "test": "npx vitest --run --coverage",
     "release": "npm install && npm run clean && npm run build && npm test && npm run format-check && npm publish",
-    "format": "npx prettier --write src/",
+    "format": "npx prettier --write src/ infrastructure_as_code/",
     "format-check": "npx prettier --check src/"
   },
   "keywords": [

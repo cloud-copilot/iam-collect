@@ -5,9 +5,11 @@ This module is used to create the role that will be assumed to collect IAM data 
 This will create the iam-collect role with the necessary permissions.
 
 ## Trust Relationship
+
 By default, the role trusts the central collect account to assume it, enabling cross-account IAM data collection.
 
 ## Permissions
+
 If the role is being added to the central collect account, it includes policies to assume similar roles in all other accounts.
 
 ## Usage
@@ -33,35 +35,35 @@ module "iam_collect_role" {
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| terraform | >= 1.0 |
-| aws | >= 4.0 |
+| Name      | Version |
+| --------- | ------- |
+| terraform | >= 1.0  |
+| aws       | >= 4.0  |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| aws | >= 4.0 |
+| ---- | ------- |
+| aws  | >= 4.0  |
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| role_name | The name of the IAM role to create | `string` | `"iam-collect"` | no |
-| role_path | The path for the IAM role | `string` | `"/"` | no |
-| central_collect_account_id | The AWS account ID for the central collect account | `string` | n/a | yes |
-| assume_role_policy | The assume role policy document for the IAM role | `string` | `null` | no |
-| description | Description of the IAM role | `string` | `null` | no |
-| tags | A map of tags to assign to the IAM role | `map(string)` | `{}` | no |
+| Name                       | Description                                        | Type          | Default         | Required |
+| -------------------------- | -------------------------------------------------- | ------------- | --------------- | :------: |
+| role_name                  | The name of the IAM role to create                 | `string`      | `"iam-collect"` |    no    |
+| role_path                  | The path for the IAM role                          | `string`      | `"/"`           |    no    |
+| central_collect_account_id | The AWS account ID for the central collect account | `string`      | n/a             |   yes    |
+| assume_role_policy         | The assume role policy document for the IAM role   | `string`      | `null`          |    no    |
+| description                | Description of the IAM role                        | `string`      | `null`          |    no    |
+| tags                       | A map of tags to assign to the IAM role            | `map(string)` | `{}`            |    no    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| role_arn | The ARN of the role |
-| role_name | The name of the IAM role |
-| role_id | The stable and unique string identifying the role |
+| Name      | Description                                       |
+| --------- | ------------------------------------------------- |
+| role_arn  | The ARN of the role                               |
+| role_name | The name of the IAM role                          |
+| role_id   | The stable and unique string identifying the role |
 
 ## Features
 
