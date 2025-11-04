@@ -38,7 +38,7 @@ variable "collect_role_path" {
 }
 
 variable "list_accounts_role_arns" {
-  description = "List of role ARNs that can list accounts in in your organizations. One per organization."
+  description = "List of role ARNs that can list accounts in your organizations. One per organization."
   type        = list(string)
 }
 
