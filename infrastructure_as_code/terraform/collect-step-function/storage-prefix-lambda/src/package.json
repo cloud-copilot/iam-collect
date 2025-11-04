@@ -1,0 +1,15 @@
+{
+  "name": "storage-prefix-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function to generate date prefixes for IAM data collection",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild index.js --bundle --platform=node --target=node22 --outfile=../dist/index.js --format=cjs",
+    "install-and-build": "npm ci && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  }
+}

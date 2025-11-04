@@ -19,6 +19,7 @@ Get every possible policy in any set of AWS accounts. This is built to run out o
 11. [History](docs/History.md)
 12. [Supported Services and Data](#supported-services-and-data)
 13. [Using AWS Config as a Data Source](docs/AwsConfig.md)
+14. [Deploying iam-collect at Scale with Terraform](infrastructure_as_code/terraform/README.md)
 
 ## iam-collect Tenets
 
