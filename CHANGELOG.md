@@ -1,3 +1,16 @@
+## [0.1.149](https://github.com/cloud-copilot/iam-collect/compare/v0.1.148...v0.1.149) (2025-11-04)
+
+
+### Bug Fixes
+
+* Typo in variable description ([497620a](https://github.com/cloud-copilot/iam-collect/commit/497620aebd1173e33681eb6c0dbe55adeb1f7a05))
+* Typos in logs and docs ([ef5de12](https://github.com/cloud-copilot/iam-collect/commit/ef5de129f0007be0c1d0bbfadbb2b32b1fddd4ef))
+
+
+### Features
+
+* Add Terraform examples for deploying iam-collect across an organization. ([a3e6c90](https://github.com/cloud-copilot/iam-collect/commit/a3e6c9045e6649f5896244cb0300c8e6cd78f5df))
+
 ## [0.1.148](https://github.com/cloud-copilot/iam-collect/compare/v0.1.147...v0.1.148) (2025-11-01)
 
 
