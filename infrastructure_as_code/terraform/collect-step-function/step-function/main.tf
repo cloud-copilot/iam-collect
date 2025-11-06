@@ -92,6 +92,34 @@ resource "aws_iam_role_policy" "cloudwatch_logs_policy" {
   })
 }
 
+# IAM policy for Distributed Map to start child executions
+resource "aws_iam_role_policy" "distributed_map_policy" {
+  count = var.execution_role_arn == null ? 1 : 0
+  name  = "${var.state_machine_name}-distributed-map-policy"
+  role  = aws_iam_role.step_function_execution_role[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "states:StartExecution"
+        ]
+        Resource = "arn:${data.aws_partition.current.partition}:states:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stateMachine:${var.state_machine_name}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "states:DescribeExecution",
+          "states:StopExecution"
+        ]
+        Resource = "arn:${data.aws_partition.current.partition}:states:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:execution:${var.state_machine_name}/*"
+      }
+    ]
+  })
+}
+
 # Step Function State Machine
 resource "aws_sfn_state_machine" "iam_collect_workflow" {
   name     = var.state_machine_name
@@ -171,14 +199,14 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
 
       ProcessAccounts = {
         Type           = "Map"
-        Comment        = "Process each account in parallel with controlled concurrency"
+        Comment        = "Process each account in parallel with controlled concurrency using Distributed Map"
         ItemsPath      = "$.accountsList.Payload.accounts"
         MaxConcurrency = var.max_parallel_executions
-        ItemSelector = {
-          "accountId.$" = "$$.Map.Item.Value"
-          "s3Prefix.$"  = "$.datePrefix.Payload.s3Prefix"
-        }
-        Iterator = {
+        ItemProcessor = {
+          ProcessorConfig = {
+            Mode = "DISTRIBUTED"
+            ExecutionType = "STANDARD"
+          }
           StartAt = "ScanAccount"
           States = {
             ScanAccount = {
@@ -222,6 +250,10 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
               End = true
             }
           }
+        }
+        ItemSelector = {
+          "accountId.$" = "$$.Map.Item.Value"
+          "s3Prefix.$"  = "$.datePrefix.Payload.s3Prefix"
         }
         ResultPath = "$.scanResults"
         Next       = "IndexData"
@@ -352,6 +384,7 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
 
   depends_on = [
     aws_iam_role_policy.lambda_invocation_policy,
-    aws_iam_role_policy.cloudwatch_logs_policy
+    aws_iam_role_policy.cloudwatch_logs_policy,
+    aws_iam_role_policy.distributed_map_policy
   ]
 }
