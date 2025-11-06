@@ -1,3 +1,10 @@
+## [0.1.151](https://github.com/cloud-copilot/iam-collect/compare/v0.1.150...v0.1.151) (2025-11-06)
+
+
+### Features
+
+* Step function now uses a Distributed Map for scanning accounts ([8a40d9c](https://github.com/cloud-copilot/iam-collect/commit/8a40d9ccd4aec0bf08009d28e0ed84b1a634cac7))
+
 ## [0.1.150](https://github.com/cloud-copilot/iam-collect/compare/v0.1.149...v0.1.150) (2025-11-04)
 
 ## [0.1.149](https://github.com/cloud-copilot/iam-collect/compare/v0.1.148...v0.1.149) (2025-11-04)
