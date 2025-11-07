@@ -1,10 +1,18 @@
 # Index Data Function Terraform Module
 
-This module creates a lambda to index the collected iam data from earlier in the workflow. The lambda is Node.js 22.x, uses CommonJS, and is bundled with esbuild.
+This module creates a lambda to index the collected iam data from earlier in the workflow. The lambda is Node.js 22.x using CommonJS.
 
 ## Permissions
 
 The module assumes that the storage bucket and this function exist in the same account. The lambda execution role will be granted permission to ListObjects, GetObject, DeleteObject, and PutObject on the specified storage bucket.
+
+## SQLite and Ephemeral Storage
+
+If you are using SQLite for indexing, the function has to download every individual sqlite database and merge them into a single database. To do this the lambda uses the ephemeral storage available to it. It will batch the downloads to avoid exceeding the ephemeral storage size.
+
+You can adjust the size of the ephemeral storage with the `ephemeral_storage_size` variable. The default is 512 MB, which should be sufficient for most use cases. If you have a large number of accounts or large datasets, you may need to increase this value.
+
+Increasing ephemeral storage could increase performance by reducing the number of batches needed. In very large environments, the final merged database may not fit in 512 MB, so you might have to increase ephemeral storage to complete indexing.
 
 ## Usage
 

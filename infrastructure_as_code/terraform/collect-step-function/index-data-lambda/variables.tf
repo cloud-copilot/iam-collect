@@ -14,6 +14,17 @@ variable "storage_bucket_region" {
   type        = string
 }
 
+variable "storage_type" {
+  description = "The type of storage to use ('s3' or 'sqlite')"
+  type        = string
+  default     = "s3"
+
+  validation {
+    condition     = contains(["s3", "sqlite"], var.storage_type)
+    error_message = "Storage type must be either 's3' or 'sqlite'."
+  }
+}
+
 variable "execution_role_arn" {
   description = "The ARN of the IAM role for Lambda execution (if not provided, one will be created)"
   type        = string
@@ -39,6 +50,17 @@ variable "memory_size" {
   validation {
     condition     = var.memory_size >= 128 && var.memory_size <= 10240
     error_message = "Memory size must be between 128 and 10240 MB."
+  }
+}
+
+variable "ephemeral_storage_size" {
+  description = "The size of ephemeral storage for the Lambda function in MB"
+  type        = number
+  default     = 512
+
+  validation {
+    condition     = var.ephemeral_storage_size >= 512 && var.ephemeral_storage_size <= 10240
+    error_message = "Ephemeral storage size must be between 512 and 10240 MB."
   }
 }
 

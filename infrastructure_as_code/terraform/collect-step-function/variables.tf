@@ -71,6 +71,17 @@ variable "base_s3_prefix" {
   default     = "iam-data"
 }
 
+variable "storage_type" {
+  description = "The type of storage to use ('s3' or 'sqlite')"
+  type        = string
+  default     = "s3"
+
+  validation {
+    condition     = contains(["s3", "sqlite"], var.storage_type)
+    error_message = "Storage type must be either 's3' or 'sqlite'."
+  }
+}
+
 variable "enable_step_function_logging" {
   description = "Enable CloudWatch logging for the Step Function"
   type        = bool

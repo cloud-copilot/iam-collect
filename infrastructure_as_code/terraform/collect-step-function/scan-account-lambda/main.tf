@@ -26,10 +26,10 @@ resource "null_resource" "lambda_build" {
   }
 }
 
-# Create ZIP archive of the built Lambda function
+# Create ZIP archive of the built Lambda function with node_modules
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/dist/index.js"
+  source_dir  = "${path.module}/dist"
   output_path = "${path.module}/lambda_function.zip"
 
   depends_on = [null_resource.lambda_build]
@@ -157,6 +157,7 @@ resource "aws_lambda_function" "scan_account_function" {
   environment {
     variables = merge(
       {
+        STORAGE_TYPE               = var.storage_type
         STORAGE_BUCKET_NAME        = var.storage_bucket_name
         STORAGE_BUCKET_REGION      = var.storage_bucket_region
         INITIAL_COLLECT_ROLE_ARN   = var.initial_role_arn

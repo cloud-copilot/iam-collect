@@ -134,9 +134,17 @@ Each Lambda function has different authorization requirements depending on the r
 
 ## Javascript Functions
 
-All functions are targeted to Node.js 22.x and built using esbuild targeting CommonJS.
+All functions are targeted to Node.js 22.x using CommonJS.
 
-The scan account function highly leverages AWS SDK v3 libraries. Even though the lambda runtime has all AWS SDKs by default, I've observed inconsistent delays updating the AWS managed runtime, so all dependencies are bundled with esbuild to ensure the correct versions are consistently available.
+The scan account function highly leverages AWS SDK v3 libraries. Even though the lambda runtime has all AWS SDKs by default, I've observed inconsistent delays updating the AWS managed runtime, so all dependencies are bundled with the node_modules folder to ensure the correct versions are consistently available.
+
+## Using SQLite
+
+iam-collect uses [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) to work with sqlite. better-sqlite3 ships with precompiled binaries for various platforms. This is important for the `scan-account-lambda` and `index-data-lambda` functions.
+
+The lambdas as currently configured to run `arm64`. The build scripts currently run `npm ci`, which by default installs the binaries for the platform running the command. So your build environment should match the target architecture to avoid any issues with incompatible binaries.
+
+Alternatively, you can adjust build scripts (in the respective `package.json`) files to use `npm install --platform=linux --arch=arm64` to force installation of the correct binaries regardless of the build environment platform.
 
 ## Scan Account Concurrency
 

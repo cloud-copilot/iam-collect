@@ -28,12 +28,12 @@ resource "null_resource" "npm_install_and_build" {
   }
 }
 
-# Create ZIP archive of the built Lambda function
+# Create ZIP archive of the built Lambda function with node_modules
 data "archive_file" "lambda_zip" {
   depends_on = [null_resource.npm_install_and_build]
 
   type        = "zip"
-  source_file = local.dist_path
+  source_dir  = "${path.module}/dist"
   output_path = "${path.module}/lambda-deployment.zip"
 }
 
@@ -111,6 +111,9 @@ resource "aws_lambda_function" "index_data_function" {
   architectures    = ["arm64"]
   timeout          = var.timeout
   memory_size      = var.memory_size
+  ephemeral_storage {
+    size = var.ephemeral_storage_size
+  }
 
   logging_config {
     log_format = "JSON"
@@ -121,6 +124,7 @@ resource "aws_lambda_function" "index_data_function" {
       {
         STORAGE_BUCKET_NAME       = var.storage_bucket_name
         STORAGE_BUCKET_REGION     = var.storage_bucket_region
+        STORAGE_TYPE              = var.storage_type
         CURRENT_PARTITION         = data.aws_partition.current.partition
         IAM_COLLECT_RAW_JSON_LOGS = "true"
       },

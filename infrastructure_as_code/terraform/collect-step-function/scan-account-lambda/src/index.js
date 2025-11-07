@@ -1,4 +1,10 @@
 const { downloadData } = require('@cloud-copilot/iam-collect')
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3')
+const fs = require('fs')
+
+const storageType = process.env.STORAGE_TYPE
+const isSqliteStorage = process.env.STORAGE_TYPE === 'sqlite'
+const sqlitePath = '/tmp/iam-collect-data.sqlite'
 
 exports.handler = async (event, context) => {
   const { s3Prefix, accountId } = event
@@ -38,14 +44,19 @@ exports.handler = async (event, context) => {
       }
     })
 
-    // Create the config object as specified
+    // Create the config object based on storage type
     const config = {
-      storage: {
-        type: 's3',
-        bucket: storageBucketName,
-        prefix: s3Prefix,
-        region: storageBucketRegion
-      },
+      storage: isSqliteStorage
+        ? {
+            type: 'sqlite',
+            path: sqlitePath
+          }
+        : {
+            type: 's3',
+            bucket: storageBucketName,
+            prefix: s3Prefix,
+            region: storageBucketRegion
+          },
       auth: {
         // This is set conditionally below if an initialCollectRoleArn is provided
         // initialRole: {
@@ -68,8 +79,8 @@ exports.handler = async (event, context) => {
       message: 'starting-data-download',
       function: 'scan-account-lambda',
       requestId: context.awsRequestId,
-      accountId: accountId,
-      s3Prefix: s3Prefix,
+      accountId,
+      s3Prefix,
       storageBucket: storageBucketName
     })
 
@@ -87,16 +98,62 @@ exports.handler = async (event, context) => {
       message: 'account-scan-completed',
       function: 'scan-account-lambda',
       requestId: context.awsRequestId,
-      accountId: accountId,
-      s3Prefix: s3Prefix
+      accountId,
+      s3Prefix
     })
+
+    // If using SQLite storage, upload the file to S3 and clean up
+    if (isSqliteStorage) {
+      const s3Key = `${s3Prefix}accounts/${accountId}.sqlite`
+
+      console.log({
+        message: 'uploading-sqlite-to-s3',
+        function: 'scan-account-lambda',
+        requestId: context.awsRequestId,
+        accountId,
+        sqlitePath,
+        s3Key
+      })
+
+      const s3Client = new S3Client({ region: storageBucketRegion })
+      const fileBuffer = fs.readFileSync(sqlitePath)
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: storageBucketName,
+          Key: s3Key,
+          Body: fileBuffer,
+          ContentType: 'application/x-sqlite3'
+        })
+      )
+
+      console.log({
+        message: 'sqlite-uploaded-to-s3',
+        function: 'scan-account-lambda',
+        requestId: context.awsRequestId,
+        accountId,
+        s3Bucket: storageBucketName,
+        s3Key
+      })
+
+      // Clean up the local SQLite file
+      fs.unlinkSync(sqlitePath)
+
+      console.log({
+        message: 'local-sqlite-file-deleted',
+        function: 'scan-account-lambda',
+        requestId: context.awsRequestId,
+        sqlitePath
+      })
+    }
 
     const response = {
       status: 'SUCCESS',
       statusCode: 200,
       message: 'Account scanning completed successfully',
-      accountId: accountId,
-      s3Prefix: s3Prefix,
+      accountId,
+      s3Prefix,
+      storageType,
       timestamp: new Date().toISOString(),
       requestId: context.awsRequestId
     }
@@ -107,7 +164,7 @@ exports.handler = async (event, context) => {
       message: 'account-scan-failed',
       function: 'scan-account-lambda',
       requestId: context.awsRequestId,
-      accountId: accountId,
+      accountId,
       error: {
         message: error.message,
         type: error.constructor.name,

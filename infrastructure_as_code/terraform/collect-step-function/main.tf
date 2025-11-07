@@ -44,6 +44,7 @@ module "scan_account_lambda" {
   function_name         = "${var.function_name_prefix}-scan-account"
   storage_bucket_name   = var.storage_bucket_name
   storage_bucket_region = var.storage_bucket_region
+  storage_type          = var.storage_type
   initial_role_arn      = local.scan_initial_role_arn
   collect_role_name     = var.collect_role_name
   collect_role_path     = var.collect_role_path
@@ -63,6 +64,7 @@ module "index_data_lambda" {
   source = "./index-data-lambda"
 
   function_name         = "${var.function_name_prefix}-index-data"
+  storage_type          = var.storage_type
   storage_bucket_name   = var.storage_bucket_name
   storage_bucket_region = var.storage_bucket_region
   environment_variables = var.environment_variables

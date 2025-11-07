@@ -1,6 +1,6 @@
 # Date Prefix Lambda Terraform Module
 
-This module creates a Node.js Lambda function to generate date-based S3 prefixes for iam-collect runs. The function uses CommonJS and is bundled with esbuild.
+This module creates a Node.js Lambda function to generate date-based S3 prefixes for iam-collect runs. The function uses CommonJS.
 
 ## Usage
 

@@ -1,8 +1,8 @@
 # List Accounts Function Terraform Module
 
-This Terraform module creates a Node.js Lambda function that lists all AWS accounts in an organization using the AWS Organizations `ListAccountsCommand` API. The function is automatically built using esbuild for optimal performance.
+This Terraform module creates a Node.js Lambda function that lists all AWS accounts in an organization using the AWS Organizations `ListAccountsCommand` API.
 
-This module creates a lambda to list all the accounts in your organization(s) using the roles provided. The lambda is Node.js 22.x uses CommonJS and is bundled with esbuild.
+This module creates a lambda to list all the accounts in your organization(s) using the roles provided. The lambda is Node.js 22.x using CommonJS.
 
 ## IAM Permissions
 

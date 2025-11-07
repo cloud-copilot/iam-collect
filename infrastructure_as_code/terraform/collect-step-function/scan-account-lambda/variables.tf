@@ -14,6 +14,17 @@ variable "storage_bucket_region" {
   type        = string
 }
 
+variable "storage_type" {
+  description = "The type of storage to use ('s3' or 'sqlite')"
+  type        = string
+  default     = "s3"
+
+  validation {
+    condition     = contains(["s3", "sqlite"], var.storage_type)
+    error_message = "Storage type must be either 's3' or 'sqlite'."
+  }
+}
+
 variable "initial_role_arn" {
   description = "The ARN of the initial IAM role to assume and use to assume the collect role in the target account. If set to an empty string, no initial role will be assumed."
   type        = string

@@ -1,6 +1,6 @@
 # Scan Account Function Terraform Module
 
-This Terraform module creates a Node.js Lambda function that runs iam-collect data gathering in a single account. The function is automatically built using esbuild for optimal performance.
+This Terraform module creates a Node.js Lambda function that runs iam-collect data gathering in a single account.
 
 ## IAM Permissions
 
@@ -13,7 +13,7 @@ The module assumes that the storage bucket and this function exist in the same a
 
 ## Code Bundling
 
-iam-collect makes thorough use of the AWS SDK v3 libraries. The lambda runtime has all AWS SDKs by default, but I've observed inconsistent delays updating the AWS managed runtime with the latest versions. So all dependencies are bundled with esbuild to ensure the correct versions are used when the function runs.
+iam-collect makes thorough use of the AWS SDK v3 libraries. The lambda runtime has all AWS SDKs by default, but I've observed inconsistent delays updating the AWS managed runtime with the latest versions. So the node_modules folder is included in the zip to ensure the correct versions are used when the function runs.
 
 ## Usage
 

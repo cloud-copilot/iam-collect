@@ -198,13 +198,15 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
       }
 
       ProcessAccounts = {
-        Type           = "Map"
-        Comment        = "Process each account in parallel with controlled concurrency using Distributed Map"
-        ItemsPath      = "$.accountsList.Payload.accounts"
-        MaxConcurrency = var.max_parallel_executions
+        Type                       = "Map"
+        Comment                    = "Process each account in parallel with controlled concurrency using Distributed Map"
+        ItemsPath                  = "$.accountsList.Payload.accounts"
+        MaxConcurrency             = var.max_parallel_executions
+        ToleratedFailurePercentage = 0
+        ToleratedFailureCount      = 0
         ItemProcessor = {
           ProcessorConfig = {
-            Mode = "DISTRIBUTED"
+            Mode          = "DISTRIBUTED"
             ExecutionType = "STANDARD"
           }
           StartAt = "ScanAccount"
@@ -220,7 +222,8 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
                   "s3Prefix.$"  = "$.s3Prefix"
                 }
               }
-              End = true
+              ResultPath = "$.scan"
+              Next       = "CheckScanResult"
               Retry = [
                 {
                   ErrorEquals     = ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException"]
@@ -229,25 +232,30 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
                   BackoffRate     = 2.0
                 }
               ]
-              Catch = [
-                {
-                  ErrorEquals = ["States.TaskFailed"]
-                  Next        = "AccountScanFailed"
-                  ResultPath  = "$.error"
-                }
-              ]
             }
 
-            AccountScanFailed = {
-              Type    = "Pass"
-              Comment = "Handle individual account scan failure"
-              Parameters = {
-                "accountId.$" = "$.accountId"
-                "status"      = "FAILED"
-                "error.$"     = "$.error"
-                "timestamp.$" = "$$.State.EnteredTime"
-              }
-              End = true
+            CheckScanResult = {
+              Type    = "Choice"
+              Comment = "Treat non-200 Lambda responses as item failures"
+              Choices = [
+                {
+                  Variable      = "$.scan.Payload.statusCode"
+                  NumericEquals = 200
+                  Next          = "ItemSucceeded"
+                }
+              ]
+              Default = "ItemFailed"
+            }
+
+            ItemSucceeded = {
+              Type = "Pass"
+              End  = true
+            }
+
+            ItemFailed = {
+              Type  = "Fail"
+              Error = "ScanAccountFailed"
+              Cause = "Lambda returned non-200 status for account scan"
             }
           }
         }
@@ -259,7 +267,7 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
         Next       = "IndexData"
         Catch = [
           {
-            ErrorEquals = ["States.ExceedToleratedFailureThreshold"]
+            ErrorEquals = ["States.ExceedToleratedFailureThreshold", "States.ItemFailed"]
             Next        = "HandleProcessingFailure"
             ResultPath  = "$.error"
           }
@@ -310,57 +318,27 @@ resource "aws_sfn_state_machine" "iam_collect_workflow" {
 
       # Error handling states
       HandleDatePrefixFailure = {
-        Type    = "Pass"
-        Comment = "Handle date prefix generation failure"
-        Parameters = {
-          status        = "FAILED"
-          stage         = "DATE_PREFIX_GENERATION"
-          message       = "Failed to generate date prefix"
-          "error.$"     = "$.error"
-          "timestamp.$" = "$$.State.EnteredTime"
-        }
-        End = true
+        Type  = "Fail"
+        Error = "DatePrefixGenerationFailed"
+        Cause = "Failed to generate date prefix"
       }
 
       HandleListAccountsFailure = {
-        Type    = "Pass"
-        Comment = "Handle account listing failure"
-        Parameters = {
-          status          = "FAILED"
-          stage           = "ACCOUNT_LISTING"
-          message         = "Failed to retrieve account list"
-          "lambdaError.$" = "$.accountsList.Payload.error"
-          "catchError.$"  = "$.error"
-          "fullState.$"   = "$"
-          "timestamp.$"   = "$$.State.EnteredTime"
-        }
-        End = true
+        Type  = "Fail"
+        Error = "AccountListingFailed"
+        Cause = "Failed to retrieve account list"
       }
 
       HandleProcessingFailure = {
-        Type    = "Pass"
-        Comment = "Handle account processing failure"
-        Parameters = {
-          status        = "FAILED"
-          stage         = "ACCOUNT_PROCESSING"
-          message       = "Too many account processing failures exceeded tolerance"
-          "error.$"     = "$.error"
-          "timestamp.$" = "$$.State.EnteredTime"
-        }
-        End = true
+        Type  = "Fail"
+        Error = "AccountProcessingFailed"
+        Cause = "Too many account processing failures exceeded tolerance"
       }
 
       HandleIndexFailure = {
-        Type    = "Pass"
-        Comment = "Handle data indexing failure"
-        Parameters = {
-          status        = "FAILED"
-          stage         = "DATA_INDEXING"
-          message       = "Failed to index collected data"
-          "error.$"     = "$.error"
-          "timestamp.$" = "$$.State.EnteredTime"
-        }
-        End = true
+        Type  = "Fail"
+        Error = "DataIndexingFailed"
+        Cause = "Failed to index collected data"
       }
     }
   })
