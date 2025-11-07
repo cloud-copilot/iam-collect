@@ -1,3 +1,10 @@
+## [0.1.152](https://github.com/cloud-copilot/iam-collect/compare/v0.1.151...v0.1.152) (2025-11-07)
+
+
+### Features
+
+* SQLite support in Terraform examples ([f9b9795](https://github.com/cloud-copilot/iam-collect/commit/f9b97958d550036b9ec2a78755f37fbfc9ccfcb0))
+
 ## [0.1.151](https://github.com/cloud-copilot/iam-collect/compare/v0.1.150...v0.1.151) (2025-11-06)
 
 
