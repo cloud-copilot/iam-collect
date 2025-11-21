@@ -1,3 +1,10 @@
+## [0.1.155](https://github.com/cloud-copilot/iam-collect/compare/v0.1.154...v0.1.155) (2025-11-21)
+
+
+### Bug Fixes
+
+* Refactor ListRegions call because RegionOptStatus was removed from @aws-sdk/client-account ([49c03b1](https://github.com/cloud-copilot/iam-collect/commit/49c03b1f336afdebf19145c4447327cee952c9d7))
+
 ## [0.1.154](https://github.com/cloud-copilot/iam-collect/compare/v0.1.153...v0.1.154) (2025-11-15)
 
 ## [0.1.153](https://github.com/cloud-copilot/iam-collect/compare/v0.1.152...v0.1.153) (2025-11-08)
