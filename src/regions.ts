@@ -1,4 +1,4 @@
-import { AccountClient, ListRegionsCommand, RegionOptStatus } from '@aws-sdk/client-account'
+import { AccountClient, ListRegionsCommand } from '@aws-sdk/client-account'
 import { AwsClientPool } from './aws/ClientPool.js'
 import { AwsCredentialIdentityWithMetaData } from './aws/coreAuth.js'
 import { paginateResource } from './syncs/typedSync.js'
@@ -19,7 +19,7 @@ export async function getEnabledRegions(
       outputKey: 'NextToken'
     },
     {
-      RegionOptStatusContains: [RegionOptStatus.ENABLED, RegionOptStatus.ENABLED_BY_DEFAULT]
+      RegionOptStatusContains: ['ENABLED', 'ENABLED_BY_DEFAULT']
     }
   )
 
