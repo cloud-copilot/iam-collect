@@ -129,6 +129,7 @@ data "aws_iam_policy_document" "collect_policy" {
       "s3:GetAccessPointPolicy",
       "s3:GetAccessPointPolicyForObjectLambda",
       "s3:GetAccountPublicAccessBlock",
+      "s3:GetBucketAbac",
       "s3:GetBucketPolicy",
       "s3:GetBucketPublicAccessBlock",
       "s3:GetBucketTagging",

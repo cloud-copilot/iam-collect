@@ -1,5 +1,6 @@
 import {
   Bucket,
+  GetBucketAbacCommand,
   GetBucketEncryptionCommand,
   GetBucketPolicyCommand,
   GetBucketTaggingCommand,
@@ -58,55 +59,75 @@ export const S3GeneralPurposeBucketSync: Sync = {
       allBuckets.map(async (bucket) => {
         const arn = `arn:${credentials.partition}:s3:::${bucket.Name}`
 
-        const [tagsJob, blockPublicAccessConfigJob, bucketPolicyJob, encryptionJob] =
-          await Promise.all(
-            syncOptions.workerPool.enqueueAll([
-              {
-                execute: () => {
-                  return withDnsRetry(async () => {
-                    return getTagsForBucket(s3Client, bucket, arn)
-                  })
-                },
-                properties: {}
+        const [
+          tagsJob,
+          blockPublicAccessConfigJob,
+          bucketPolicyJob,
+          encryptionJob,
+          abacEnabledJob
+        ] = await Promise.all(
+          syncOptions.workerPool.enqueueAll([
+            {
+              execute: () => {
+                return withDnsRetry(async () => {
+                  return getTagsForBucket(s3Client, bucket, arn)
+                })
               },
-              {
-                execute: () => {
-                  return withDnsRetry(async () => {
-                    return getBucketPublicAccessSettings(s3Client, bucket, arn)
-                  })
-                },
-                properties: {}
+              properties: {}
+            },
+            {
+              execute: () => {
+                return withDnsRetry(async () => {
+                  return getBucketPublicAccessSettings(s3Client, bucket, arn)
+                })
               },
-              {
-                execute: () => {
-                  return withDnsRetry(async () => {
-                    return getBucketPolicy(s3Client, bucket, credentials.accountId, arn)
-                  })
-                },
-                properties: {}
+              properties: {}
+            },
+            {
+              execute: () => {
+                return withDnsRetry(async () => {
+                  return getBucketPolicy(s3Client, bucket, credentials.accountId, arn)
+                })
               },
-              {
-                execute: () => {
-                  return withDnsRetry(async () => {
-                    return getBucketEncryptionSettings(s3Client, bucket, arn)
-                  })
-                },
-                properties: {}
-              }
-            ])
-          )
+              properties: {}
+            },
+            {
+              execute: () => {
+                return withDnsRetry(async () => {
+                  return getBucketEncryptionSettings(s3Client, bucket, arn)
+                })
+              },
+              properties: {}
+            },
+            {
+              execute: () => {
+                return withDnsRetry(async () => {
+                  return getBucketAbacEnabled(s3Client, bucket, arn)
+                })
+              },
+              properties: {}
+            }
+          ])
+        )
 
-        for (const job of [tagsJob, blockPublicAccessConfigJob, bucketPolicyJob, encryptionJob]) {
+        for (const job of [
+          tagsJob,
+          blockPublicAccessConfigJob,
+          bucketPolicyJob,
+          encryptionJob,
+          abacEnabledJob
+        ]) {
           if (job.status === 'rejected') {
             throw job.reason
           }
         }
 
-        const [tags, blockPublicAccessConfig, bucketPolicy, encryption] = [
+        const [tags, blockPublicAccessConfig, bucketPolicy, encryption, abacEnabled] = [
           (tagsJob as SuccessfulJob).value,
           (blockPublicAccessConfigJob as SuccessfulJob).value,
           (bucketPolicyJob as SuccessfulJob).value,
-          (encryptionJob as SuccessfulJob).value
+          (encryptionJob as SuccessfulJob).value,
+          (abacEnabledJob as SuccessfulJob).value
         ]
 
         return {
@@ -118,7 +139,8 @@ export const S3GeneralPurposeBucketSync: Sync = {
           metadata: {
             name: bucket.Name!,
             region: region,
-            arn
+            arn,
+            abacEnabled
           }
         }
       })
@@ -245,4 +267,33 @@ async function getBucketEncryptionSettings(
   )
 
   return response?.ServerSideEncryptionConfiguration
+}
+
+/**
+ * Check if ABAC is enabled for the bucket.
+ *
+ * @param client the S3 client to use
+ * @param bucket the bucket to check
+ * @param arn the ARN of the bucket
+ * @returns true if ABAC is enabled, undefined otherwise
+ */
+async function getBucketAbacEnabled(
+  client: S3Client,
+  bucket: Bucket,
+  arn: string
+): Promise<true | undefined> {
+  const command = new GetBucketAbacCommand({ Bucket: bucket.Name! })
+  const response = await runAndCatchAccessDeniedWithLog(
+    arn,
+    's3',
+    gpBuckets,
+    'abacEnabled',
+    async () => {
+      return runAndCatch404(async () => {
+        return await client.send(command)
+      })
+    }
+  )
+
+  return response?.AbacStatus?.Status === 'Enabled' ? true : undefined
 }
