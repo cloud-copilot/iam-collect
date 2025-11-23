@@ -1,3 +1,10 @@
+## [0.1.157](https://github.com/cloud-copilot/iam-collect/compare/v0.1.156...v0.1.157) (2025-11-23)
+
+
+### Features
+
+* Capture if ABAC is enabled on S3 buckets ([d4a21b6](https://github.com/cloud-copilot/iam-collect/commit/d4a21b67a83c7f11b28ce438662115e5e563bfb5))
+
 ## [0.1.156](https://github.com/cloud-copilot/iam-collect/compare/v0.1.155...v0.1.156) (2025-11-22)
 
 ## [0.1.155](https://github.com/cloud-copilot/iam-collect/compare/v0.1.154...v0.1.155) (2025-11-21)
