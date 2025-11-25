@@ -18,7 +18,7 @@ export function randomCharacters(length: number = 5): string {
 }
 
 /**
- * Generates a short hash of the input string using SHA-256 and encodes it in base64url format.
+ * Generate a short hash of the input string using SHA-256.
  * The resulting hash is truncated to 8 characters.
  *
  * @param input The input string to hash.
@@ -31,7 +31,7 @@ export async function shortHash(input: string): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   const hashArray = new Uint8Array(hashBuffer)
 
-  let base64 = btoa(String.fromCharCode(...hashArray))
+  let base64 = Buffer.from(hashArray).toString('base64')
 
   return base64.slice(0, 8)
 }
