@@ -1,3 +1,10 @@
+## [0.1.158](https://github.com/cloud-copilot/iam-collect/compare/v0.1.157...v0.1.158) (2025-11-25)
+
+
+### Bug Fixes
+
+* Update JS SDK usage to leverage automatic credential rotation and enable long running jobs ([a2f4c46](https://github.com/cloud-copilot/iam-collect/commit/a2f4c4678fa06f30971f7d1a32d408e866507a58))
+
 ## [0.1.157](https://github.com/cloud-copilot/iam-collect/compare/v0.1.156...v0.1.157) (2025-11-23)
 
 
