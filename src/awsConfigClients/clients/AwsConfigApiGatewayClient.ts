@@ -1,5 +1,5 @@
 import { APIGatewayClient, GetRestApisCommand } from '@aws-sdk/client-api-gateway'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
@@ -14,7 +14,7 @@ export class AwsConfigApiGatewayClient extends AbstractClient<AwsConfigClientCon
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

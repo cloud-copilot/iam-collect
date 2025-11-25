@@ -1,7 +1,7 @@
 import { ConfigServiceClient } from '@aws-sdk/client-config-service'
 import { getCredentials } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
 import { AuthConfig } from '../config/config.js'
 import { ClientConstructor } from '../customClients/AbstractClient.js'
 import { AbstractClientPool } from '../customClients/AbstractClientPool.js'
@@ -56,7 +56,7 @@ const fullySupportedServices: Set<AwsService> = new Set([
 export class AwsConfigClientPool extends AbstractClientPool<AwsConfigClientContext> {
   private configClient: ConfigServiceClient | undefined
   private aggregatorName: string | undefined
-  private configCredentials: AwsCredentialIdentityWithMetaData | undefined
+  private configCredentials: AwsCredentialProviderWithMetaData | undefined
 
   /**
    * Constructor
@@ -123,7 +123,7 @@ export class AwsConfigClientPool extends AbstractClientPool<AwsConfigClientConte
    */
   protected getClientContext(
     ClientType: ClientConstructor<any>,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,
     endpoint: string | undefined
   ): AwsConfigClientContext {

@@ -7,7 +7,7 @@ import {
   S3ControlClient
 } from '@aws-sdk/client-s3-control'
 import { ListOutpostsWithS3Command, Outpost, S3OutpostsClient } from '@aws-sdk/client-s3outposts'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { log } from '../../utils/log.js'
@@ -188,11 +188,11 @@ async function listS3Outposts(outpostsClient: S3OutpostsClient): Promise<Outpost
  * @returns a new S3ControlClient with the Outpost ID set in the headers
  */
 function controlClientForOutpost(
-  credentials: AwsCredentialIdentityWithMetaData,
+  credentials: AwsCredentialProviderWithMetaData,
   region: string | undefined,
   outpostId: string
 ): S3ControlClient {
-  const controlClient = new S3ControlClient({ credentials, region })
+  const controlClient = new S3ControlClient({ credentials: credentials.provider, region })
   controlClient.middlewareStack.add(
     (next, context) => (args) => {
       if (args.request) {

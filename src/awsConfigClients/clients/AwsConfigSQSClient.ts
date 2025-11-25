@@ -4,7 +4,7 @@ import {
   ListQueueTagsCommand,
   SQSClient
 } from '@aws-sdk/client-sqs'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
@@ -21,7 +21,7 @@ export class AwsConfigSQSClient extends AbstractClient<AwsConfigClientContext> {
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

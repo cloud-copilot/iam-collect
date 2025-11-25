@@ -4,7 +4,7 @@ import {
   ListKeysCommand,
   ListResourceTagsCommand
 } from '@aws-sdk/client-kms'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { ResourceNotFoundException } from '../../customClients/ResourceNotFoundException.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
@@ -22,7 +22,7 @@ export class AwsConfigKmsClient extends AbstractClient<AwsConfigClientContext> {
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

@@ -1,6 +1,6 @@
 import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 
@@ -33,7 +33,7 @@ export interface Sync {
   execute(
     accountId: string,
     region: string,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     storage: AwsIamStore,
     endpoint: string | undefined,
     syncOptions: SyncOptions

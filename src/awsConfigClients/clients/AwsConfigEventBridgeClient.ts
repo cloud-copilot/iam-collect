@@ -4,7 +4,7 @@ import {
   ListEventBusesCommand,
   ListTagsForResourceCommand
 } from '@aws-sdk/client-eventbridge'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
@@ -22,7 +22,7 @@ export class AwsConfigEventBridgeClient extends AbstractClient<AwsConfigClientCo
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

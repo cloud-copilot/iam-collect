@@ -3,7 +3,7 @@ import {
   ListSecretsCommand,
   SecretsManagerClient
 } from '@aws-sdk/client-secrets-manager'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
@@ -18,7 +18,7 @@ export class AwsConfigSecretsManagerClient extends AbstractClient<AwsConfigClien
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

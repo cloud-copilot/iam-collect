@@ -1,5 +1,5 @@
 import { DescribeVpcEndpointsCommand, EC2Client } from '@aws-sdk/client-ec2'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
@@ -16,7 +16,7 @@ export class AwsConfigEC2Client extends AbstractClient<AwsConfigClientContext> {
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

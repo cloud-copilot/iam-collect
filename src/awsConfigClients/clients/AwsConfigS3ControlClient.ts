@@ -15,7 +15,7 @@ import {
   ListTagsForResourceCommand,
   S3ControlClient
 } from '@aws-sdk/client-s3-control'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { stringifyIfPresent } from '../../utils/json.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
@@ -43,7 +43,7 @@ export class AwsConfigS3ControlClient extends AbstractClient<AwsConfigClientCont
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

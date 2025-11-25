@@ -8,7 +8,7 @@ import {
   DefaultRateLimiterOptions
 } from '@smithy/util-retry'
 import { AwsService } from '../services.js'
-import { AwsCredentialIdentityWithMetaData } from './coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from './coreAuth.js'
 
 export type ClientConstructor<T> = new (args: any) => T
 export type AnyClient = Client<any, any, any, any>
@@ -47,7 +47,7 @@ export class AwsClientPool {
    */
   public client<T extends AnyClient>(
     ClientType: ClientConstructor<T>,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,
     endpoint: string | undefined
   ): T {
@@ -55,7 +55,7 @@ export class AwsClientPool {
 
     if (!this.clientCache.has(cacheKey)) {
       const client = new ClientType({
-        credentials,
+        credentials: credentials.provider,
         region,
         maxAttempts: 10,
         requestHandler: new NodeHttpHandler({
@@ -72,11 +72,11 @@ export class AwsClientPool {
 
   private getCacheKey<T extends AnyClient>(
     ClientType: ClientConstructor<T>,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,
     endpoint: string | undefined
   ): string {
-    return `${ClientType.name}:${credentials.accountId}:${credentials.accessKeyId}:${region}:${endpoint}`
+    return `${ClientType.name}:${credentials.accountId}:${credentials.cacheKey}:${region}:${endpoint}`
   }
 
   /**

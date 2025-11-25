@@ -5,7 +5,7 @@ import {
   ListTagsCommand,
   OpenSearchClient
 } from '@aws-sdk/client-opensearch'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
@@ -22,7 +22,7 @@ export class AwsConfigOpenSearchClient extends AbstractClient<AwsConfigClientCon
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

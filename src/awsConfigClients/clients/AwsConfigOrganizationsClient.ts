@@ -12,7 +12,7 @@ import {
   ListTagsForResourceCommand,
   OrganizationsClient
 } from '@aws-sdk/client-organizations'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
@@ -28,7 +28,7 @@ export class AwsConfigOrganizationsClient extends AbstractClient<AwsConfigClient
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

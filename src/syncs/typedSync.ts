@@ -1,7 +1,7 @@
 import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
 import type { Client, Command } from '@smithy/smithy-client'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { AwsService } from '../services.js'
 import { runAndCatchAccessDeniedWithLog, withDnsRetry } from '../utils/client-tools.js'
@@ -271,7 +271,7 @@ export async function paginateResourceConfig<
   ExtraFieldsFunc extends ExtraFieldsDefinition<C, Cmd, K>
 >(
   resourceTypeSync: ResourceSyncType<C, Cmd, K, ExtraFieldsFunc>,
-  credentials: AwsCredentialIdentityWithMetaData,
+  credentials: AwsCredentialProviderWithMetaData,
   region: string,
   endpoint: string | undefined,
   workerPool: ConcurrentWorkerPool<any, any>,
@@ -400,7 +400,7 @@ export function createTypedSyncOperation<
     execute: async (
       accountId: string,
       region: string,
-      credentials: AwsCredentialIdentityWithMetaData,
+      credentials: AwsCredentialProviderWithMetaData,
       storage: AwsIamStore,
       endpoint: string | undefined,
       syncOptions: SyncOptions

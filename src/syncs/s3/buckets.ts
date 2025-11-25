@@ -10,7 +10,7 @@ import {
   S3Client,
   ServerSideEncryptionConfiguration
 } from '@aws-sdk/client-s3'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import {
   runAndCatch404,
@@ -35,7 +35,7 @@ export const S3GeneralPurposeBucketSync: Sync = {
   execute: async (
     accountId: string,
     region: string,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     storage: AwsIamStore,
     endpoint: string | undefined,
     syncOptions: SyncOptions
