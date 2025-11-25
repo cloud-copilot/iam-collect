@@ -54,7 +54,6 @@ export class S3PathBasedPersistenceAdapter implements PathBasedPersistenceAdapte
       credentials,
       this.storageConfig.region,
       this.storageConfig.endpoint
-      //TODO: Need to think about how to makes sure this gets it's own client and not the shared with other S3 clients
     )
     return client
   }
