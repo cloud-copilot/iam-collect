@@ -1,11 +1,11 @@
 import { AccountClient, ListRegionsCommand } from '@aws-sdk/client-account'
 import { AwsClientPool } from './aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData } from './aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from './aws/coreAuth.js'
 import { paginateResource } from './syncs/typedSync.js'
 import { isDefined } from './utils/types.js'
 
 export async function getEnabledRegions(
-  credentials: AwsCredentialIdentityWithMetaData,
+  credentials: AwsCredentialProviderWithMetaData,
   clientPool: AwsClientPool
 ): Promise<string[]> {
   const accountClient = clientPool.client(AccountClient, credentials, undefined, undefined)

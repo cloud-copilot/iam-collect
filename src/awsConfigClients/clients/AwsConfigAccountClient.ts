@@ -1,5 +1,5 @@
 import { AccountClient, ListRegionsCommand } from '@aws-sdk/client-account'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import { executeConfigQuery, resourceStatusWhereClause } from '../awsConfigUtils.js'
@@ -12,7 +12,7 @@ export class AwsConfigAccountClient extends AbstractClient<AwsConfigClientContex
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

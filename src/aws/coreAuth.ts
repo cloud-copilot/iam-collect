@@ -3,10 +3,14 @@ import {
   fromNodeProviderChain,
   fromTemporaryCredentials
 } from '@aws-sdk/credential-providers'
-import { AwsCredentialIdentity } from '@aws-sdk/types'
+import {
+  AwsCredentialIdentity,
+  IdentityProvider,
+  RuntimeConfigIdentityProvider
+} from '@aws-sdk/types'
 import { AuthConfig } from '../config/config.js'
 import { log } from '../utils/log.js'
-import { randomCharacters } from '../utils/strings.js'
+import { randomCharacters, shortHash } from '../utils/strings.js'
 import { getTokenInfo } from './tokens.js'
 
 /**
@@ -22,6 +26,29 @@ export interface AwsCredentialIdentityWithMetaData extends AwsCredentialIdentity
    * The AWS account ID associated with these credentials.
    */
   accountId: string
+}
+
+type AwsCredentialProviders =
+  | IdentityProvider<AwsCredentialIdentity>
+  | RuntimeConfigIdentityProvider<AwsCredentialIdentity>
+
+export type AwsCredentialProviderWithMetaData = {
+  provider: AwsCredentialProviders
+
+  /**
+   * The AWS partition (e.g., 'aws', 'aws-cn', 'aws-us-gov').
+   */
+  partition: string
+
+  /**
+   * The AWS account ID associated with these credentials.
+   */
+  accountId: string
+
+  /**
+   * A unique cache key for these credentials.
+   */
+  cacheKey: string
 }
 
 /**
@@ -47,7 +74,8 @@ export function now(): number {
 export async function getNewCredentials(
   accountId: string,
   authConfig: AuthConfig | undefined
-): Promise<AwsCredentialIdentityWithMetaData> {
+): Promise<AwsCredentialProviderWithMetaData> {
+  const cacheKey = await shortHash(JSON.stringify({ accountId, authConfig }))
   const baseCredentials = await getNewInitialCredentials(authConfig, {
     accountId
   })
@@ -60,7 +88,7 @@ export async function getNewCredentials(
       'Assuming role for account with credentials'
     )
     const roleProvider = fromTemporaryCredentials({
-      masterCredentials: baseCredentials,
+      masterCredentials: baseCredentials.provider,
       params: {
         RoleArn: roleArn,
         ExternalId: authConfig.role.externalId,
@@ -68,9 +96,9 @@ export async function getNewCredentials(
       }
     })
 
-    const roleCredentials = await roleProvider()
     credentials = {
-      ...roleCredentials,
+      cacheKey,
+      provider: roleProvider,
       accountId: accountId,
       partition: baseCredentials.partition
     }
@@ -102,15 +130,17 @@ export async function getNewCredentials(
 export async function getNewInitialCredentials(
   authConfig: AuthConfig | undefined,
   logInfo: Record<string, unknown> = {}
-): Promise<AwsCredentialIdentityWithMetaData> {
+): Promise<AwsCredentialProviderWithMetaData> {
+  let provider: AwsCredentialProviders
   let credentials: AwsCredentialIdentity
+  const cacheKey = await shortHash(JSON.stringify({ authConfig }))
   if (authConfig?.profile) {
     log.trace({ ...logInfo, profile: authConfig.profile }, 'Using profile for credentials')
-    const provider = fromIni({ profile: authConfig.profile })
+    provider = fromIni({ profile: authConfig.profile })
     credentials = await provider()
   } else {
     log.trace(logInfo, 'Using default SDK credential chain')
-    const provider = fromNodeProviderChain()
+    provider = fromNodeProviderChain()
     credentials = await provider()
   }
 
@@ -142,12 +172,14 @@ export async function getNewInitialCredentials(
       }
     })
 
+    provider = roleProvider
     credentials = await roleProvider()
     tokenInfo = await getTokenInfo(credentials)
   }
 
   return {
-    ...credentials,
+    cacheKey,
+    provider,
     accountId: tokenInfo.accountId,
     partition: tokenInfo.partition
   }

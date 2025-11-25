@@ -21,19 +21,25 @@ describe('getNewCredentials', () => {
     const authConfig = undefined
 
     // And the default credentials are valid
-    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'noconfig'
-      })
-    )
+    const mockProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'noconfig'
+    })
+    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(mockProvider)
     // And the credentials are for the same account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId,
+      arn: 'arn:aws:iam::123456789012:user/test'
+    })
 
     // When getNewCredentials is called
-    const credentials = await getNewCredentials(accountId, authConfig)
+    const result = await getNewCredentials(accountId, authConfig)
 
-    // Then it should return the default credentials
-    expect(credentials.accessKeyId).toEqual('noconfig')
+    // Then it should return the provider with metadata
+    expect(result.provider).toBe(mockProvider)
+    expect(result.accountId).toEqual(accountId)
+    expect(result.partition).toEqual('aws')
+    expect(result.cacheKey).toBeDefined()
   })
 
   it('should throw error if default credentials do not match the account ID', async () => {
@@ -48,7 +54,11 @@ describe('getNewCredentials', () => {
       })
     )
     // And the credentials are for a different account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '098765432109' })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '098765432109',
+      arn: 'arn:aws:iam::098765432109:user/test'
+    })
 
     // When getNewCredentials is called
     await expect(getNewCredentials(accountId, authConfig)).rejects.toThrow(
@@ -62,22 +72,27 @@ describe('getNewCredentials', () => {
     const authConfig = { profile: 'test-profile' }
 
     // And the credentials are valid for the profile
-    const iniMock = vi.mocked(fromIni).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'profileAccess'
-      })
-    )
+    const mockProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'profileAccess'
+    })
+    const iniMock = vi.mocked(fromIni).mockReturnValueOnce(mockProvider)
     // And the credentials are for the same account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId,
+      arn: 'arn:aws:iam::123456789012:user/test'
+    })
 
     // When getNewCredentials is called
-    const credentials = await getNewCredentials(accountId, authConfig)
+    const result = await getNewCredentials(accountId, authConfig)
 
-    // Then it should return the credentials for the profile
-    expect(credentials.accessKeyId).toEqual('profileAccess')
+    // Then it should return the provider with metadata
+    expect(result.provider).toBe(mockProvider)
+    expect(result.accountId).toEqual(accountId)
+    expect(result.partition).toEqual('aws')
 
     // And it should have called fromIni with the correct profile
-    expect(iniMock).toHaveBeenCalledWith(authConfig)
+    expect(iniMock).toHaveBeenCalledWith({ profile: 'test-profile' })
   })
 
   it('should throw an error if the profile does not match the account ID and no role is provided', async () => {
@@ -92,7 +107,11 @@ describe('getNewCredentials', () => {
       })
     )
     // And the credentials are for a different account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '098765432109' })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '098765432109',
+      arn: 'arn:aws:iam::098765432109:user/test'
+    })
 
     // When getNewCredentials is called
     await expect(getNewCredentials(accountId, authConfig)).rejects.toThrow(
@@ -112,32 +131,34 @@ describe('getNewCredentials', () => {
     }
 
     // And the base credentials are valid
-    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'baseAccess'
-      })
-    )
+    const baseProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'baseAccess'
+    })
+    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(baseProvider)
     // And the base credentials are for a different account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '555555555555' })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '555555555555',
+      arn: 'arn:aws:iam::555555555555:user/test'
+    })
 
     // And the role can be assumed
-    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'roleAccess'
-      })
-    )
-    // When getNewCredentials is called
-    const credentials = await getNewCredentials(accountId, authConfig)
+    const roleProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'roleAccess'
+    })
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(roleProvider)
 
-    // Then it should return the assumed role credentials
-    expect(credentials.accessKeyId).toEqual('roleAccess')
+    // When getNewCredentials is called
+    const result = await getNewCredentials(accountId, authConfig)
+
+    // Then it should return the provider with metadata
+    expect(result.provider).toBe(roleProvider)
+    expect(result.accountId).toEqual(accountId)
+    expect(result.partition).toEqual('aws')
+
     // And it should have called fromTemporaryCredentials with the correct parameters
     expect(fromTemporaryCredentials).toHaveBeenCalledWith({
-      masterCredentials: {
-        accessKeyId: 'baseAccess',
-        accountId: '555555555555',
-        partition: 'aws'
-      },
+      masterCredentials: baseProvider,
       params: {
         ExternalId: 'test-external-id',
         RoleArn: 'arn:aws:iam::123456789012:role/test-role',
@@ -163,40 +184,47 @@ describe('getNewCredentials', () => {
     }
 
     // And the base credentials are valid
-    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'baseAccess'
-      })
-    )
+    const baseCredentials = {
+      accessKeyId: 'baseAccess'
+    }
+    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(vi.fn().mockResolvedValue(baseCredentials))
     // And the base credentials are for a different account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '555555555555' })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '555555555555',
+      arn: 'arn:aws:iam::555555555555:user/test'
+    })
 
-    // And the role can be assumed
-    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'initialRoleAccess'
-      })
-    )
+    // And the initial role can be assumed
+    const initialRoleProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'initialRoleAccess'
+    })
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(initialRoleProvider)
 
-    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'accountRoleAccess'
-      })
-    )
+    // And we get token info from the initial role
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '555555555555',
+      arn: 'arn:aws:sts::555555555555:assumed-role/collectRole/test'
+    })
 
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '999999999999' })
+    // And the final role can be assumed
+    const accountRoleProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'accountRoleAccess'
+    })
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(accountRoleProvider)
 
     // When getNewCredentials is called
-    const credentials = await getNewCredentials(accountId, authConfig)
+    const result = await getNewCredentials(accountId, authConfig)
 
-    // Then it should assume the account credentials in the account
-    expect(credentials.accessKeyId).toEqual('accountRoleAccess')
+    // Then it should return the final provider with metadata
+    expect(result.provider).toBe(accountRoleProvider)
+    expect(result.accountId).toEqual(accountId)
+    expect(result.partition).toEqual('aws')
 
     // And it should have called fromTemporaryCredentials with the correct parameters
     expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(1, {
-      masterCredentials: {
-        accessKeyId: 'baseAccess'
-      },
+      masterCredentials: baseCredentials,
       params: {
         ExternalId: 'test-initial-external-id',
         RoleArn: 'arn:aws:iam::555555555555:role/collect/collectRole',
@@ -205,9 +233,7 @@ describe('getNewCredentials', () => {
     })
 
     expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(2, {
-      masterCredentials: expect.objectContaining({
-        accessKeyId: 'initialRoleAccess'
-      }),
+      masterCredentials: initialRoleProvider,
       params: {
         ExternalId: 'test-external-id',
         RoleArn: 'arn:aws:iam::999999999999:role/test-role',
@@ -233,40 +259,47 @@ describe('getNewCredentials', () => {
     }
 
     // And the base credentials are valid
-    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'baseAccess'
-      })
-    )
+    const baseCredentials = {
+      accessKeyId: 'baseAccess'
+    }
+    vi.mocked(fromNodeProviderChain).mockReturnValueOnce(vi.fn().mockResolvedValue(baseCredentials))
     // And the base credentials are for a different account Id
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '555555555555' })
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '555555555555',
+      arn: 'arn:aws:iam::555555555555:user/test'
+    })
 
-    // And the role can be assumed
-    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'initialRoleAccess'
-      })
-    )
+    // And the initial role can be assumed
+    const initialRoleProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'initialRoleAccess'
+    })
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(initialRoleProvider)
 
-    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(
-      vi.fn().mockResolvedValue({
-        accessKeyId: 'accountRoleAccess'
-      })
-    )
+    // And we get token info from the initial role
+    vi.mocked(getTokenInfo).mockResolvedValueOnce({
+      partition: 'aws',
+      accountId: '555555555555',
+      arn: 'arn:aws:sts::555555555555:assumed-role/codedRole/test'
+    })
 
-    vi.mocked(getTokenInfo).mockResolvedValueOnce({ partition: 'aws', accountId: '999999999999' })
+    // And the final role can be assumed
+    const accountRoleProvider = vi.fn().mockResolvedValue({
+      accessKeyId: 'accountRoleAccess'
+    })
+    vi.mocked(fromTemporaryCredentials).mockReturnValueOnce(accountRoleProvider)
 
     // When getNewCredentials is called
-    const credentials = await getNewCredentials(accountId, authConfig)
+    const result = await getNewCredentials(accountId, authConfig)
 
-    // Then it should assume the account credentials in the account
-    expect(credentials.accessKeyId).toEqual('accountRoleAccess')
+    // Then it should return the final provider with metadata
+    expect(result.provider).toBe(accountRoleProvider)
+    expect(result.accountId).toEqual(accountId)
+    expect(result.partition).toEqual('aws')
 
     // And it should have called fromTemporaryCredentials with the correct parameters
     expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(1, {
-      masterCredentials: {
-        accessKeyId: 'baseAccess'
-      },
+      masterCredentials: baseCredentials,
       params: {
         ExternalId: 'test-initial-external-id',
         RoleArn: 'arn:aws:iam::555555555555:role/hard/codedRole',
@@ -275,9 +308,7 @@ describe('getNewCredentials', () => {
     })
 
     expect(fromTemporaryCredentials).toHaveBeenNthCalledWith(2, {
-      masterCredentials: expect.objectContaining({
-        accessKeyId: 'initialRoleAccess'
-      }),
+      masterCredentials: initialRoleProvider,
       params: {
         ExternalId: 'test-external-id',
         RoleArn: 'arn:aws:iam::999999999999:role/test-role',

@@ -13,7 +13,7 @@ import {
 } from '@aws-sdk/client-iam'
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { AwsClientPool } from '../../aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
@@ -30,7 +30,7 @@ export class AwsConfigIamClient extends AbstractClient<AwsConfigClientContext> {
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

@@ -1,4 +1,4 @@
-import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { CommandContext, CustomCommand } from './AbstractCommand.js'
 
 export type ClientConstructor<T> = new (args: any) => T
@@ -20,7 +20,7 @@ export abstract class AbstractClient<CustomClientContext = {}> {
 
   protected commandRegistry = new Map<string, CustomCommand<any, CustomClientContext>>()
 
-  protected credentials: AwsCredentialIdentityWithMetaData
+  protected credentials: AwsCredentialProviderWithMetaData
   protected region: string | undefined
   protected detailsCache: Record<string, Partial<Record<string, any>>> = {}
 
@@ -46,7 +46,7 @@ export abstract class AbstractClient<CustomClientContext = {}> {
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     protected customContext: CustomClientContext

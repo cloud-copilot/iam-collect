@@ -18,7 +18,7 @@ import {
   PolicyTypeStatus,
   Root
 } from '@aws-sdk/client-organizations'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore, OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
 import {
   runAndCatch404,
@@ -64,7 +64,7 @@ export const OrganizationSync: Sync = {
   execute: async function (
     accountId: string,
     region: string,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     storage: AwsIamStore,
     endpoint: string | undefined,
     syncOptions: SyncOptions

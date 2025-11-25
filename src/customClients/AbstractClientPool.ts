@@ -1,6 +1,6 @@
 import type { Client } from '@smithy/smithy-client'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { AbstractClient, ClientConstructor } from './AbstractClient.js'
 
 type AnyClient = Client<any, any, any, any>
@@ -10,7 +10,7 @@ type AnyClient = Client<any, any, any, any>
  */
 type CustomClientConstructor<CustomClientContext = {}> = (new (
   options: {
-    credentials: AwsCredentialIdentityWithMetaData
+    credentials: AwsCredentialProviderWithMetaData
     region: string | undefined
     endpoint?: string | undefined
   },
@@ -44,7 +44,7 @@ export class AbstractClientPool<CustomClientContext = {}> extends AwsClientPool 
    */
   protected getClientContext(
     ClientType: ClientConstructor<any>,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,
     endpoint: string | undefined
   ): CustomClientContext {
@@ -72,11 +72,11 @@ export class AbstractClientPool<CustomClientContext = {}> extends AwsClientPool 
    */
   public client<T extends AnyClient>(
     ClientType: ClientConstructor<T>,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,
     endpoint: string | undefined
   ): T {
-    const cacheKey = `${ClientType.name}:${credentials.accountId}:${credentials.accessKeyId}:${region}`
+    const cacheKey = `${ClientType.name}:${credentials.accountId}:${credentials.cacheKey}:${region}`
 
     if (this.configClientCache.has(cacheKey)) {
       return this.configClientCache.get(cacheKey)

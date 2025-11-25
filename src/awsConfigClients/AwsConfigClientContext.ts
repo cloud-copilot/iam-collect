@@ -1,5 +1,5 @@
 import { ConfigServiceClient } from '@aws-sdk/client-config-service'
-import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { customCommandFactory } from '../customClients/AbstractCommand.js'
 
 /**
@@ -8,7 +8,7 @@ import { customCommandFactory } from '../customClients/AbstractCommand.js'
 export interface AwsConfigClientContext {
   configClient: ConfigServiceClient
   aggregatorName: string
-  configCredentials: AwsCredentialIdentityWithMetaData
+  configCredentials: AwsCredentialProviderWithMetaData
 }
 
 export const awsConfigCommand = customCommandFactory<AwsConfigClientContext>()

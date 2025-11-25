@@ -11,7 +11,7 @@ import {
 } from '@aws-sdk/client-iam'
 
 import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
@@ -25,7 +25,7 @@ export const AuthorizationDetailsSync: Sync = {
   execute: async (
     accountId: string,
     region: string,
-    credentials: AwsCredentialIdentityWithMetaData,
+    credentials: AwsCredentialProviderWithMetaData,
     storage: AwsIamStore,
     endpoint: string | undefined,
     syncOptions: SyncOptions

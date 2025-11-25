@@ -3,7 +3,7 @@ import {
   ListTablesCommand,
   ListTagsOfResourceCommand
 } from '@aws-sdk/client-dynamodb'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
@@ -18,7 +18,7 @@ export class AwsConfigDynamoDBClient extends AbstractClient<AwsConfigClientConte
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

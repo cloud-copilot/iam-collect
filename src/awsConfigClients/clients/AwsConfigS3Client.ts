@@ -7,7 +7,7 @@ import {
   ListDirectoryBucketsCommand,
   S3Client
 } from '@aws-sdk/client-s3'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { ResourceNotFoundException } from '../../customClients/ResourceNotFoundException.js'
 import { stringifyIfPresent } from '../../utils/json.js'
@@ -26,7 +26,7 @@ export class AwsConfigS3Client extends AbstractClient<AwsConfigClientContext> {
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

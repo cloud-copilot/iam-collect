@@ -5,7 +5,7 @@ import {
   ListStreamsCommand,
   ListTagsForStreamCommand
 } from '@aws-sdk/client-kinesis'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
@@ -21,7 +21,7 @@ export class AwsConfigKinesisClient extends AbstractClient<AwsConfigClientContex
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

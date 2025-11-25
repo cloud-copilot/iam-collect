@@ -7,7 +7,7 @@ import {
   ListLayerVersionsCommand,
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
@@ -28,7 +28,7 @@ export class AwsConfigLambdaClient extends AbstractClient<AwsConfigClientContext
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

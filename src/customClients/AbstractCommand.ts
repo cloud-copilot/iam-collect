@@ -1,4 +1,4 @@
-import { AwsCredentialIdentityWithMetaData } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { CommandConstructors, ExtractInputType, ExtractOutputType } from '../syncs/typedSync.js'
 
 /**
@@ -8,7 +8,7 @@ import { CommandConstructors, ExtractInputType, ExtractOutputType } from '../syn
  * So information will be different for each Account/Client/Region combination
  */
 export interface CommandContext {
-  credentials: AwsCredentialIdentityWithMetaData
+  credentials: AwsCredentialProviderWithMetaData
   region: string | undefined
   accountId: string
   partition: string

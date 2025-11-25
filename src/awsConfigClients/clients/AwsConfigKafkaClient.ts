@@ -5,7 +5,7 @@ import {
   ListClustersV2Command,
   ListTagsForResourceCommand
 } from '@aws-sdk/client-kafka'
-import { AwsCredentialIdentityWithMetaData } from '../../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { ResourceNotFoundException } from '../../customClients/ResourceNotFoundException.js'
 import { stringifyIfPresent } from '../../utils/json.js'
@@ -24,7 +24,7 @@ export class AwsConfigKafkaClient extends AbstractClient<AwsConfigClientContext>
 
   constructor(
     options: {
-      credentials: AwsCredentialIdentityWithMetaData
+      credentials: AwsCredentialProviderWithMetaData
       region: string | undefined
     },
     customContext: AwsConfigClientContext

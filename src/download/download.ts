@@ -1,7 +1,7 @@
 import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { getCredentials } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialIdentityWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
+import { AwsCredentialProviderWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
 import {
   accountServiceRegionConfig,
   AuthConfig,
@@ -309,7 +309,7 @@ async function getAccountRegions(
   allRegions: string[],
   accountId: string,
   configs: TopLevelConfig[],
-  accountCredentials: AwsCredentialIdentityWithMetaData,
+  accountCredentials: AwsCredentialProviderWithMetaData,
   clientPool: AwsClientPool
 ): Promise<string[]> {
   if (allRegions.length > 0) {
@@ -333,7 +333,7 @@ async function getCredentialsForSync(
   currentPartition: string,
   accountId: string,
   authConfig: AuthConfig | undefined
-): Promise<AwsCredentialIdentityWithMetaData> {
+): Promise<AwsCredentialProviderWithMetaData> {
   if (clientPool.requiresAwsCredentials()) {
     return getCredentials(accountId, authConfig)
   }
@@ -341,9 +341,9 @@ async function getCredentialsForSync(
   return {
     accountId: accountId,
     partition: currentPartition,
-    accessKeyId: '',
-    credentialScope: '',
-    expiration: undefined,
-    secretAccessKey: ''
+    cacheKey: 'no-credentials',
+    provider: async () => {
+      throw new Error('No credentials required for this data source')
+    }
   }
 }
