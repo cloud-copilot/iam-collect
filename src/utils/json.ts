@@ -48,9 +48,9 @@ const predictableIamKeys: Record<string, number> = {
  * @param b the second key
  * @returns the comparison result using predictable IAM key order, or standard system order otherwise
  */
-function iamComparator(a: any, b: any): number {
-  const aRank = typeof a == 'string' ? predictableIamKeys[a] : undefined
-  const bRank = typeof b == 'string' ? predictableIamKeys[b] : undefined
+function iamComparator(a: string, b: string): number {
+  const aRank = predictableIamKeys[a]
+  const bRank = predictableIamKeys[b]
 
   if (aRank !== undefined && bRank !== undefined) {
     return aRank - bRank
@@ -109,14 +109,14 @@ export function consistentStringify(
 
   if (node === null) return 'null'
 
-  var keys = Object.keys(node).sort(iamComparator)
+  const keys = Object.keys(node).sort(iamComparator)
   if (keys.length === 0) return '{}'
   const keySpace = startingSpaces + spacer
   let out = `{\n`
   let valuePrinted = false
   for (let i = 0; i < keys.length; i++) {
-    var key = keys[i]
-    var value = consistentStringify(node[key], spacer, startingSpaces + spacer)
+    const key = keys[i]
+    const value = consistentStringify(node[key], spacer, startingSpaces + spacer)
     if (!value) continue
     if (valuePrinted) out += ',\n'
     out += keySpace + JSON.stringify(key) + ': ' + value
