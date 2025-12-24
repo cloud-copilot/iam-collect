@@ -1,6 +1,7 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import DatabaseConstructor, { Database } from 'better-sqlite3'
 import { createHash } from 'crypto'
+import { consistentStringify } from '../../utils/json.js'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
 
 function quote(value: any): string {
@@ -130,7 +131,7 @@ export class SqliteAwsIamStore implements AwsIamStore {
   }
 
   private serialize(data: any): string {
-    return typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+    return typeof data === 'string' ? data : consistentStringify(data)
   }
 
   async saveResourceMetadata(
@@ -582,7 +583,7 @@ export class SqliteAwsIamStore implements AwsIamStore {
     if (existing.length === 0 && lockId !== '') {
       return false
     }
-    const content = JSON.stringify(data, null, 2)
+    const content = consistentStringify(data)
     const hash = createHash('sha256').update(content).digest('hex')
     const sql = `INSERT OR REPLACE INTO indexes(partition, index_name, data, hash)
       VALUES(${quote(this.partition)}, ${quote(indexName.toLowerCase())}, ${quote(content)}, ${quote(hash)})`

@@ -26,3 +26,101 @@ export function stringifyIfPresent(value: any): string | undefined {
   }
   return JSON.stringify(value)
 }
+
+/**
+ * Keys that should be ordered predictably in IAM policy documents.
+ */
+const predictableIamKeys: Record<string, number> = {
+  Version: 1,
+  Statement: 2,
+  Sid: 3,
+  Effect: 4,
+  Action: 5,
+  Principal: 6,
+  Resource: 7,
+  Condition: 8
+}
+
+/**
+ * Comparator function to sort IAM keys predictably.
+ *
+ * @param a the first key
+ * @param b the second key
+ * @returns the comparison result using predictable IAM key order, or standard system order otherwise
+ */
+function iamComparator(a: string, b: string): number {
+  const aRank = predictableIamKeys[a]
+  const bRank = predictableIamKeys[b]
+
+  if (aRank !== undefined && bRank !== undefined) {
+    return aRank - bRank
+  }
+
+  return a.localeCompare(b)
+}
+
+/**
+ * Consistently stringify a JSON object with predictable key ordering.
+ * This includes consistently ordering array elements.
+ *
+ * IAM policy documents have special predictable key ordering for better semantic readability.
+ *
+ * This intentionally does not handle custom classes or circular references.
+ *
+ * @param node the JSON object to stringify
+ * @param spacer the string to use for one level of indentation
+ * @param startingSpaces the current indentation string
+ * @returns the consistently stringified JSON, or undefined if the input was undefined
+ */
+export function consistentStringify(
+  node: any,
+  spacer: string = '  ',
+  startingSpaces: string = ''
+): string {
+  if (node === undefined) {
+    return undefined as any
+  }
+
+  if (node && node.toJSON && typeof node.toJSON === 'function') {
+    node = node.toJSON()
+  }
+  if (typeof node === 'number') return isFinite(node) ? '' + node : 'null'
+  if (typeof node !== 'object') return JSON.stringify(node)
+
+  if (Array.isArray(node)) {
+    if (node.length === 0) return '[]'
+    const arrayValues = node.map(
+      (v) => consistentStringify(v, spacer, startingSpaces + spacer) || 'null'
+    )
+    arrayValues.sort()
+    let out = '['
+    for (let i = 0; i < arrayValues.length; i++) {
+      if (arrayValues[i] === undefined) {
+        continue
+      }
+      if (i > 0) {
+        out += ','
+      }
+      out += `\n${startingSpaces + spacer}${arrayValues[i]}`
+    }
+
+    return out + `\n${startingSpaces}]`
+  }
+
+  if (node === null) return 'null'
+
+  const keys = Object.keys(node).sort(iamComparator)
+  if (keys.length === 0) return '{}'
+  const keySpace = startingSpaces + spacer
+  let out = `{\n`
+  let valuePrinted = false
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i]
+    const value = consistentStringify(node[key], spacer, startingSpaces + spacer)
+    if (!value) continue
+    if (valuePrinted) out += ',\n'
+    out += keySpace + JSON.stringify(key) + ': ' + value
+    valuePrinted = true
+  }
+  return out + `\n${startingSpaces}}`
+}

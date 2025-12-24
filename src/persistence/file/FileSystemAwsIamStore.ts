@@ -1,5 +1,6 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { join } from 'path'
+import { consistentStringify } from '../../utils/json.js'
 import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
 import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
@@ -420,7 +421,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   async saveRamResource(accountId: string, arn: string, data: any): Promise<void> {
     const region = splitArnParts(arn).region
     const filePath = this.ramPolicyFilePath(accountId, region, arn)
-    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+    const content = typeof data === 'string' ? data : consistentStringify(data)
     await this.fsAdapter.writeFile(filePath, content)
   }
 
@@ -451,7 +452,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
 
   async saveIndex(indexName: string, data: any, lockId: string): Promise<boolean> {
     const filePath = this.indexPath(indexName)
-    return this.fsAdapter.writeWithOptimisticLock(filePath, JSON.stringify(data, null, 2), lockId)
+    return this.fsAdapter.writeWithOptimisticLock(filePath, consistentStringify(data), lockId)
   }
 
   /**
@@ -505,7 +506,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
       return
     }
 
-    const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+    const content = typeof data === 'string' ? data : consistentStringify(data)
     await this.fsAdapter.writeFile(filePath, content)
   }
 }
