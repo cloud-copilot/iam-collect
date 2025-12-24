@@ -1,3 +1,10 @@
+## [0.1.163](https://github.com/cloud-copilot/iam-collect/compare/v0.1.162...v0.1.163) (2025-12-24)
+
+
+### Features
+
+* Consistent sorting of JSON keys and array values before storing ([4688979](https://github.com/cloud-copilot/iam-collect/commit/468897921a4291acc2ab704e2f853e5faa3f14f1))
+
 ## [0.1.162](https://github.com/cloud-copilot/iam-collect/compare/v0.1.161...v0.1.162) (2025-12-20)
 
 ## [0.1.161](https://github.com/cloud-copilot/iam-collect/compare/v0.1.160...v0.1.161) (2025-12-13)
