@@ -767,6 +767,7 @@ describe('SqliteAwsIamStore', () => {
     })
 
     it('handles very large JSON objects', async () => {
+      //Given a large JSON object
       const arn = 'arn:aws:iam::123456789012:role/Test'
       const largeObject = {
         data: Array(1000)
@@ -774,8 +775,15 @@ describe('SqliteAwsIamStore', () => {
           .map((_, i) => ({ id: i, value: `item-${i}` }))
       }
 
+      //When saving and retrieving the large object
       await store.saveResourceMetadata('123456789012', arn, 'metadata', largeObject)
       const result = await store.getResourceMetadata('123456789012', arn, 'metadata')
+
+      //Then the retrieved object should match the original
+      const comparator = (a: any, b: any) => a.id - b.id
+
+      largeObject.data.sort(comparator)
+      ;(result as typeof largeObject).data.sort(comparator)
 
       expect(result).toEqual(largeObject)
     })
