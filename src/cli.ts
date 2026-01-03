@@ -17,7 +17,7 @@ import { downloadData } from './download/download.js'
 import { index } from './index/index.js'
 import { mergeSqliteDatabases } from './mergeSqlite/mergeSqlite.js'
 import { AwsService } from './services.js'
-import { LogLevels, setLogLevel } from './utils/log.js'
+import { LogLevel, LogLevels, setLogLevel } from './utils/log.js'
 
 /**
  * For some reason the AWS SDK v3 looks for AWS_REGION and not AWS_DEFAULT_REGION
@@ -139,7 +139,7 @@ const main = async () => {
   )
 
   if (cli.args.log) {
-    setLogLevel(cli.args.log)
+    setLogLevel(cli.args.log as LogLevel)
   }
 
   if (cli.subcommand === 'init') {
