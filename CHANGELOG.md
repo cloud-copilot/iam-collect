@@ -1,3 +1,10 @@
+## [0.1.169](https://github.com/cloud-copilot/iam-collect/compare/v0.1.168...v0.1.169) (2026-02-15)
+
+
+### Bug Fixes
+
+* Ignore guarddog rule causing false positives ([9a301eb](https://github.com/cloud-copilot/iam-collect/commit/9a301ebc9a1ed349405285de388451ef6f135333))
+
 ## [0.1.168](https://github.com/cloud-copilot/iam-collect/compare/v0.1.167...v0.1.168) (2026-02-14)
 
 ## [0.1.167](https://github.com/cloud-copilot/iam-collect/compare/v0.1.166...v0.1.167) (2026-01-19)
