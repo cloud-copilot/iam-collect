@@ -3,9 +3,9 @@ import {
   ListSecretsCommand,
   SecretsManagerClient
 } from '@aws-sdk/client-secrets-manager'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
 /**
  * Secrets Manager client implementation using AWS Config as data source
@@ -55,8 +55,6 @@ const AwsConfigListSecretsCommand = awsConfigCommand({
 const AwsConfigGetResourcePolicyCommand = awsConfigCommand({
   command: GetResourcePolicyCommand,
   execute: async (input, context) => {
-    const { SecretId } = input
-
     // Policy not available in Config, so fetch directly from Secrets Manager
     return {}
   }

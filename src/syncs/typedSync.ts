@@ -1,13 +1,13 @@
-import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
+import { ConcurrentWorkerPool, type Job } from '@cloud-copilot/job'
 import type { Client, Command } from '@smithy/smithy-client'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
-import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
-import { AwsService } from '../services.js'
+import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
+import { type AwsIamStore, type ResourceTypeParts } from '../persistence/AwsIamStore.js'
+import { type AwsService } from '../services.js'
 import { runAndCatchAccessDeniedWithLog, withDnsRetry } from '../utils/client-tools.js'
 import { log } from '../utils/log.js'
-import { convertTagsToRecord, Tags } from '../utils/tags.js'
-import { DataRecord, Sync, syncData, SyncOptions } from './sync.js'
+import { convertTagsToRecord, type Tags } from '../utils/tags.js'
+import { type DataRecord, type Sync, syncData, type SyncOptions } from './sync.js'
 
 export type ClientConstructor = new (args: any) => Client<any, any, any, any>
 type CommandConstructor = new (args: any) => Command<any, any, any, any, any>

@@ -1,24 +1,24 @@
 import {
-  Bucket,
+  type Bucket,
   GetBucketAbacCommand,
   GetBucketEncryptionCommand,
   GetBucketPolicyCommand,
   GetBucketTaggingCommand,
   GetPublicAccessBlockCommand,
   ListBucketsCommand,
-  PublicAccessBlockConfiguration,
+  type PublicAccessBlockConfiguration,
   S3Client,
-  ServerSideEncryptionConfiguration
+  type ServerSideEncryptionConfiguration
 } from '@aws-sdk/client-s3'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
-import { AwsIamStore } from '../../persistence/AwsIamStore.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsIamStore } from '../../persistence/AwsIamStore.js'
 import {
   runAndCatch404,
   runAndCatchAccessDeniedWithLog,
   withDnsRetry
 } from '../../utils/client-tools.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
-import { Sync, syncData, SyncOptions } from '../sync.js'
+import { type Sync, syncData, type SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
 interface SuccessfulJob {

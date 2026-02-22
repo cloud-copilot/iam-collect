@@ -1,5 +1,5 @@
-import { loadPolicy, Policy } from '@cloud-copilot/iam-policy'
-import { Indexer } from '../indexer.js'
+import { loadPolicy, type Policy } from '@cloud-copilot/iam-policy'
+import { type Indexer } from '../indexer.js'
 
 interface PrincipalsToTrustPoliciesIndex {
   [key: string]: Partial<Record<'principal' | 'notprincipal', Record<string, string[]>>>

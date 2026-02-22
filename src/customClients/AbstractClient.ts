@@ -1,5 +1,5 @@
-import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
-import { CommandContext, CustomCommand } from './AbstractCommand.js'
+import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
+import { type CommandContext, type CustomCommand } from './AbstractCommand.js'
 
 export type ClientConstructor<T> = new (args: any) => T
 

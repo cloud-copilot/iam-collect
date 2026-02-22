@@ -1,5 +1,5 @@
 import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts'
-import { AwsCredentialIdentity } from '@aws-sdk/types'
+import { type AwsCredentialIdentity } from '@aws-sdk/types'
 
 /**
  * Get the AWS account ID and partition from the provided credentials.

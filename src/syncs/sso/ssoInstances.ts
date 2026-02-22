@@ -2,7 +2,7 @@ import {
   DescribePermissionSetCommand,
   GetInlinePolicyForPermissionSetCommand,
   GetPermissionsBoundaryForPermissionSetCommand,
-  InstanceMetadata,
+  type InstanceMetadata,
   ListAccountsForProvisionedPermissionSetCommand,
   ListCustomerManagedPolicyReferencesInPermissionSetCommand,
   ListInstancesCommand,
@@ -14,7 +14,7 @@ import {
 import { runAndCatch404, runAndCatchAccessDenied, withDnsRetry } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
-import { DataRecord, Sync, syncData } from '../sync.js'
+import { type DataRecord, type Sync, syncData } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation, paginateResource } from '../typedSync.js'
 
 export const SsoDataSync: Sync = {
@@ -192,10 +192,6 @@ function createSsoInstanceResourceSyncs(ssoInstance: InstanceMetadata, region: s
           },
 
           accounts: async (client, permissionSet) => {
-            const command = new ListAccountsForProvisionedPermissionSetCommand({
-              InstanceArn: ssoInstance.InstanceArn!,
-              PermissionSetArn: permissionSet.name!
-            })
             const results = await paginateResource(
               client,
               ListAccountsForProvisionedPermissionSetCommand,

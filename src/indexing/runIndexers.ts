@@ -1,8 +1,8 @@
-import { StorageConfig } from '../config/config.js'
-import { Job, JobResult, runJobs } from '../jobs/jobQueue.js'
+import { type StorageConfig } from '../config/config.js'
+import { type Job, type JobResult, runJobs } from '../jobs/jobQueue.js'
 import { createStorageClient } from '../persistence/util.js'
 import { log } from '../utils/log.js'
-import { Indexer } from './indexer.js'
+import { type Indexer } from './indexer.js'
 
 /**
  * An index job to run.

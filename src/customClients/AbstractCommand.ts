@@ -1,5 +1,9 @@
-import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
-import { CommandConstructors, ExtractInputType, ExtractOutputType } from '../syncs/typedSync.js'
+import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
+import {
+  type CommandConstructors,
+  type ExtractInputType,
+  type ExtractOutputType
+} from '../syncs/typedSync.js'
 
 /**
  * Context provided to custom command implementations

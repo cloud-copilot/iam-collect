@@ -5,10 +5,10 @@ import {
   GetRepositoryPolicyCommand,
   ListTagsForResourceCommand
 } from '@aws-sdk/client-ecr'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { stringifyIfPresent } from '../../utils/json.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
   executeConfigQuery,
   parseConfigItem,
@@ -102,7 +102,7 @@ const AwsConfigDescribeRepositoriesCommand = awsConfigCommand({
     const results = await executeConfigQuery(sql, context)
 
     const repositories = results.map((resultString: string) => {
-      const { configItem, configuration, tags } = parseConfigItem(resultString)
+      const { configItem, configuration } = parseConfigItem(resultString)
 
       // Cache data that will be needed by other commands
       context.putCache(configItem.resourceId, 'configuration', configuration)

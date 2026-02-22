@@ -1,6 +1,6 @@
 import { GetPublicAccessBlockCommand, S3ControlClient } from '@aws-sdk/client-s3-control'
 import { runAndCatch404 } from '../../utils/client-tools.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 
 export const AccountS3BpaSync: Sync = {
   awsService: 's3',

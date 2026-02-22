@@ -1,14 +1,14 @@
 import { LambdaClient } from '@aws-sdk/client-lambda'
-import { RetryStrategyV2 } from '@aws-sdk/types'
+import { type RetryStrategyV2 } from '@aws-sdk/types'
 import { NodeHttpHandler } from '@smithy/node-http-handler'
 import type { Client } from '@smithy/smithy-client'
 import {
   AdaptiveRetryStrategy,
   DefaultRateLimiter,
-  DefaultRateLimiterOptions
+  type DefaultRateLimiterOptions
 } from '@smithy/util-retry'
-import { AwsService } from '../services.js'
-import { AwsCredentialProviderWithMetaData } from './coreAuth.js'
+import { type AwsService } from '../services.js'
+import { type AwsCredentialProviderWithMetaData } from './coreAuth.js'
 
 export type ClientConstructor<T> = new (args: any) => T
 export type AnyClient = Client<any, any, any, any>

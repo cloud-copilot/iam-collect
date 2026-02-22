@@ -4,11 +4,11 @@ import {
   GetRegistryPolicyCommand,
   GetRepositoryPolicyCommand,
   ListTagsForResourceCommand,
-  Repository
+  type Repository
 } from '@aws-sdk/client-ecr'
 import { runAndCatchError } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const EcrSyncs: Sync[] = [

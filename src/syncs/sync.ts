@@ -1,8 +1,8 @@
 import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
-import { AwsIamStore, ResourceTypeParts } from '../persistence/AwsIamStore.js'
-import { AwsService } from '../services.js'
+import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
+import { type AwsIamStore, type ResourceTypeParts } from '../persistence/AwsIamStore.js'
+import { type AwsService } from '../services.js'
 
 export interface SyncOptions {
   workerPool: ConcurrentWorkerPool

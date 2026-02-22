@@ -1,12 +1,15 @@
 import { ConfigServiceClient } from '@aws-sdk/client-config-service'
 import { getCredentials } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialProviderWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
-import { AuthConfig } from '../config/config.js'
-import { ClientConstructor } from '../customClients/AbstractClient.js'
+import {
+  type AwsCredentialProviderWithMetaData,
+  getNewInitialCredentials
+} from '../aws/coreAuth.js'
+import { type AuthConfig } from '../config/config.js'
+import { type ClientConstructor } from '../customClients/AbstractClient.js'
 import { AbstractClientPool } from '../customClients/AbstractClientPool.js'
-import { AwsService } from '../services.js'
-import { AwsConfigClientContext } from './AwsConfigClientContext.js'
+import { type AwsService } from '../services.js'
+import { type AwsConfigClientContext } from './AwsConfigClientContext.js'
 import { AwsConfigAccountClient } from './clients/AwsConfigAccountClient.js'
 import { AwsConfigApiGatewayClient } from './clients/AwsConfigApiGatewayClient.js'
 import { AwsConfigBackupClient } from './clients/AwsConfigBackupClient.js'
@@ -67,7 +70,7 @@ export class AwsConfigClientPool extends AbstractClientPool<AwsConfigClientConte
     super()
   }
 
-  public async init(): Promise<void> {
+  public override async init(): Promise<void> {
     this.aggregatorName = this.options.aggregatorName
     const authConfig = this.options.auth
     const defaultCredentials = await getNewInitialCredentials(authConfig, {
@@ -87,14 +90,14 @@ export class AwsConfigClientPool extends AbstractClientPool<AwsConfigClientConte
     )
   }
 
-  public requiresAwsCredentials(): boolean {
+  public override requiresAwsCredentials(): boolean {
     return false
   }
 
   /**
    * Register the default supported Config-based clients
    */
-  protected registerDefaultClients(): void {
+  protected override registerDefaultClients(): void {
     this.registerClient(AwsConfigAccountClient)
     this.registerClient(AwsConfigApiGatewayClient)
     this.registerClient(AwsConfigBackupClient)
@@ -121,7 +124,7 @@ export class AwsConfigClientPool extends AbstractClientPool<AwsConfigClientConte
   /**
    * Get custom client context for Config-based implementations
    */
-  protected getClientContext(
+  protected override getClientContext(
     ClientType: ClientConstructor<any>,
     credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,
@@ -134,7 +137,7 @@ export class AwsConfigClientPool extends AbstractClientPool<AwsConfigClientConte
     }
   }
 
-  public isSyncSupported(service: AwsService, syncName: string, region: string): boolean {
+  public override isSyncSupported(service: AwsService, syncName: string, region: string): boolean {
     const fullySupported = fullySupportedServices.has(service)
     if (fullySupported) {
       return true

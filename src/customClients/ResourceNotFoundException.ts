@@ -3,7 +3,7 @@
  * Compatible with AWS SDK error structure and can be caught by runAndCatch404
  */
 export class ResourceNotFoundException extends Error {
-  public readonly name = 'ResourceNotFoundException'
+  public override readonly name = 'ResourceNotFoundException'
   public readonly $metadata: {
     httpStatusCode: number
     requestId: string

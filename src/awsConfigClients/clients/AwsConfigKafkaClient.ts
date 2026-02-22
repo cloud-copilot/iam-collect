@@ -5,11 +5,11 @@ import {
   ListClustersV2Command,
   ListTagsForResourceCommand
 } from '@aws-sdk/client-kafka'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { ResourceNotFoundException } from '../../customClients/ResourceNotFoundException.js'
 import { stringifyIfPresent } from '../../utils/json.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
   executeConfigQuery,
   parseConfigItem,
@@ -49,8 +49,6 @@ export class AwsConfigKafkaClient extends AbstractClient<AwsConfigClientContext>
 const AwsConfigListClustersV2Command = awsConfigCommand({
   command: ListClustersV2Command,
   execute: async (input, context) => {
-    const { NextToken, MaxResults } = input
-
     // Query AWS Config for all MSK clusters with only needed configuration fields
     const query = `
       SELECT

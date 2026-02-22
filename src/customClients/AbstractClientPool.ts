@@ -1,7 +1,7 @@
 import type { Client } from '@smithy/smithy-client'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
-import { AbstractClient, ClientConstructor } from './AbstractClient.js'
+import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
+import { AbstractClient, type ClientConstructor } from './AbstractClient.js'
 
 type AnyClient = Client<any, any, any, any>
 
@@ -70,7 +70,7 @@ export class AbstractClientPool<CustomClientContext = {}> extends AwsClientPool 
    * @param region AWS region
    * @param endpoint Custom endpoint
    */
-  public client<T extends AnyClient>(
+  public override client<T extends AnyClient>(
     ClientType: ClientConstructor<T>,
     credentials: AwsCredentialProviderWithMetaData,
     region: string | undefined,

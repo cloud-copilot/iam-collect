@@ -1,6 +1,6 @@
 import { AwsClientPool } from '../aws/ClientPool.js'
 import { AwsConfigClientPool } from '../awsConfigClients/AwsConfigClientPool.js'
-import { DataSourceConfig, DataSourceType } from '../config/config.js'
+import { type DataSourceConfig, type DataSourceType } from '../config/config.js'
 
 /**
  * Create the appropriate client pool based on data source configuration

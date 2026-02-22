@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { PathBasedPersistenceAdapter } from './PathBasedPersistenceAdapter.js'
+import { type PathBasedPersistenceAdapter } from './PathBasedPersistenceAdapter.js'
 
 export class InMemoryPathBasedPersistenceAdapter implements PathBasedPersistenceAdapter {
   private fileSystem: Record<string, string> = {}

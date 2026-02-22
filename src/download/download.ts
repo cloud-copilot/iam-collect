@@ -1,10 +1,13 @@
 import { ConcurrentWorkerPool } from '@cloud-copilot/job'
 import { getCredentials } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
-import { AwsCredentialProviderWithMetaData, getNewInitialCredentials } from '../aws/coreAuth.js'
+import {
+  type AwsCredentialProviderWithMetaData,
+  getNewInitialCredentials
+} from '../aws/coreAuth.js'
 import {
   accountServiceRegionConfig,
-  AuthConfig,
+  type AuthConfig,
   configuredRegionListForAccount,
   customConfigForSync,
   getAccountAuthConfig,
@@ -15,12 +18,12 @@ import {
   regionsForService,
   servicesForAccount,
   syncEnabledForRegion,
-  TopLevelConfig
+  type TopLevelConfig
 } from '../config/config.js'
 import { createClientPool } from '../config/dataSource.js'
 import { getPartitionDefaults } from '../config/partitionDefaults.js'
 import { getIndexersForService } from '../indexing/indexMap.js'
-import { IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
+import { type IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
 import { JobRunner } from '../jobs/jobRunner.js'
 import { defaultConcurrency } from '../jobs/util.js'
 import { createStorageClient } from '../persistence/util.js'

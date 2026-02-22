@@ -1,5 +1,5 @@
 import { IAMClient, ListInstanceProfilesCommand } from '@aws-sdk/client-iam'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const InstanceProfilesSync: Sync = createTypedSyncOperation(

@@ -1,4 +1,4 @@
-import { TopLevelConfig } from './config.js'
+import { type TopLevelConfig } from './config.js'
 
 const partitionDefaults: Record<string, TopLevelConfig> = {
   aws: {

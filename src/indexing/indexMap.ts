@@ -1,5 +1,5 @@
-import { AwsService, lowerCaseService } from '../services.js'
-import { Indexer } from './indexer.js'
+import { type AwsService, lowerCaseService } from '../services.js'
+import { type Indexer } from './indexer.js'
 import { AccountOrganizationIndexer } from './indexers/accountOrgs.js'
 import { ApiGatewayIndexer } from './indexers/apigateways.js'
 import { S3BucketIndexer } from './indexers/buckets.js'

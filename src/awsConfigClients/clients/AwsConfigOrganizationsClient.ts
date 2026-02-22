@@ -12,9 +12,9 @@ import {
   ListTagsForResourceCommand,
   OrganizationsClient
 } from '@aws-sdk/client-organizations'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
 /**
  * AWS Config-based Organizations client implementation

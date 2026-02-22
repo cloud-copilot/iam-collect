@@ -5,7 +5,7 @@ import {
   SNSClient
 } from '@aws-sdk/client-sns'
 import { log } from '../../utils/log.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const SnsTopicsSync: Sync = createTypedSyncOperation(

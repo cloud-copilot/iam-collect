@@ -9,7 +9,7 @@ import {
 } from '@aws-sdk/client-lambda'
 import { runAndCatch404, runAndCatchAccessDeniedWithLog } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
-import { DataRecord, Sync, syncData } from '../sync.js'
+import { type DataRecord, type Sync, syncData } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation, paginateResource } from '../typedSync.js'
 
 export const LambdaSync = createTypedSyncOperation(

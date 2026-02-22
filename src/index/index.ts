@@ -1,10 +1,10 @@
-import { getStorageConfig, TopLevelConfig } from '../config/config.js'
-import { Indexer } from '../indexing/indexer.js'
+import { getStorageConfig, type TopLevelConfig } from '../config/config.js'
+import { type Indexer } from '../indexing/indexer.js'
 import { getIndexersForService } from '../indexing/indexMap.js'
-import { IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
+import { type IndexJob, runIndexJobs } from '../indexing/runIndexers.js'
 import { defaultConcurrency } from '../jobs/util.js'
 import { createStorageClient } from '../persistence/util.js'
-import { allServices, AwsService } from '../services.js'
+import { allServices, type AwsService } from '../services.js'
 
 export async function index(
   configs: TopLevelConfig[],

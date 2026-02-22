@@ -1,4 +1,4 @@
-import { AwsService } from '../services.js'
+import { type AwsService } from '../services.js'
 import { log } from './log.js'
 
 /**

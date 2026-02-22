@@ -5,7 +5,7 @@ import {
 } from '@aws-sdk/client-s3-control'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const S3MultiRegionAccessPointsSync: Sync = createTypedSyncOperation(

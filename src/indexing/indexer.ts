@@ -1,5 +1,5 @@
-import { AwsIamStore } from '../persistence/AwsIamStore.js'
-import { AwsService } from '../services.js'
+import { type AwsIamStore } from '../persistence/AwsIamStore.js'
+import { type AwsService } from '../services.js'
 
 export interface Indexer<T> {
   /**
