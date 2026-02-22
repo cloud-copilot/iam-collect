@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { parse } from 'jsonc-parser'
 import { resolve } from 'path'
-import { TopLevelConfig } from './config.js'
+import { type TopLevelConfig } from './config.js'
 
 /**
  * Gets the current directory the process is running in

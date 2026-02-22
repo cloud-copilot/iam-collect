@@ -2,7 +2,7 @@ import { ResourceOwner } from '@aws-sdk/client-api-gateway'
 import { GetResourcePoliciesCommand, ListResourcesCommand, RAMClient } from '@aws-sdk/client-ram'
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { parseIfPresent } from '../../utils/json.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
 export const RamResourcesSync: Sync = {

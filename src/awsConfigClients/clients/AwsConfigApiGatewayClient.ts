@@ -1,7 +1,7 @@
 import { APIGatewayClient, GetRestApisCommand } from '@aws-sdk/client-api-gateway'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 
 /**
  * API Gateway client implementation using AWS Config as data source

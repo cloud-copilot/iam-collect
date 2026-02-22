@@ -1,22 +1,22 @@
 import {
   GetAccountAuthorizationDetailsCommand,
-  GetAccountAuthorizationDetailsResponse,
-  GroupDetail,
+  type GetAccountAuthorizationDetailsResponse,
+  type GroupDetail,
   IAMClient,
   ListPolicyTagsCommand,
-  ManagedPolicyDetail,
-  RoleDetail,
-  Tag,
-  UserDetail
+  type ManagedPolicyDetail,
+  type RoleDetail,
+  type Tag,
+  type UserDetail
 } from '@aws-sdk/client-iam'
 
-import { ConcurrentWorkerPool, Job } from '@cloud-copilot/job'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
-import { AwsIamStore } from '../../persistence/AwsIamStore.js'
+import { ConcurrentWorkerPool, type Job } from '@cloud-copilot/job'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
-import { Sync, syncData, SyncOptions } from '../sync.js'
+import { type Sync, syncData, type SyncOptions } from '../sync.js'
 
 export const AuthorizationDetailsSync: Sync = {
   awsService: 'iam',

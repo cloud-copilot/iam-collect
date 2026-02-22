@@ -1,7 +1,7 @@
 import { GetResourcePolicyCommand, GlueClient } from '@aws-sdk/client-glue'
 import { runAndCatchError } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 
 export const GlueCatalogSync: Sync = {
   name: 'GlueCatalogSync',

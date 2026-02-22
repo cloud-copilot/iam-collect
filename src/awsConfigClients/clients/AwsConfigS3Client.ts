@@ -7,11 +7,11 @@ import {
   ListDirectoryBucketsCommand,
   S3Client
 } from '@aws-sdk/client-s3'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { ResourceNotFoundException } from '../../customClients/ResourceNotFoundException.js'
 import { stringifyIfPresent } from '../../utils/json.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
   executeConfigQuery,
   parseConfigItem,

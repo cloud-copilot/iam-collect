@@ -2,7 +2,7 @@ import { DynamoDBClient, GetResourcePolicyCommand } from '@aws-sdk/client-dynamo
 import { DynamoDBStreamsClient, ListStreamsCommand } from '@aws-sdk/client-dynamodb-streams'
 import { runAndCatchError } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
-import { DataRecord, Sync, syncData } from '../sync.js'
+import { type DataRecord, type Sync, syncData } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
 export const DynamoDbStreamsSync: Sync = {

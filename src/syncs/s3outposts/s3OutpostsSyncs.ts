@@ -6,13 +6,17 @@ import {
   ListRegionalBucketsCommand,
   S3ControlClient
 } from '@aws-sdk/client-s3-control'
-import { ListOutpostsWithS3Command, Outpost, S3OutpostsClient } from '@aws-sdk/client-s3outposts'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import {
+  ListOutpostsWithS3Command,
+  type Outpost,
+  S3OutpostsClient
+} from '@aws-sdk/client-s3outposts'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { parseIfPresent } from '../../utils/json.js'
 import { log } from '../../utils/log.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
-import { DataRecord, Sync, syncData } from '../sync.js'
+import { type DataRecord, type Sync, syncData } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
 export const S3OutpostsBucketsSync: Sync = {

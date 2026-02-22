@@ -4,10 +4,10 @@ import {
   ListBackupVaultsCommand,
   ListTagsCommand
 } from '@aws-sdk/client-backup'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
 import { stringifyIfPresent } from '../../utils/json.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
   executeConfigQuery,
   parseConfigItem,

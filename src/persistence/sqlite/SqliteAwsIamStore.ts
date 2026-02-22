@@ -1,8 +1,12 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
-import DatabaseConstructor, { Database } from 'better-sqlite3'
+import DatabaseConstructor, { type Database } from 'better-sqlite3'
 import { createHash } from 'crypto'
 import { consistentStringify } from '../../utils/json.js'
-import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
+import {
+  type AwsIamStore,
+  type OrganizationPolicyType,
+  type ResourceTypeParts
+} from '../AwsIamStore.js'
 
 function quote(value: any): string {
   if (value === undefined || value === null || value === '') {

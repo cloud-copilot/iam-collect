@@ -1,6 +1,6 @@
-import { AuthConfig } from '../config/config.js'
+import { type AuthConfig } from '../config/config.js'
 import { log } from '../utils/log.js'
-import { AwsCredentialProviderWithMetaData, getNewCredentials, now } from './coreAuth.js'
+import { type AwsCredentialProviderWithMetaData, getNewCredentials, now } from './coreAuth.js'
 
 /**
  * We cache credentials with a timeout

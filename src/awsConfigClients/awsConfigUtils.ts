@@ -1,8 +1,8 @@
 import {
   SelectAggregateResourceConfigCommand,
-  SelectAggregateResourceConfigCommandOutput
+  type SelectAggregateResourceConfigCommandOutput
 } from '@aws-sdk/client-config-service'
-import { AwsConfigClientContext } from './AwsConfigClientContext.js'
+import { type AwsConfigClientContext } from './AwsConfigClientContext.js'
 
 /**
  * Common utility functions for AWS Config-based command implementations

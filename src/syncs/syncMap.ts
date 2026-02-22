@@ -1,4 +1,4 @@
-import { AwsService, lowerCaseService } from '../services.js'
+import { type AwsService, lowerCaseService } from '../services.js'
 import { RestApisSync } from './apigateway/gateways.js'
 import { BackupVaultsSync } from './backup/backupVaults.js'
 import { DynamoDbStreamsSync } from './dynamodb/dynamoDbStreams.js'
@@ -32,7 +32,7 @@ import { SecretSync } from './secretsmanager/secrets.js'
 import { SnsTopicsSync } from './sns/topics.js'
 import { SqsQueueSync } from './sqs/queues.js'
 import { SsoDataSync } from './sso/ssoInstances.js'
-import { Sync } from './sync.js'
+import { type Sync } from './sync.js'
 
 const allSyncs = [
   AccountS3BpaSync,

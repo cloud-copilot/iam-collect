@@ -1,7 +1,7 @@
 import { createHash } from 'crypto'
 import { access, mkdir, readdir, readFile, rm, unlink, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
-import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
+import { type PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 
 export class FileSystemAdapter implements PathBasedPersistenceAdapter {
   constructor(private readonly deleteData: boolean) {}

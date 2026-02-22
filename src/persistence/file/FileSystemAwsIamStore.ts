@@ -1,8 +1,12 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { join } from 'path'
 import { consistentStringify } from '../../utils/json.js'
-import { AwsIamStore, OrganizationPolicyType, ResourceTypeParts } from '../AwsIamStore.js'
-import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
+import {
+  type AwsIamStore,
+  type OrganizationPolicyType,
+  type ResourceTypeParts
+} from '../AwsIamStore.js'
+import { type PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
 
 export class FileSystemAwsIamStore implements AwsIamStore {
@@ -10,7 +14,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
 
   constructor(
     private readonly baseFolder: string,
-    private readonly partition: string,
+    partition: string,
     private readonly separator: string,
     fsAdapter: PathBasedPersistenceAdapter
   ) {

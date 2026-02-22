@@ -1,4 +1,4 @@
-import { Indexer } from '../indexer.js'
+import { type Indexer } from '../indexer.js'
 
 interface S3BucketIndex {
   accountId: string

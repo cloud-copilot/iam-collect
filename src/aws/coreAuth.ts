@@ -4,11 +4,11 @@ import {
   fromTemporaryCredentials
 } from '@aws-sdk/credential-providers'
 import {
-  AwsCredentialIdentity,
-  IdentityProvider,
-  RuntimeConfigIdentityProvider
+  type AwsCredentialIdentity,
+  type IdentityProvider,
+  type RuntimeConfigIdentityProvider
 } from '@aws-sdk/types'
-import { AuthConfig } from '../config/config.js'
+import { type AuthConfig } from '../config/config.js'
 import { log } from '../utils/log.js'
 import { randomCharacters, shortHash } from '../utils/strings.js'
 import { getTokenInfo } from './tokens.js'

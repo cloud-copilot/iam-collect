@@ -1,5 +1,5 @@
 import { log } from '../utils/log.js'
-import { Job, JobContext, JobResult } from './jobQueue.js'
+import { type Job, type JobContext, type JobResult } from './jobQueue.js'
 
 /**
  * Job runner that allows running jobs as they are created.

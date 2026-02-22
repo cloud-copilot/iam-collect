@@ -1,5 +1,5 @@
 import {
-  Account,
+  type Account,
   DescribeOrganizationCommand,
   DescribePolicyCommand,
   DescribeResourcePolicyCommand,
@@ -11,22 +11,22 @@ import {
   ListPoliciesForTargetCommand,
   ListRootsCommand,
   ListTagsForResourceCommand,
-  Organization,
-  OrganizationalUnit,
+  type Organization,
+  type OrganizationalUnit,
   OrganizationsClient,
   PolicyType,
   PolicyTypeStatus,
-  Root
+  type Root
 } from '@aws-sdk/client-organizations'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
-import { AwsIamStore, OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsIamStore, type OrganizationPolicyType } from '../../persistence/AwsIamStore.js'
 import {
   runAndCatch404,
   runAndCatchAccessDenied,
   runAndCatchAccessDeniedWithLog
 } from '../../utils/client-tools.js'
 import { convertTagsToRecord } from '../../utils/tags.js'
-import { Sync, SyncOptions } from '../sync.js'
+import { type Sync, type SyncOptions } from '../sync.js'
 import { paginateResource } from '../typedSync.js'
 
 interface AccountDetails {

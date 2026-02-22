@@ -1,13 +1,13 @@
 import {
   DescribeDomainCommand,
-  DomainStatus,
+  type DomainStatus,
   ListDomainNamesCommand,
   ListTagsCommand,
   OpenSearchClient
 } from '@aws-sdk/client-opensearch'
-import { AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { AbstractClient } from '../../customClients/AbstractClient.js'
-import { AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
+import { type AwsConfigClientContext, awsConfigCommand } from '../AwsConfigClientContext.js'
 import {
   executeConfigQuery,
   parseConfigItem,

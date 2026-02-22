@@ -1,5 +1,5 @@
 import { ConfigServiceClient } from '@aws-sdk/client-config-service'
-import { AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { customCommandFactory } from '../customClients/AbstractCommand.js'
 
 /**

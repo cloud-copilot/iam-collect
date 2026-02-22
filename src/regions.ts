@@ -1,6 +1,6 @@
 import { AccountClient, ListRegionsCommand } from '@aws-sdk/client-account'
 import { AwsClientPool } from './aws/ClientPool.js'
-import { AwsCredentialProviderWithMetaData } from './aws/coreAuth.js'
+import { type AwsCredentialProviderWithMetaData } from './aws/coreAuth.js'
 import { paginateResource } from './syncs/typedSync.js'
 import { isDefined } from './utils/types.js'
 

@@ -1,4 +1,4 @@
-import { AwsService } from '../services.js'
+import { type AwsService } from '../services.js'
 
 export type DataSourceType = 'aws-sdk' | 'aws-config'
 
@@ -152,10 +152,6 @@ export interface TopLevelConfig extends BaseConfig {
 type ServicesForAccount = AwsService[]
 type RegionsForAccountService = string[]
 type AccountRegionList = string[]
-interface AccountServiceRegionConfig {
-  auth?: AuthConfig
-  endpoint?: string
-}
 
 export interface ResolvedAccountServiceRegionConfig {
   accountId: string

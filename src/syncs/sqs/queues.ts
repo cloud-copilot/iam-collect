@@ -32,7 +32,6 @@ export const SqsQueueSync = createTypedSyncOperation(
     tags: (queue) => queue.extraFields.tags,
     extraFields: {
       tags: async (client, queue, account, region, partition) => {
-        const arn = queueArn(queue, region, account, partition)
         const tagResult = await client.send(
           new ListQueueTagsCommand({
             QueueUrl: queue.name
@@ -41,7 +40,6 @@ export const SqsQueueSync = createTypedSyncOperation(
         return tagResult.Tags
       },
       attributes: async (client, queue, account, region, partition) => {
-        const arn = queueArn(queue, region, account, partition)
         const attributes = await client.send(
           new GetQueueAttributesCommand({
             QueueUrl: queue.name,

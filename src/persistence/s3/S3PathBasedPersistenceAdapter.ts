@@ -3,19 +3,19 @@ import {
   DeleteObjectsCommand,
   GetObjectCommand,
   ListObjectsV2Command,
-  ListObjectsV2CommandOutput,
+  type ListObjectsV2CommandOutput,
   PutObjectCommand,
-  PutObjectCommandInput,
+  type PutObjectCommandInput,
   S3Client
 } from '@aws-sdk/client-s3'
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { getCredentials } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { getNewInitialCredentials } from '../../aws/coreAuth.js'
-import { S3StorageConfig } from '../../config/config.js'
+import { type S3StorageConfig } from '../../config/config.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
 import { log } from '../../utils/log.js'
-import { PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
+import { type PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 
 export class S3PathBasedPersistenceAdapter implements PathBasedPersistenceAdapter {
   private storageAuthAccountId: string | undefined

@@ -1,5 +1,5 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
-import { Indexer } from '../indexer.js'
+import { type Indexer } from '../indexer.js'
 
 interface ApiGatewayMetadata {
   arn: string

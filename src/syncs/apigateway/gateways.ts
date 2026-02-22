@@ -1,6 +1,6 @@
 import { APIGatewayClient, GetRestApisCommand } from '@aws-sdk/client-api-gateway'
 import { log } from '../../utils/log.js'
-import { Sync } from '../sync.js'
+import { type Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 
 export const RestApisSync: Sync = createTypedSyncOperation(
