@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { StorageConfig, TopLevelConfig } from '../config/config.js'
+import type { StorageConfig, TopLevelConfig } from '../config/config.js'
 import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'

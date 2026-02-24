@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/client-s3'
 import { mockClient } from 'aws-sdk-client-mock'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { S3StorageConfig } from '../../config/config.js'
+import type { S3StorageConfig } from '../../config/config.js'
 import { S3PathBasedPersistenceAdapter } from './S3PathBasedPersistenceAdapter.js'
 
 // Mock the auth modules

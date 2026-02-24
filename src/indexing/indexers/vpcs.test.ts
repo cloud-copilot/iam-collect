@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { FileSystemAwsIamStore } from '../../persistence/file/FileSystemAwsIamStore.js'
 import { InMemoryPathBasedPersistenceAdapter } from '../../persistence/InMemoryPathBasedPersistenceAdapter.js'
-import { VpcEndpointIndexer, VpcIndex } from './vpcs.js'
+import { VpcEndpointIndexer, type VpcIndex } from './vpcs.js'
 
 describe('VpcEndpointIndexer', () => {
   describe('updateCache', () => {
