@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   accountServiceRegionConfig,
-  AuthConfig,
+  type AuthConfig,
   configuredRegionListForAccount,
   customConfigForSync,
   getAccountAuthConfig,
@@ -9,11 +9,11 @@ import {
   getDefaultAuthConfig,
   getStorageConfig,
   regionsForService,
-  ResolvedAccountServiceRegionConfig,
+  type ResolvedAccountServiceRegionConfig,
   servicesForAccount,
-  StorageConfig,
+  type StorageConfig,
   syncEnabledForRegion,
-  TopLevelConfig
+  type TopLevelConfig
 } from './config.js'
 
 const defaultServicesForAccount = ['kms', 's3', 'sns', 'sqs']
