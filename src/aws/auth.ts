@@ -1,5 +1,5 @@
 import { type AuthConfig } from '../config/config.js'
-import { log } from '../utils/log.js'
+import { log } from '@cloud-copilot/log'
 import { type AwsCredentialProviderWithMetaData, getNewCredentials, now } from './coreAuth.js'
 
 /**

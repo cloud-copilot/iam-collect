@@ -1,4 +1,4 @@
-import { log } from '../utils/log.js'
+import { log } from '@cloud-copilot/log'
 
 /**
  * Represents the outcome of a job:

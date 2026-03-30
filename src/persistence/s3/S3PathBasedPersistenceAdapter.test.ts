@@ -36,7 +36,7 @@ vi.mock('../../aws/ClientPool.js', () => ({
   }
 }))
 
-vi.mock('../../utils/log.js', () => ({
+vi.mock('@cloud-copilot/log', () => ({
   log: {
     debug: vi.fn()
   }

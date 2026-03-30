@@ -1,4 +1,4 @@
-import { log } from '../utils/log.js'
+import { log } from '@cloud-copilot/log'
 import { type Job, type JobContext, type JobResult } from './jobQueue.js'
 
 /**
