@@ -30,7 +30,7 @@ import { createStorageClient } from '../persistence/util.js'
 import { getEnabledRegions } from '../regions.js'
 import { allServices } from '../services.js'
 import { getGlobalSyncsForService, getRegionalSyncsForService } from '../syncs/syncMap.js'
-import { log } from '../utils/log.js'
+import { log } from '@cloud-copilot/log'
 
 /**
  * Download data from AWS services.

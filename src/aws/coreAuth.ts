@@ -9,7 +9,7 @@ import {
   type RuntimeConfigIdentityProvider
 } from '@aws-sdk/types'
 import { type AuthConfig } from '../config/config.js'
-import { log } from '../utils/log.js'
+import { log } from '@cloud-copilot/log'
 import { randomCharacters, shortHash } from '../utils/strings.js'
 import { getTokenInfo } from './tokens.js'
 

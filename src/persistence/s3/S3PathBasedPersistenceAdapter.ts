@@ -14,7 +14,7 @@ import { AwsClientPool } from '../../aws/ClientPool.js'
 import { getNewInitialCredentials } from '../../aws/coreAuth.js'
 import { type S3StorageConfig } from '../../config/config.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
-import { log } from '../../utils/log.js'
+import { log } from '@cloud-copilot/log'
 import { type PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
 
 export class S3PathBasedPersistenceAdapter implements PathBasedPersistenceAdapter {

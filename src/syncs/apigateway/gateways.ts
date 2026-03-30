@@ -1,5 +1,5 @@
 import { APIGatewayClient, GetRestApisCommand } from '@aws-sdk/client-api-gateway'
-import { log } from '../../utils/log.js'
+import { log } from '@cloud-copilot/log'
 import { type Sync } from '../sync.js'
 import { createResourceSyncType, createTypedSyncOperation } from '../typedSync.js'
 

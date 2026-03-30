@@ -17,7 +17,7 @@ import { downloadData } from './download/download.js'
 import { index } from './index/index.js'
 import { mergeSqliteDatabases } from './mergeSqlite/mergeSqlite.js'
 import { type AwsService } from './services.js'
-import { type LogLevel, LogLevels, setLogLevel } from './utils/log.js'
+import { type LogLevel, LogLevels, setLogger, StandardLogger } from '@cloud-copilot/log'
 
 /**
  * For some reason the AWS SDK v3 looks for AWS_REGION and not AWS_DEFAULT_REGION
@@ -138,9 +138,11 @@ const main = async () => {
     }
   )
 
-  if (cli.args.log) {
-    setLogLevel(cli.args.log as LogLevel)
-  }
+  setLogger(
+    new StandardLogger({
+      logLevel: (cli.args.log as LogLevel) ?? undefined
+    })
+  )
 
   if (cli.subcommand === 'init') {
     if (defaultConfigExists()) {

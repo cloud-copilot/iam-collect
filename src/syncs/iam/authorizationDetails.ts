@@ -14,7 +14,7 @@ import { ConcurrentWorkerPool, type Job } from '@cloud-copilot/job'
 import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { type AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'
-import { log } from '../../utils/log.js'
+import { log } from '@cloud-copilot/log'
 import { convertTagsToRecord } from '../../utils/tags.js'
 import { type Sync, syncData, type SyncOptions } from '../sync.js'
 
