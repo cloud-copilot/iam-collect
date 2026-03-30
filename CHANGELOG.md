@@ -1,3 +1,10 @@
+## [0.1.180](https://github.com/cloud-copilot/iam-collect/compare/v0.1.179...v0.1.180) (2026-03-30)
+
+
+### Features
+
+* Write batch in AwsIamStore ([283a2f6](https://github.com/cloud-copilot/iam-collect/commit/283a2f61ab5a24a4837e8929d7eff1e3ffda5dfd))
+
 ## [0.1.179](https://github.com/cloud-copilot/iam-collect/compare/v0.1.178...v0.1.179) (2026-03-28)
 
 ## [0.1.178](https://github.com/cloud-copilot/iam-collect/compare/v0.1.177...v0.1.178) (2026-03-22)
