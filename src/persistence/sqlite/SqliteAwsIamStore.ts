@@ -36,6 +36,17 @@ export class SqliteAwsIamStore implements AwsIamStore {
     this.db.close()
   }
 
+  async writeBatch(fn: () => Promise<void>): Promise<void> {
+    this.run('BEGIN')
+    try {
+      await fn()
+      this.run('COMMIT')
+    } catch (error) {
+      this.run('ROLLBACK')
+      throw error
+    }
+  }
+
   /**
    * Returns the SQL DDL for a SQLite database.
    *

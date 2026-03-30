@@ -459,6 +459,10 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     return this.fsAdapter.writeWithOptimisticLock(filePath, consistentStringify(data), lockId)
   }
 
+  async writeBatch(fn: () => Promise<void>): Promise<void> {
+    await fn()
+  }
+
   /**
    * Checks if a given content value is empty.
    *
