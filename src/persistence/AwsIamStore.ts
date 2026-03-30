@@ -376,4 +376,11 @@ export interface AwsIamStore {
    * @return true if the index was saved successfully, false if there was an optimistic locking failure
    */
   saveIndex<T>(indexName: string, data: T, lockId: string): Promise<boolean>
+
+  /**
+   * Execute a batch of write operations together.
+   *
+   * @param fn - Async function containing write operations to batch
+   */
+  writeBatch(fn: () => Promise<void>): Promise<void>
 }
