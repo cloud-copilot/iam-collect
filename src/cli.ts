@@ -34,7 +34,12 @@ const main = async () => {
     {
       init: {
         description: 'Initialize the iam-collect configuration file',
-        arguments: {}
+        arguments: {
+          sqlite: booleanArgument({
+            character: 's',
+            description: 'Initialize configuration file with SQLite storage'
+          })
+        }
       },
       download: {
         description: 'Download IAM data and update indexes',
@@ -150,7 +155,9 @@ const main = async () => {
       process.exit(1)
     }
     console.log('Initializing...')
-    await createDefaultConfiguration()
+    await createDefaultConfiguration({
+      type: cli.args.sqlite ? 'sqlite' : 'file'
+    })
   } else if (cli.subcommand === 'download') {
     const defaultConfig = './iam-collect.jsonc'
     const configFiles = cli.args.configFiles.length > 0 ? cli.args.configFiles : [defaultConfig]
