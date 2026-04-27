@@ -21,18 +21,35 @@ export function defaultConfigExists(): boolean {
   return existsSync(fullDefaultConfigPath())
 }
 
-const defaultConfig = `
-{
-  // The name of the configuration, used if you need to have multiple configurations.
-  "name": "default config",
-  "iamCollectVersion": "0.0.0",
+type ConfigType = 'sqlite' | 'file'
 
+export type DefaultConfigOptions = {
+  type?: ConfigType
+}
+
+const storageTemplates: Record<ConfigType, string> = {
+  file: `
   // Default storage is on the file system.
   "storage": {
     "type": "file",
     //If this starts with a '.', it is relative to the config file, otherwise it is an absolute path.
     "path": "./iam-data"
-  },
+  },`,
+  sqlite: `
+  // Store data in a local sqlite database.
+  "storage": {
+    "type": "sqlite",
+    //If this starts with a '.', it is relative to the config file, otherwise it is an absolute path.
+    "path": "./iam-data.sqlite"
+  },`
+}
+
+const defaultConfig = `
+{
+  // The name of the configuration, used if you need to have multiple configurations.
+  "name": "default config",
+  "iamCollectVersion": "0.0.0",
+  $$storage$$
 
   /*
   You can also use S3 storage instead of the default file storage.
@@ -151,7 +168,8 @@ const defaultConfig = `
 }
 `
 
-export async function getDefaultConfig(): Promise<string> {
-  const version = await iamCollectVersion()
-  return defaultConfig.replace('0.0.0', version)
+export async function getDefaultConfig(options: DefaultConfigOptions): Promise<string> {
+  const version = iamCollectVersion()
+  const storage = storageTemplates[options.type ?? 'file']
+  return defaultConfig.replace('0.0.0', version).replace('$$storage$$', storage)
 }
