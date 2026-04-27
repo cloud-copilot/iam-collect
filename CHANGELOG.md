@@ -1,3 +1,10 @@
+## [0.1.188](https://github.com/cloud-copilot/iam-collect/compare/v0.1.187...v0.1.188) (2026-04-27)
+
+
+### Features
+
+* CLI flag to initialize the config file with sqlite configuration settings ([732dbdf](https://github.com/cloud-copilot/iam-collect/commit/732dbdf06aba3720a3a3b7726d6eddb8dfd70132))
+
 ## [0.1.187](https://github.com/cloud-copilot/iam-collect/compare/v0.1.186...v0.1.187) (2026-04-26)
 
 ## [0.1.186](https://github.com/cloud-copilot/iam-collect/compare/v0.1.185...v0.1.186) (2026-04-11)
