@@ -1,3 +1,10 @@
+## [0.1.198](https://github.com/cloud-copilot/iam-collect/compare/v0.1.197...v0.1.198) (2026-06-27)
+
+
+### Bug Fixes
+
+* update dependency action reference ([5ea20fe](https://github.com/cloud-copilot/iam-collect/commit/5ea20fe3c1b1ffaccb307919486ea312b60b405b))
+
 ## [0.1.197](https://github.com/cloud-copilot/iam-collect/compare/v0.1.196...v0.1.197) (2026-06-20)
 
 ## [0.1.196](https://github.com/cloud-copilot/iam-collect/compare/v0.1.195...v0.1.196) (2026-06-13)
