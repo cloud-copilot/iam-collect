@@ -54,12 +54,11 @@ export class InMemoryPathBasedPersistenceAdapter implements PathBasedPersistence
   async listDirectory(dirPath: string): Promise<string[]> {
     const keys = Object.keys(this.fileSystem).filter((key) => key.startsWith(dirPath + '/'))
     const allMatches = new Set(
-      keys.map(
-        (key) =>
-          key
-            .slice(dirPath.length + 1)
-            .split('/')
-            .at(0)!
+      keys.map((key) =>
+        key
+          .slice(dirPath.length + 1)
+          .split('/')
+          .at(0)!
       )
     )
     return Array.from(allMatches)
