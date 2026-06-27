@@ -29,8 +29,7 @@ export interface AwsCredentialIdentityWithMetaData extends AwsCredentialIdentity
 }
 
 type AwsCredentialProviders =
-  | IdentityProvider<AwsCredentialIdentity>
-  | RuntimeConfigIdentityProvider<AwsCredentialIdentity>
+  IdentityProvider<AwsCredentialIdentity> | RuntimeConfigIdentityProvider<AwsCredentialIdentity>
 
 export type AwsCredentialProviderWithMetaData = {
   provider: AwsCredentialProviders
