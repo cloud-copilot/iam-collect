@@ -244,7 +244,7 @@ export class SqliteAwsIamStore implements AwsIamStore {
   async findResourceMetadata<T>(accountId: string, options: ResourceTypeParts): Promise<T[]> {
     accountId = accountId.toLowerCase()
     let sql = `SELECT data FROM resource_metadata WHERE partition=${quote(this.partition)} AND account_id=${quote(accountId)} AND service=${quote(options.service.toLowerCase())} AND metadata_type='metadata'`
-    if (options.region) {
+    if (options.region && options.region !== '*') {
       sql += ` AND region=${quote(options.region.toLowerCase())}`
     }
     if (options.resourceType) {
