@@ -316,6 +316,22 @@ describe('SqliteAwsIamStore', () => {
       )
       expect(result).toEqual([])
     })
+
+    it("findResourceMetadata treats region '*' as any region", async () => {
+      const anyRegion = await store.findResourceMetadata<{ name: string }>('123456789012', {
+        service: 'lambda',
+        region: '*',
+        resourceType: 'function'
+      })
+      expect(anyRegion.map((resource) => resource.name)).toEqual(['test'])
+
+      const wrongRegion = await store.findResourceMetadata<{ name: string }>('123456789012', {
+        service: 'lambda',
+        region: 'eu-west-1',
+        resourceType: 'function'
+      })
+      expect(wrongRegion).toEqual([])
+    })
   })
 
   describe('Resource Sync', () => {
