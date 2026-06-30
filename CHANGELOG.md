@@ -1,3 +1,10 @@
+## [0.1.200](https://github.com/cloud-copilot/iam-collect/compare/v0.1.199...v0.1.200) (2026-06-30)
+
+
+### Bug Fixes
+
+* handle wildcard region in sqlite metadata lookup ([3b20eb3](https://github.com/cloud-copilot/iam-collect/commit/3b20eb3f884ea6fd42501cdc8b78ed1d45e9a60b))
+
 ## [0.1.199](https://github.com/cloud-copilot/iam-collect/compare/v0.1.198...v0.1.199) (2026-06-27)
 
 ## [0.1.198](https://github.com/cloud-copilot/iam-collect/compare/v0.1.197...v0.1.198) (2026-06-27)
