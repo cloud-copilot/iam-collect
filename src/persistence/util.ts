@@ -2,7 +2,7 @@ import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { sep } from 'path'
 import { getStorageConfig, type StorageConfig, type TopLevelConfig } from '../config/config.js'
 import { iamCollectVersion } from '../config/packageVersion.js'
-import { type AwsIamStore } from './AwsIamStore.js'
+import { type AwsIamStore, type StorageClientOptions } from './AwsIamStore.js'
 import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { InMemoryPathBasedPersistenceAdapter } from './InMemoryPathBasedPersistenceAdapter.js'
@@ -15,12 +15,14 @@ import { SqliteAwsIamStore } from './sqlite/SqliteAwsIamStore.js'
  * @param configs - The top-level configurations that define the storage settings.
  * @param partition - The partition to use for the storage client.
  * @param deleteData - Whether to delete existing data in the storage.
+ * @param options - Options controlling storage client behavior.
  * @returns The storage client instance to use
  */
 export function createStorageClient(
   configs: TopLevelConfig[],
   partition: string,
-  deleteData: boolean
+  deleteData: boolean,
+  options?: StorageClientOptions
 ): AwsIamStore
 /**
  * Create a storage client based on the provided storage configuration and partition.
@@ -28,17 +30,20 @@ export function createStorageClient(
  * @param storageConfig - The storage configuration object that defines the type and path of the storage.
  * @param partition - The partition to use for the storage client.
  * @param deleteData - Whether to delete existing data in the storage.
+ * @param options - Options controlling storage client behavior.
  * @returns The storage client instance to use
  */
 export function createStorageClient(
   storageConfig: StorageConfig,
   partition: string,
-  deleteData: boolean
+  deleteData: boolean,
+  options?: StorageClientOptions
 ): AwsIamStore
 export function createStorageClient(
   storageConfig: StorageConfig | TopLevelConfig[],
   partition: string,
-  deleteData: boolean
+  deleteData: boolean,
+  options: StorageClientOptions = {}
 ): AwsIamStore {
   if (Array.isArray(storageConfig)) {
     const foundConfig = getStorageConfig(storageConfig)
@@ -53,14 +58,21 @@ export function createStorageClient(
       storageConfig.path,
       partition,
       sep,
-      new FileSystemAdapter(deleteData)
+      new FileSystemAdapter(deleteData),
+      options
     )
   } else if (storageConfig.type === 's3') {
     const persistenceAdapter = new S3PathBasedPersistenceAdapter(storageConfig, deleteData)
-    return new FileSystemAwsIamStore(storageConfig.prefix || '', partition, '/', persistenceAdapter)
+    return new FileSystemAwsIamStore(
+      storageConfig.prefix || '',
+      partition,
+      '/',
+      persistenceAdapter,
+      options
+    )
   } else if (storageConfig.type === 'sqlite') {
     const version = iamCollectVersion()
-    return new SqliteAwsIamStore(storageConfig.path, partition, version)
+    return new SqliteAwsIamStore(storageConfig.path, partition, version, options)
   }
 
   throw new Error(
@@ -72,9 +84,18 @@ export function createStorageClient(
  * Create an in-memory storage client with the 'aws' partition.
  *
  * This is useful for testing.
+ *
+ * @param options - Options controlling storage client behavior.
+ * @returns The in-memory storage client instance to use.
  */
-export function createInMemoryStorageClient(): AwsIamStore {
-  return new FileSystemAwsIamStore('mock', 'aws', '/', new InMemoryPathBasedPersistenceAdapter())
+export function createInMemoryStorageClient(options: StorageClientOptions = {}): AwsIamStore {
+  return new FileSystemAwsIamStore(
+    'mock',
+    'aws',
+    '/',
+    new InMemoryPathBasedPersistenceAdapter(),
+    options
+  )
 }
 
 /**

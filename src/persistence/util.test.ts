@@ -4,7 +4,7 @@ import { FileSystemAdapter } from './file/FileSystemAdapter.js'
 import { FileSystemAwsIamStore } from './file/FileSystemAwsIamStore.js'
 import { S3PathBasedPersistenceAdapter } from './s3/S3PathBasedPersistenceAdapter.js'
 import { SqliteAwsIamStore } from './sqlite/SqliteAwsIamStore.js'
-import { createStorageClient } from './util.js'
+import { createInMemoryStorageClient, createStorageClient } from './util.js'
 
 describe('createStorageClient', () => {
   it('should create a FileSystemAwsIamStore when type is file', async () => {
@@ -70,6 +70,68 @@ describe('createStorageClient', () => {
     //Then it should return a FileSystemAwsIamStore instance
     expect(storageClient).toBeInstanceOf(FileSystemAwsIamStore)
     expect((storageClient as any).fsAdapter).toBeInstanceOf(FileSystemAdapter)
+  })
+
+  it('should pass storage client options to file storage clients', async () => {
+    //Given a file storage config and passthrough serialization options
+    const storageConfig: StorageConfig = {
+      type: 'file',
+      path: '/path/to/storage'
+    }
+
+    //When createStorageClient is called
+    const storageClient = createStorageClient(storageConfig, 'aws', true, {
+      jsonSerialization: 'passthrough'
+    })
+
+    //Then it should configure the FileSystemAwsIamStore with the options
+    expect((storageClient as any).serialize({ z: 1, a: 2 })).toBe('{\n  "z": 1,\n  "a": 2\n}')
+  })
+
+  it('should pass storage client options to s3 storage clients', async () => {
+    //Given an S3 storage config and passthrough serialization options
+    const storageConfig: StorageConfig = {
+      type: 's3',
+      bucket: 'my-bucket',
+      region: 'us-east-1'
+    }
+
+    //When createStorageClient is called
+    const storageClient = createStorageClient(storageConfig, 'aws', true, {
+      jsonSerialization: 'passthrough'
+    })
+
+    //Then it should configure the FileSystemAwsIamStore with the options
+    expect((storageClient as any).serialize({ z: 1, a: 2 })).toBe('{\n  "z": 1,\n  "a": 2\n}')
+  })
+
+  it('should pass storage client options to sqlite storage clients', async () => {
+    //Given a sqlite storage config and passthrough serialization options
+    const storageConfig: StorageConfig = {
+      type: 'sqlite',
+      path: ':memory:'
+    }
+
+    //When createStorageClient is called
+    const storageClient = createStorageClient(storageConfig, 'aws', true, {
+      jsonSerialization: 'passthrough'
+    })
+
+    //Then it should configure the SqliteAwsIamStore with the options
+    expect((storageClient as any).serialize({ z: 1, a: 2 })).toBe('{\n  "z": 1,\n  "a": 2\n}')
+    ;(storageClient as SqliteAwsIamStore).close()
+  })
+
+  it('should pass storage client options to in-memory storage clients', async () => {
+    //Given passthrough serialization options
+    const options = { jsonSerialization: 'passthrough' as const }
+
+    //When createInMemoryStorageClient is called
+    const storageClient = createInMemoryStorageClient(options)
+
+    //Then it should configure the FileSystemAwsIamStore with the options
+    expect(storageClient).toBeInstanceOf(FileSystemAwsIamStore)
+    expect((storageClient as any).serialize({ z: 1, a: 2 })).toBe('{\n  "z": 1,\n  "a": 2\n}')
   })
 
   it('should throw an error if no storage config is found', async () => {

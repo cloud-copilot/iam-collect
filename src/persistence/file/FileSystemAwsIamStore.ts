@@ -1,25 +1,29 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import { join } from 'path'
-import { consistentStringify } from '../../utils/json.js'
 import {
   type AwsIamStore,
   type OrganizationPolicyType,
-  type ResourceTypeParts
+  type ResourceTypeParts,
+  type StorageClientOptions
 } from '../AwsIamStore.js'
 import { type PathBasedPersistenceAdapter } from '../PathBasedPersistenceAdapter.js'
+import { createStorageStringifier, type StorageStringifier } from '../serialization.js'
 import { resourcePrefix, resourceTypePrefix } from '../util.js'
 
 export class FileSystemAwsIamStore implements AwsIamStore {
   private fsAdapter: PathBasedPersistenceAdapter
+  private readonly stringifyJson: StorageStringifier
 
   constructor(
     private readonly baseFolder: string,
     partition: string,
     private readonly separator: string,
-    fsAdapter: PathBasedPersistenceAdapter
+    fsAdapter: PathBasedPersistenceAdapter,
+    options: StorageClientOptions = {}
   ) {
     this.baseFolder = join(baseFolder, 'aws', partition)
     this.fsAdapter = fsAdapter
+    this.stringifyJson = createStorageStringifier(options)
   }
 
   private organizationPath(organizationId: string): string {
@@ -425,7 +429,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
   async saveRamResource(accountId: string, arn: string, data: any): Promise<void> {
     const region = splitArnParts(arn).region
     const filePath = this.ramPolicyFilePath(accountId, region, arn)
-    const content = typeof data === 'string' ? data : consistentStringify(data)
+    const content = this.serialize(data)
     await this.fsAdapter.writeFile(filePath, content)
   }
 
@@ -456,11 +460,21 @@ export class FileSystemAwsIamStore implements AwsIamStore {
 
   async saveIndex(indexName: string, data: any, lockId: string): Promise<boolean> {
     const filePath = this.indexPath(indexName)
-    return this.fsAdapter.writeWithOptimisticLock(filePath, consistentStringify(data), lockId)
+    return this.fsAdapter.writeWithOptimisticLock(filePath, this.stringifyJson(data), lockId)
   }
 
   async writeBatch(fn: () => Promise<void>): Promise<void> {
     await fn()
+  }
+
+  /**
+   * Serialize content for storage, preserving string payloads as already-serialized JSON.
+   *
+   * @param data The content to serialize.
+   * @returns The serialized content.
+   */
+  private serialize(data: any): string {
+    return typeof data === 'string' ? data : this.stringifyJson(data)
   }
 
   /**
@@ -514,7 +528,7 @@ export class FileSystemAwsIamStore implements AwsIamStore {
       return
     }
 
-    const content = typeof data === 'string' ? data : consistentStringify(data)
+    const content = this.serialize(data)
     await this.fsAdapter.writeFile(filePath, content)
   }
 }

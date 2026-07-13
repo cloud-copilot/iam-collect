@@ -1,4 +1,19 @@
 /**
+ * Controls how storage clients serialize non-string JSON data before persistence.
+ */
+export interface StorageClientOptions {
+  /**
+   * The JSON serialization mode to use for non-string values.
+   *
+   * `consistent` uses deterministic serialization for stable stored output.
+   * `passthrough` uses standard JSON.stringify formatting without deterministic reordering.
+   *
+   * Defaults to `consistent`.
+   */
+  jsonSerialization?: 'consistent' | 'passthrough'
+}
+
+/**
  * The parts of the a resource type that can be used for categories.
  */
 export interface ResourceTypeParts {
