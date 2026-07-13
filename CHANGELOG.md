@@ -1,3 +1,10 @@
+## [0.1.203](https://github.com/cloud-copilot/iam-collect/compare/v0.1.202...v0.1.203) (2026-07-13)
+
+
+### Features
+
+* add storage json serialization options ([bea8011](https://github.com/cloud-copilot/iam-collect/commit/bea8011df7a1b31d916ea69171891d29083ac79c))
+
 ## [0.1.202](https://github.com/cloud-copilot/iam-collect/compare/v0.1.201...v0.1.202) (2026-07-11)
 
 ## [0.1.201](https://github.com/cloud-copilot/iam-collect/compare/v0.1.200...v0.1.201) (2026-07-04)
