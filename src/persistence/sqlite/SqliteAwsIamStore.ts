@@ -1,12 +1,13 @@
 import { splitArnParts } from '@cloud-copilot/iam-utils'
 import DatabaseConstructor, { type Database } from 'better-sqlite3'
 import { createHash } from 'crypto'
-import { consistentStringify } from '../../utils/json.js'
 import {
   type AwsIamStore,
   type OrganizationPolicyType,
-  type ResourceTypeParts
+  type ResourceTypeParts,
+  type StorageClientOptions
 } from '../AwsIamStore.js'
+import { createStorageStringifier, type StorageStringifier } from '../serialization.js'
 
 function quote(value: any): string {
   if (value === undefined || value === null || value === '') {
@@ -22,12 +23,15 @@ const CURRENT_SCHEMA_VERSION = '2025-10-14'
  */
 export class SqliteAwsIamStore implements AwsIamStore {
   private readonly db: Database
+  private readonly stringifyJson: StorageStringifier
 
   constructor(
     private readonly dbPath: string,
     private readonly partition: string,
-    private readonly iamCollectVersion: string
+    private readonly iamCollectVersion: string,
+    options: StorageClientOptions = {}
   ) {
+    this.stringifyJson = createStorageStringifier(options)
     this.db = new DatabaseConstructor(this.dbPath)
     this.init()
   }
@@ -145,8 +149,14 @@ export class SqliteAwsIamStore implements AwsIamStore {
     )
   }
 
+  /**
+   * Serialize content for storage, preserving string payloads as already-serialized JSON.
+   *
+   * @param data The content to serialize.
+   * @returns The serialized content.
+   */
   private serialize(data: any): string {
-    return typeof data === 'string' ? data : consistentStringify(data)
+    return typeof data === 'string' ? data : this.stringifyJson(data)
   }
 
   async saveResourceMetadata(
@@ -598,7 +608,7 @@ export class SqliteAwsIamStore implements AwsIamStore {
     if (existing.length === 0 && lockId !== '') {
       return false
     }
-    const content = consistentStringify(data)
+    const content = this.stringifyJson(data)
     const hash = createHash('sha256').update(content).digest('hex')
     const sql = `INSERT OR REPLACE INTO indexes(partition, index_name, data, hash)
       VALUES(${quote(this.partition)}, ${quote(indexName.toLowerCase())}, ${quote(content)}, ${quote(hash)})`

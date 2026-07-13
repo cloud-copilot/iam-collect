@@ -35,6 +35,55 @@ describe('FileSystemAwsIamStore', () => {
       )
     })
 
+    it('should consistently serialize object metadata by default', async () => {
+      //Given object metadata with insertion order that differs from sorted order
+      const data = { z: 1, a: 2 }
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      //When metadata is saved
+      await store.saveResourceMetadata(
+        '123456789012',
+        'arn:aws:iam::123456789012:role/Test-Role',
+        'metadata',
+        data
+      )
+
+      //Then object keys should be serialized in deterministic order
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/metadata.json',
+        '{\n  "a": 2,\n  "z": 1\n}'
+      )
+    })
+
+    it('should use passthrough serialization when configured', async () => {
+      //Given a store configured for passthrough JSON serialization
+      const passthroughStore = new FileSystemAwsIamStore(
+        '/base/folder',
+        'aws',
+        '/',
+        mockFsAdapter,
+        {
+          jsonSerialization: 'passthrough'
+        }
+      )
+      const data = { z: 1, a: 2 }
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      //When metadata is saved
+      await passthroughStore.saveResourceMetadata(
+        '123456789012',
+        'arn:aws:iam::123456789012:role/Test-Role',
+        'metadata',
+        data
+      )
+
+      //Then object keys should stay in JSON.stringify order
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012/iam/role/test-role/metadata.json',
+        '{\n  "z": 1,\n  "a": 2\n}'
+      )
+    })
+
     it('should save aws managed policies metadata', async () => {
       // Given a specific ARN and metadata type
       const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
