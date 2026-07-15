@@ -152,6 +152,8 @@ If you prefer, you can configure iam-collect to pull data from AWS Config instea
 | ecr               | Repositories                      | name, region, tags, resource policy, key id                                                                                         |
 | ecr               | Registries                        | policy                                                                                                                              |
 | ec2               | VPC Endpoints                     | id, name, type, vpc, policy                                                                                                         |
+| eks               | Clusters                          | name, authentication mode, tags                                                                                                     |
+| eks               | Access Entries                    | cluster, principal, username, type, kubernetes groups, associated access policies, tags                                             |
 | elasticfilesystem | File Systems                      | name, id, key, encryption, tags, policy                                                                                             |
 | es                | OpenSearch Domains                | name, policy, tags, KMS key id                                                                                                      |
 | events            | Event Buses                       | name, key id, policy, tags                                                                                                          |

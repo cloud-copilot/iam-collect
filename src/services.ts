@@ -7,6 +7,7 @@ export const allServices = [
   'dynamodb',
   'ec2',
   'ecr',
+  'eks',
   'elasticfilesystem',
   'es',
   'events',
