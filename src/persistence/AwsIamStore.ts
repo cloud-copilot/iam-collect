@@ -50,7 +50,7 @@ export interface ResourceTypeParts {
   metadata?: Record<string, string>
 }
 
-export type OrganizationPolicyType = 'scps' | 'rcps'
+export type OrganizationPolicyType = 'scps' | 'rcps' | 's3-policies'
 
 /**
  * An interface for persisting AWS resource metadata.

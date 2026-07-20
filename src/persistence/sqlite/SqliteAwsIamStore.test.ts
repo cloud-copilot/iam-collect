@@ -619,12 +619,23 @@ describe('SqliteAwsIamStore', () => {
       await store.saveOrganizationPolicyMetadata('o-1234567890', 'rcps', 'p-789', 'metadata', {
         name: 'Policy3'
       })
+      await store.saveOrganizationPolicyMetadata(
+        'o-1234567890',
+        's3-policies',
+        'p-s3policy',
+        'metadata',
+        {
+          name: 'S3Policy'
+        }
+      )
 
       const scps = await store.listOrganizationPolicies('o-1234567890', 'scps')
       const rcps = await store.listOrganizationPolicies('o-1234567890', 'rcps')
+      const s3Policies = await store.listOrganizationPolicies('o-1234567890', 's3-policies')
 
       expect(scps.sort()).toEqual(['p-123', 'p-456'])
       expect(rcps).toEqual(['p-789'])
+      expect(s3Policies).toEqual(['p-s3policy'])
     })
 
     it('normalizes case for organization policy operations', async () => {

@@ -809,6 +809,27 @@ describe('FileSystemAwsIamStore', () => {
       )
     })
 
+    it('should save organization s3 policy metadata', async () => {
+      // Given a specific organization ID and S3 policy type
+      const data = JSON.stringify({ Version: '2012-10-17', Statement: [] })
+      const writeFileSpy = vi.spyOn(mockFsAdapter, 'writeFile').mockResolvedValue()
+
+      // When metadata is saved
+      await store.saveOrganizationPolicyMetadata(
+        'o-12345',
+        's3-policies',
+        'p-12345678',
+        'policy',
+        data
+      )
+
+      // Then the S3 policies directory should be used
+      expect(writeFileSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/organizations/o-12345/s3-policies/p-12345678/policy.json',
+        data
+      )
+    })
+
     it('should delete the organization policy metadata file if data is empty', async () => {
       for (const emptyValue of ['', '   ', '{}', '[]', undefined, null, {}, []]) {
         // Given a specific organization ID and policy type
