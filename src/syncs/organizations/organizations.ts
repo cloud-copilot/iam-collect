@@ -578,10 +578,12 @@ async function syncPolicies(
   enabled: boolean,
   writeOnly: boolean
 ): Promise<void> {
-  if (!enabled && !writeOnly) {
-    const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
-    for (const policyId of existingPolicies) {
-      await storage.deleteOrganizationPolicy(organizationId, fileType, policyId)
+  if (!enabled) {
+    if (!writeOnly) {
+      const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
+      for (const policyId of existingPolicies) {
+        await storage.deleteOrganizationPolicy(organizationId, fileType, policyId)
+      }
     }
     return
   }
