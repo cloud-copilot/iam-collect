@@ -105,6 +105,7 @@ aws/                                          # always `aws` for now, may add ot
     │   └── <organization-id>/                # AWS Organization ID
     │       ├── ous/                          # organizational units metadata
     │       ├── rcps/                         # resource control policies
+    │       ├── s3-policies/                  # S3 policies
     │       ├── scps/                         # service control policies
     │       └── ....json                      # different metadata about the org such as accounts, or structure
     └── indexes/                              # search indexes for fast lookups
@@ -114,11 +115,10 @@ aws/                                          # always `aws` for now, may add ot
 ```
 
 - **Accounts**: Under `accounts/`, each account directory contains:
-
   - **Resource folders**: Nested by `<service-name>/<region>/<resource-type>/<resource-id>/`, each holding `metadata.json` and `data.json`.
   - **RAM**: A `ram/` folder with JSON files (`<resourceArn>.json`) for Resource Access Manager shares.
 
-- **Organizations**: Under `organizations/`, each org directory includes `accounts.json` (listing account IDs) and subfolders for `ous/`, `rcps/`, and `scps/` containing respective metadata.
+- **Organizations**: Under `organizations/`, each org directory includes `accounts.json` (listing account IDs) and subfolders for `ous/`, `rcps/`, `s3-policies/`, and `scps/` containing respective metadata.
 
 - **Indexes**: The `indexes/` folder contains JSON files that serve as search indexes for faster lookups, such as mapping buckets to accounts or accounts to organizations.
 

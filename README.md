@@ -175,7 +175,7 @@ If you prefer, you can configure iam-collect to pull data from AWS Config instea
 | organizations     | Organizations                     | id, root account id, enabled policy types, org structure, delegated administrators                                                  |
 | organizations     | Organizational Units              | id, parent ou, enabled SCPs, enabled RCPs, tags                                                                                     |
 | organizations     | Accounts                          | id, parent ou, enabled SCPs, enabled RCPs, tags                                                                                     |
-| organizations     | SCPs, RCPs                        | id, name, description, tags, policy                                                                                                 |
+| organizations     | SCPs, RCPs, S3 Policies           | id, name, description, tags, policy                                                                                                 |
 | sns               | Topics                            | name, tags, kms key id, policy                                                                                                      |
 | sqs               | Queues                            | name, tags, kms key id, policy                                                                                                      |
 | secretsmanager    | Secrets                           | name, tags, kms key id, policy                                                                                                      |

@@ -33,6 +33,7 @@ interface AccountDetails {
   ou: string
   scps: string[]
   rcps: string[]
+  s3Policies: string[]
   tags: Record<string, string> | undefined
 }
 
@@ -97,6 +98,7 @@ export const OrganizationSync: Sync = {
 
     const scpsEnabled = !!features[PolicyType.SERVICE_CONTROL_POLICY]
     const rcpsEnabled = !!features[PolicyType.RESOURCE_CONTROL_POLICY]
+    const s3PoliciesEnabled = !!features[PolicyType.S3_POLICY]
 
     const allAccounts: AccountDetailsMap = {}
     const allOus: Record<
@@ -105,6 +107,7 @@ export const OrganizationSync: Sync = {
         parent: string | undefined
         scps: string[]
         rcps: string[]
+        s3Policies: string[]
       }
     > = {}
 
@@ -123,6 +126,12 @@ export const OrganizationSync: Sync = {
         root.Id!,
         PolicyType.RESOURCE_CONTROL_POLICY,
         rcpsEnabled
+      ),
+      s3Policies: await getPoliciesForTarget(
+        organizationClient,
+        root.Id!,
+        PolicyType.S3_POLICY,
+        s3PoliciesEnabled
       )
     }
     ouDetails[root.Id!] = await getOuDetails(organizationClient, root)
@@ -150,15 +159,21 @@ export const OrganizationSync: Sync = {
             parent: key,
             scps: await getPoliciesForTarget(
               organizationClient,
-              root.Id!,
+              childId,
               PolicyType.SERVICE_CONTROL_POLICY,
               scpsEnabled
             ),
             rcps: await getPoliciesForTarget(
               organizationClient,
-              root.Id!,
+              childId,
               PolicyType.RESOURCE_CONTROL_POLICY,
               rcpsEnabled
+            ),
+            s3Policies: await getPoliciesForTarget(
+              organizationClient,
+              childId,
+              PolicyType.S3_POLICY,
+              s3PoliciesEnabled
             )
           }
           parent[key].children ||= {}
@@ -189,6 +204,12 @@ export const OrganizationSync: Sync = {
               account.Id!,
               PolicyType.RESOURCE_CONTROL_POLICY,
               rcpsEnabled
+            ),
+            s3Policies: await getPoliciesForTarget(
+              organizationClient,
+              account.Id!,
+              PolicyType.S3_POLICY,
+              s3PoliciesEnabled
             ),
             tags: accountTags
           }
@@ -257,6 +278,16 @@ export const OrganizationSync: Sync = {
       PolicyType.RESOURCE_CONTROL_POLICY,
       'rcps',
       rcpsEnabled,
+      syncOptions.writeOnly
+    )
+
+    await syncPolicies(
+      organizationId,
+      organizationClient,
+      storage,
+      PolicyType.S3_POLICY,
+      's3-policies',
+      s3PoliciesEnabled,
       syncOptions.writeOnly
     )
 
@@ -534,8 +565,9 @@ async function getPoliciesForTarget(
  * @param organizationClient the OrganizationsClient to use
  * @param storage the AwsIamStore to use for persistence
  * @param policyType the type of policy to sync (e.g., SERVICE_CONTROL_POLICY, RESOURCE_CONTROL_POLICY)
- * @param fileType the type of policy file to sync to storage (e.g., 'scps', 'rcps')
+ * @param fileType the type of policy file to sync to storage (e.g., 'scps', 'rcps', 's3-policies')
  * @param enabled whether the policy type is enabled in the organization
+ * @param writeOnly whether to skip deleting stale policies from storage
  */
 async function syncPolicies(
   organizationId: string,
@@ -546,10 +578,12 @@ async function syncPolicies(
   enabled: boolean,
   writeOnly: boolean
 ): Promise<void> {
-  if (!enabled && !writeOnly) {
-    const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
-    for (const policyId of existingPolicies) {
-      await storage.deleteOrganizationPolicy(organizationId, fileType, policyId)
+  if (!enabled) {
+    if (!writeOnly) {
+      const existingPolicies = await storage.listOrganizationPolicies(organizationId, fileType)
+      for (const policyId of existingPolicies) {
+        await storage.deleteOrganizationPolicy(organizationId, fileType, policyId)
+      }
     }
     return
   }
