@@ -1,3 +1,10 @@
+## [0.1.205](https://github.com/cloud-copilot/iam-collect/compare/v0.1.204...v0.1.205) (2026-07-20)
+
+
+### Features
+
+* collect organization s3 policies ([#334](https://github.com/cloud-copilot/iam-collect/issues/334)) ([fad605e](https://github.com/cloud-copilot/iam-collect/commit/fad605e12d104588d4316fcc1dcc94c83184c905))
+
 ## [0.1.204](https://github.com/cloud-copilot/iam-collect/compare/v0.1.203...v0.1.204) (2026-07-18)
 
 ## [0.1.203](https://github.com/cloud-copilot/iam-collect/compare/v0.1.202...v0.1.203) (2026-07-13)
