@@ -42,6 +42,8 @@ If your dataSource is AWS Config, iam-collect skips resource types that are not 
 | ecr               | Repositories                      | ✅               | AWS::ECR::Repository                                          |
 | ecr               | Registries                        | ✅               | AWS::ECR::RegistryPolicy                                      |
 | ec2               | VPC Endpoints                     | ✅               | AWS::EC2::VPCEndpoint                                         |
+| eks               | Clusters                          | ❌               |                                                               |
+| eks               | Access Entries                    | ❌               |                                                               |
 | elasticfilesystem | File Systems                      | ✅               | AWS::EFS::FileSystem                                          |
 | es                | OpenSearch Domains                | ✅               | AWS::OpenSearch::Domain                                       |
 | events            | Event Buses                       | ✅               | AWS::Events::EventBus                                         |
