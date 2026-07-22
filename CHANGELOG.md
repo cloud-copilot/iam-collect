@@ -1,3 +1,10 @@
+## [0.1.206](https://github.com/cloud-copilot/iam-collect/compare/v0.1.205...v0.1.206) (2026-07-22)
+
+
+### Features
+
+* collect EKS clusters and access entries ([#332](https://github.com/cloud-copilot/iam-collect/issues/332)) ([a2eb8e4](https://github.com/cloud-copilot/iam-collect/commit/a2eb8e4d8c0060ee513fcb4c7132b2d87b28e945))
+
 ## [0.1.205](https://github.com/cloud-copilot/iam-collect/compare/v0.1.204...v0.1.205) (2026-07-20)
 
 
