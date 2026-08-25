@@ -5,7 +5,7 @@ import { type AwsIamStore, type ResourceTypeParts } from '../persistence/AwsIamS
 import { type AwsService } from '../services.js'
 
 export interface SyncOptions {
-  workerPool: ConcurrentWorkerPool
+  workerPool: ConcurrentWorkerPool<any, any>
   writeOnly: boolean
   customConfig?: Record<string, any>
   clientPool: AwsClientPool

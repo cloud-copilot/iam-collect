@@ -2,6 +2,7 @@ import {
   GetLayerVersionPolicyCommand,
   GetPolicyCommand,
   LambdaClient,
+  ListAliasesCommand,
   ListFunctionsCommand,
   ListLayersCommand,
   ListLayerVersionsCommand,
@@ -19,9 +20,9 @@ import {
 /**
  * AWS Config-based Lambda client implementation
  *
- * Lambda Layers Only:
- * Since policies are not available in AWS Config for Lambda Layers, this client provides limited functionality
- * and returns empty results for all Lambda Layer operations.
+ * Lambda Layers and Aliases:
+ * Since policies are not available in AWS Config for Lambda Layers or aliases, this client provides limited
+ * functionality and returns empty results for those operations.
  */
 export class AwsConfigLambdaClient extends AbstractClient<AwsConfigClientContext> {
   static readonly clientName = LambdaClient.name
@@ -42,6 +43,7 @@ export class AwsConfigLambdaClient extends AbstractClient<AwsConfigClientContext
   protected registerCommands(): void {
     this.registerCommand(AwsConfigGetLayerVersionPolicyCommand)
     this.registerCommand(AwsConfigGetPolicyCommand)
+    this.registerCommand(AwsConfigListAliasesCommand)
     this.registerCommand(AwsConfigListFunctionsCommand)
     this.registerCommand(AwsConfigListLayersCommand)
     this.registerCommand(AwsConfigListLayerVersionsCommand)
@@ -81,6 +83,20 @@ const AwsConfigGetPolicyCommand = awsConfigCommand({
     return {
       Policy: supplementaryConfiguration?.Policy,
       RevisionId: configuration?.revisionId
+    }
+  }
+})
+
+/**
+ * Config-based implementation of Lambda ListAliasesCommand
+ * Returns an empty list since aliases and their policies are not tracked separately in Config
+ */
+const AwsConfigListAliasesCommand = awsConfigCommand({
+  command: ListAliasesCommand,
+  execute: async (input, context) => {
+    return {
+      Aliases: [],
+      NextMarker: undefined
     }
   }
 })

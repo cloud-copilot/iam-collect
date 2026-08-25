@@ -59,6 +59,7 @@
         "kms:ListResourceTags",
         "lambda:GetLayerVersionPolicy",
         "lambda:GetPolicy",
+        "lambda:ListAliases",
         "lambda:ListFunctions",
         "lambda:ListLayerVersions",
         "lambda:ListLayers",
