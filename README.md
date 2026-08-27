@@ -163,6 +163,7 @@ If you prefer, you can configure iam-collect to pull data from AWS Config instea
 | kinesis           | Data Streams                      | name, encryption type, key id, policy, tags                                                                                         |
 | kms               | Keys                              | id, policy, tags                                                                                                                    |
 | lambda            | Functions                         | name, role, tags, policy                                                                                                            |
+| lambda            | Function Aliases                  | name, role, alias, version, policy                                                                                                  |
 | lambda            | Layer Versions                    | name, version, policy                                                                                                               |
 | ram               | Shared Resources                  | resource shares, resource policy                                                                                                    |
 | s3                | Access Points                     | name, bucket, bucket account, policy, block public access configuration, network origin, vpc, alias, endpoints                      |

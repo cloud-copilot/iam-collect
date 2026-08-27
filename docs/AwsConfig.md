@@ -53,6 +53,7 @@ If your dataSource is AWS Config, iam-collect skips resource types that are not 
 | kinesis           | Data Streams                      | ❌               |                                                               |
 | kms               | Keys                              | ✅               | AWS::KMS::Key                                                 |
 | lambda            | Functions                         | ✅               | AWS::Lambda::Function                                         |
+| lambda            | Function Aliases                  | ❌               |                                                               |
 | lambda            | Layer Versions                    | ❌               |                                                               |
 | ram               | Shared Resources                  | ❌               |                                                               |
 | s3                | Access Points                     | ✅               | AWS::S3::AccessPoint                                          |
