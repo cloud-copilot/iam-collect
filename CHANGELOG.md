@@ -1,3 +1,10 @@
+## [0.1.214](https://github.com/cloud-copilot/iam-collect/compare/v0.1.213...v0.1.214) (2026-08-28)
+
+
+### Bug Fixes
+
+* filter file resource metadata by metadata options ([#342](https://github.com/cloud-copilot/iam-collect/issues/342)) ([3a9ad24](https://github.com/cloud-copilot/iam-collect/commit/3a9ad24c144a14be04b43c14dd0e0eedad17d289))
+
 ## [0.1.213](https://github.com/cloud-copilot/iam-collect/compare/v0.1.212...v0.1.213) (2026-08-28)
 
 
