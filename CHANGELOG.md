@@ -1,3 +1,10 @@
+## [0.1.213](https://github.com/cloud-copilot/iam-collect/compare/v0.1.212...v0.1.213) (2026-08-28)
+
+
+### Features
+
+* collect Lambda function alias policies ([#340](https://github.com/cloud-copilot/iam-collect/issues/340)) ([8c674ff](https://github.com/cloud-copilot/iam-collect/commit/8c674ff2d13bef64585377fcb64be81e8972677f))
+
 ## [0.1.212](https://github.com/cloud-copilot/iam-collect/compare/v0.1.211...v0.1.212) (2026-08-28)
 
 
