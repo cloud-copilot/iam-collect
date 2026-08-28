@@ -1,3 +1,10 @@
+## [0.1.212](https://github.com/cloud-copilot/iam-collect/compare/v0.1.211...v0.1.212) (2026-08-28)
+
+
+### Bug Fixes
+
+* run PR checks with pull_request trigger ([#341](https://github.com/cloud-copilot/iam-collect/issues/341)) ([44ccda1](https://github.com/cloud-copilot/iam-collect/commit/44ccda1d9430d229fe158265baf702dda3614b77))
+
 ## [0.1.211](https://github.com/cloud-copilot/iam-collect/compare/v0.1.210...v0.1.211) (2026-08-22)
 
 ## [0.1.210](https://github.com/cloud-copilot/iam-collect/compare/v0.1.209...v0.1.210) (2026-08-15)
