@@ -214,8 +214,15 @@ export class FileSystemAwsIamStore implements AwsIamStore {
     pathParts.push('*')
 
     const strings = await this.fsAdapter.findWithPattern(searchBase, pathParts, 'metadata.json')
+    const results = strings.map((s) => JSON.parse(s))
 
-    return strings.map((s) => JSON.parse(s))
+    if (!options.metadata || Object.keys(options.metadata).length === 0) {
+      return results
+    }
+
+    return results.filter((item) =>
+      Object.entries(options.metadata!).every(([key, value]) => item[key] === value)
+    )
   }
 
   async syncResourceList(
