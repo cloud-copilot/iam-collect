@@ -1156,6 +1156,56 @@ describe('FileSystemAwsIamStore', () => {
       )
       expect(result).toEqual(expectedResources)
     })
+
+    it('should filter metadata when metadata options are present', async () => {
+      //Given resources with only one matching the metadata filter
+      const expectedResources = [
+        { name: 'function', isAlias: 'false' },
+        { name: 'alias-prod', isAlias: 'true' },
+        { name: 'alias-beta', isAlias: 'true' }
+      ]
+      const findMetadataSpy = vi
+        .spyOn(mockFsAdapter, 'findWithPattern')
+        .mockResolvedValue(expectedResources.map((item) => JSON.stringify(item)))
+
+      //When finding resource metadata with a metadata filter
+      const result = await store.findResourceMetadata('123456789012', {
+        service: 'lambda',
+        region: 'us-east-1',
+        resourceType: 'function',
+        metadata: { isAlias: 'true', name: 'alias-prod' }
+      })
+
+      //Then only resources matching all metadata filters should be returned
+      expect(findMetadataSpy).toHaveBeenCalledWith(
+        '/base/folder/aws/aws/accounts/123456789012',
+        ['lambda', 'us-east-1', 'function', '*'],
+        'metadata.json'
+      )
+      expect(result).toEqual([{ name: 'alias-prod', isAlias: 'true' }])
+    })
+
+    it('should return an empty array when no metadata matches metadata options', async () => {
+      //Given resources that do not match the metadata filter
+      const expectedResources = [
+        { name: 'function', isAlias: 'false' },
+        { name: 'alias-prod', isAlias: 'true' }
+      ]
+      vi.spyOn(mockFsAdapter, 'findWithPattern').mockResolvedValue(
+        expectedResources.map((item) => JSON.stringify(item))
+      )
+
+      //When finding resource metadata with a non-matching metadata filter
+      const result = await store.findResourceMetadata('123456789012', {
+        service: 'lambda',
+        region: 'us-east-1',
+        resourceType: 'function',
+        metadata: { isAlias: 'true', name: 'alias-beta' }
+      })
+
+      //Then no resources should be returned
+      expect(result).toEqual([])
+    })
   })
 
   describe('getOrganizationMetadata', () => {
