@@ -114,6 +114,7 @@ describe('LambdaSync', () => {
       role: 'test-role',
       name: 'test-function',
       alias: 'beta',
+      isAlias: 'true',
       version: '3'
     })
 

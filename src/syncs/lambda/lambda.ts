@@ -158,6 +158,7 @@ async function collectAliasRecords(
         arn: alias.AliasArn,
         role: func.Role,
         name: func.FunctionName,
+        isAlias: 'true',
         alias: alias.Name,
         version: alias.FunctionVersion
       },
