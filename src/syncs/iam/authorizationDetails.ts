@@ -10,7 +10,7 @@ import {
   type UserDetail
 } from '@aws-sdk/client-iam'
 
-import { ConcurrentWorkerPool, type Job } from '@cloud-copilot/job'
+import { ConcurrentWorkerPool, type Job } from '@actsecurity/job'
 import { type AwsCredentialProviderWithMetaData } from '../../aws/coreAuth.js'
 import { type AwsIamStore } from '../../persistence/AwsIamStore.js'
 import { runAndCatch404 } from '../../utils/client-tools.js'

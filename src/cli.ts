@@ -7,7 +7,7 @@ import {
   parseCliArguments,
   stringArgument,
   stringArrayArgument
-} from '@cloud-copilot/cli'
+} from '@actsecurity/cli'
 import { conductLogAnalysis } from './analysis/analyze.js'
 import { loadConfigFiles } from './config/configFile.js'
 import { createDefaultConfiguration } from './config/createConfigFile.js'
