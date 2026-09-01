@@ -10,7 +10,7 @@ import {
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
 import { type Job } from '@actsecurity/job'
-import { log } from '@cloud-copilot/log'
+import { log } from '@actsecurity/log'
 import {
   runAndCatch404,
   runAndCatchAccessDeniedWithLog,

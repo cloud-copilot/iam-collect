@@ -5,7 +5,7 @@ import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
 import { type AwsIamStore, type ResourceTypeParts } from '../persistence/AwsIamStore.js'
 import { type AwsService } from '../services.js'
 import { runAndCatchAccessDeniedWithLog, withDnsRetry } from '../utils/client-tools.js'
-import { log } from '@cloud-copilot/log'
+import { log } from '@actsecurity/log'
 import { convertTagsToRecord, type Tags } from '../utils/tags.js'
 import { type DataRecord, type Sync, syncData, type SyncOptions } from './sync.js'
 
