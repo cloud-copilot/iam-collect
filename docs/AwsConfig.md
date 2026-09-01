@@ -75,6 +75,9 @@ If your dataSource is AWS Config, iam-collect skips resource types that are not 
 | secretsmanager    | Secrets                           | ❌               |                                                               |
 | sso               | Instances                         | ❌               |                                                               |
 | sso               | Permission Sets                   | ❌               |                                                               |
+| sso               | Identity Store Users              | ❌               |                                                               |
+| sso               | Identity Store Groups             | ❌               |                                                               |
+| sso               | Identity Store Group Memberships  | ❌               |                                                               |
 
 ## Configuring iam-collect to use AWS Config
 
