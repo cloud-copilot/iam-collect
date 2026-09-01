@@ -1,3 +1,15 @@
+## [0.1.216](https://github.com/act-security-labs/iam-collect/compare/v0.1.215...v0.1.216) (2026-09-01)
+
+
+### Bug Fixes
+
+* Update @actsecurity/job and @actsecurity/log dependencies ([#350](https://github.com/act-security-labs/iam-collect/issues/350)) ([489755f](https://github.com/act-security-labs/iam-collect/commit/489755fe385c747e8530a9d800da4cb803a4decd))
+
+
+### Features
+
+* Move to actsecurity ([#349](https://github.com/act-security-labs/iam-collect/issues/349)) ([0c85331](https://github.com/act-security-labs/iam-collect/commit/0c85331ee507c31597f9c59b3e7beb6177d9cdad))
+
 ## [0.1.215](https://github.com/cloud-copilot/iam-collect/compare/v0.1.214...v0.1.215) (2026-08-29)
 
 ## [0.1.214](https://github.com/cloud-copilot/iam-collect/compare/v0.1.213...v0.1.214) (2026-08-28)
