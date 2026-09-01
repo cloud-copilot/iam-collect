@@ -138,7 +138,7 @@ const main = async () => {
       expectOperands: false,
       version: {
         currentVersion: iamCollectVersion,
-        checkForUpdates: '@cloud-copilot/iam-collect'
+        checkForUpdates: '@actsecurity/iam-collect'
       }
     }
   )

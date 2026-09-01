@@ -4,7 +4,7 @@
   "description": "Collect IAM information from AWS Accounts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cloud-copilot/iam-collect.git"
+    "url": "git+https://github.com/act-security-labs/iam-collect.git"
   },
   "exports": {
     ".": {
@@ -34,9 +34,9 @@
   "author": "David Kerber <dave@cloudcopilot.io>",
   "license": "AGPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/cloud-copilot/iam-collect/issues"
+    "url": "https://github.com/act-security-labs/iam-collect/issues"
   },
-  "homepage": "https://github.com/cloud-copilot/iam-collect#readme",
+  "homepage": "https://github.com/act-security-labs/iam-collect#readme",
   "devDependencies": {
     "@actsecurity/prettier-config": "^0.1.0",
     "@semantic-release/changelog": "^6.0.3",
