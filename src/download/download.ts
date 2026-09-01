@@ -1,4 +1,4 @@
-import { ConcurrentWorkerPool } from '@cloud-copilot/job'
+import { ConcurrentWorkerPool } from '@actsecurity/job'
 import { getCredentials } from '../aws/auth.js'
 import { AwsClientPool } from '../aws/ClientPool.js'
 import {

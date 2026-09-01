@@ -9,7 +9,7 @@ import {
   ListLayerVersionsCommand,
   ListTagsCommand
 } from '@aws-sdk/client-lambda'
-import { type Job } from '@cloud-copilot/job'
+import { type Job } from '@actsecurity/job'
 import { log } from '@cloud-copilot/log'
 import {
   runAndCatch404,

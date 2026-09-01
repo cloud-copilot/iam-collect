@@ -8,7 +8,7 @@ import {
   type PutObjectCommandInput,
   S3Client
 } from '@aws-sdk/client-s3'
-import { splitArnParts } from '@cloud-copilot/iam-utils'
+import { splitArnParts } from '@actsecurity/iam-utils'
 import { getCredentials } from '../../aws/auth.js'
 import { AwsClientPool } from '../../aws/ClientPool.js'
 import { getNewInitialCredentials } from '../../aws/coreAuth.js'

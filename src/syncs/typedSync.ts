@@ -1,4 +1,4 @@
-import { ConcurrentWorkerPool, type Job } from '@cloud-copilot/job'
+import { ConcurrentWorkerPool, type Job } from '@actsecurity/job'
 import type { Client, Command } from '@smithy/smithy-client'
 import { AwsClientPool } from '../aws/ClientPool.js'
 import { type AwsCredentialProviderWithMetaData } from '../aws/coreAuth.js'
